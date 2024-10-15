@@ -1,39 +1,85 @@
-# From .NET Core 3.0 you can use the command: `dotnet new gitignore` to generate a customizable .gitignore file
+# Ignore database and bin/obj folders
+bin/
+obj/
 
-*.swp
-*.*~
+# Ignore user-generated files by the web server
+wwwroot/js
+
+# Ignore SQLite database and its related files
+*.sqlite-shm
+*.sqlite-wal
+
+# Ignore database locking files
+*.db-shm
+*.db-wal
+
+# Ignore cache files
+*.cache
+.cache/
+
+# Ignore JSON files
+*.json
+!appsettings.json
+!Properties/launchSettings.json
+
+
+# Ignore NuGet package files and folders
+*.nupkg
+packages/
+.nuget/
 project.lock.json
-.DS_Store
-*.pyc
+project.fragment.lock.json
 
-# Visual Studio Code
-.vscode
+# Ignore build logs
+*.log
 
-# User-specific files
-*.suo
+# Ignore Visual Studio files
+.vscode/
+.vs/
+.vscode/*
 *.user
-*.userosscache
+*.suo
+*.csproj.user
 *.sln.docstates
 
-# Build results
-[Dd]ebug/
-[Dd]ebugPublic/
-[Rr]elease/
-[Rr]eleases/
-x64/
-x86/
-build/
-bld/
-[Bb]in/
-[Oo]bj/
-msbuild.log
-msbuild.err
-msbuild.wrn
+# Ignore AssemblyInfo.cs and other generated files
+AssemblyInfo.cs
+GeneratedAssemblyInfo.cs
 
-# Visual Studio 2015
-.vs/
-Cargohub.sln
-Cargohub.AssemblyInfo.cs
-Cargohub.AssemblyInfoInputs.cache
-Cargohub.assets.cache
-Cargohub.GeneratedMSBuildEditorConfig.editorconfig
+# Ignore config files
+*.config
+*.env
+*.settings
+*.settings.json
+appsettings*.json
+app.config
+web.config
+
+# Ignore NuGet stuff
+*.nupkg
+project.lock.json
+project.fragment.lock.json
+.nuget/
+
+# Ignore temporary files and backup files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Ignore compiled DLLs and EXEs
+*.dll
+*.exe
+
+# Ignore runtime generated files
+dump.rdb
+dump.rdb.bak
+
+# Ignore macOS system files
+.DS_Store
+
+# Ignore generated MSBuild editor config file
+StarterKit.GeneratedMSBuildEditorConfig.editorconfig
+
+# Ignore NuGet dependency graph specification file
+StarterKit.csproj.nuget.dgspec.json
