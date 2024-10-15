@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace Cargohub.interfaces
 {
-        public interface ICrudService<TEntity, TKey>
-        {
-            IEnumerable<TEntity> GetAll();
-            TEntity GetById(TKey id);
-            Task Create(TEntity entity);
-            Task Update(TEntity entity);
-            Task Delete(TKey id);
-        }
+    public interface ICrudService<TEntity, TKey>
+    {
+        List<TEntity> GetAll();
+        TEntity GetById(TKey id);
+        Task Create(TEntity entity);
+        Task Update(TEntity entity);
+        Task Delete(TKey id);
+    }
 }

@@ -22,6 +22,10 @@ namespace Cargohub.controllers
         public IActionResult GetWarehouses()
         {
             var warehouses = _warehouseService.GetAll();
+            if (warehouses == null || !warehouses.Any())
+            {
+                return NotFound();
+            }
             return Ok(warehouses);
         }
 

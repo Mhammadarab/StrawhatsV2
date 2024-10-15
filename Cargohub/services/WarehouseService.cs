@@ -1,16 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using System.IO;
 using Cargohub.interfaces;
 using Cargohub.models;
+using Newtonsoft.Json;
 
 namespace Cargohub.services
 {
     public class WarehouseService : ICrudService<Warehouse, int>
     {
+        private readonly string jsonFilePath = "data/warehouses.json";
         public Task Create(Warehouse entity)
         {
             throw new NotImplementedException();
@@ -21,17 +25,10 @@ namespace Cargohub.services
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Warehouse> GetAll()
+        public List<Warehouse> GetAll()
         {
-            var dataPath = "data/warehouses.json";
-            if (!File.Exists(dataPath))
-            {
-                return new List<Warehouse>();
-            }
-
-            var jsonData = File.ReadAllText(dataPath);
-            var warehouses = JsonSerializer.Deserialize<List<Warehouse>>(jsonData) ?? new List<Warehouse>();
-            return warehouses;
+            var jsonData = File.ReadAllText(jsonFilePath);
+            return JsonConvert.DeserializeObject<List<Warehouse>>(jsonData);
         }
         public Warehouse GetById(int id)
         {
