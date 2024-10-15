@@ -1,35 +1,44 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Cargohub.interfaces;
 using Cargohub.models;
-using static Cargohub.interfaces.IWarehouseService;
 
 namespace Cargohub.services
 {
     public class WarehouseService : ICrudService<Warehouse, int>
     {
-        public void Create(Warehouse entity)
+        public Task Create(Warehouse entity)
         {
             throw new NotImplementedException();
         }
 
-        public void Delete(int id)
+        public Task Delete(int id)
         {
             throw new NotImplementedException();
         }
 
         public IEnumerable<Warehouse> GetAll()
         {
-            throw new NotImplementedException();
-        }
+            var dataPath = "data/warehouses.json";
+            if (!File.Exists(dataPath))
+            {
+                return new List<Warehouse>();
+            }
 
+            var jsonData = File.ReadAllText(dataPath);
+            var warehouses = JsonSerializer.Deserialize<List<Warehouse>>(jsonData) ?? new List<Warehouse>();
+            return warehouses;
+        }
         public Warehouse GetById(int id)
         {
             throw new NotImplementedException();
         }
 
-        public void Update(Warehouse entity)
+        public Task Update(Warehouse entity)
         {
             throw new NotImplementedException();
         }

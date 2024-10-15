@@ -2,18 +2,33 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Cargohub.interfaces;
+using Cargohub.models;
+using Cargohub.services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cargohub.controllers
 {
-    [Route("api/v1/[controller]")]
+    [Route("api/v1/")]
     [ApiController]
-    public class WarehouseController : ControllerBase
+    public class WarehouseController : Controller
     {
-        [HttpGet]
+        private readonly ICrudService<Warehouse, int> _warehouseService;
+        public WarehouseController(ICrudService<Warehouse, int> warehouseService)
+        {
+            _warehouseService = warehouseService;
+        }
+        [HttpGet("warehouses")]
         public IActionResult GetWarehouses()
         {
-            return Ok("List of all warehouses");
+            var warehouses = _warehouseService.GetAll();
+            return Ok(warehouses);
+        }
+
+        [HttpGet("test")]
+        public IActionResult Test()
+        {
+            return Ok("you are in the warehouse controller");
         }
     }
 }
