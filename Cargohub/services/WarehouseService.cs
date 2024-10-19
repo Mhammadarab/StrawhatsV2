@@ -1,37 +1,95 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Cargohub.interfaces;
 using Cargohub.models;
-using static Cargohub.interfaces.IWarehouseService;
+using Newtonsoft.Json;
 
 namespace Cargohub.services
 {
     public class WarehouseService : ICrudService<Warehouse, int>
     {
-        public void Create(Warehouse entity)
+        private readonly string jsonFilePath = "data/warehouses.json";
+
+        public Task Create(Warehouse entity)
         {
-            throw new NotImplementedException();
+            var warehouses = GetAll() ?? new List<Warehouse>();
+
+            // Find the next available ID
+            var nextId = warehouses.Any() ? warehouses.Max(w => w.Id) + 1 : 1;
+            entity.Id = nextId;
+
+            warehouses.Add(entity);
+            SaveToFile(warehouses);
+            return Task.CompletedTask;
         }
 
-        public void Delete(int id)
+        public Task Delete(int id)
         {
-            throw new NotImplementedException();
+            var warehouses = GetAll() ?? new List<Warehouse>();
+            var warehouse = warehouses.FirstOrDefault(w => w.Id == id);
+
+            if (warehouse == null)
+            {
+                throw new KeyNotFoundException($"Warehouse with ID {id} not found.");
+            }
+
+            warehouses.Remove(warehouse);
+            SaveToFile(warehouses);
+            return Task.CompletedTask;
         }
 
-        public IEnumerable<Warehouse> GetAll()
+        public List<Warehouse> GetAll()
         {
-            throw new NotImplementedException();
+            var jsonData = File.ReadAllText(jsonFilePath);
+            return JsonConvert.DeserializeObject<List<Warehouse>>(jsonData) ?? new List<Warehouse>();
         }
 
         public Warehouse GetById(int id)
         {
-            throw new NotImplementedException();
+            var warehouses = GetAll();
+            var warehouse = warehouses.FirstOrDefault(w => w.Id == id);
+
+            if (warehouse == null)
+            {
+                throw new KeyNotFoundException($"Warehouse with ID {id} not found.");
+            }
+
+            return warehouse;
         }
 
-        public void Update(Warehouse entity)
+        public Task Update(Warehouse entity)
         {
-            throw new NotImplementedException();
+            var warehouses = GetAll() ?? new List<Warehouse>();
+            var existingWarehouse = warehouses.FirstOrDefault(w => w.Id == entity.Id);
+
+            if (existingWarehouse == null)
+            {
+                throw new KeyNotFoundException($"Warehouse with ID {entity.Id} not found.");
+            }
+
+            // Update the properties
+            existingWarehouse.Code = entity.Code;
+            existingWarehouse.Name = entity.Name;
+            existingWarehouse.Address = entity.Address;
+            existingWarehouse.Zip = entity.Zip;
+            existingWarehouse.City = entity.City;
+            existingWarehouse.Province = entity.Province;
+            existingWarehouse.Country = entity.Country;
+            existingWarehouse.Contact = entity.Contact;
+            existingWarehouse.CreatedAt = entity.CreatedAt;
+            existingWarehouse.UpdatedAt = entity.UpdatedAt;
+
+            SaveToFile(warehouses);
+            return Task.CompletedTask;
+        }
+
+        private void SaveToFile(List<Warehouse> warehouses)
+        {
+            var jsonData = JsonConvert.SerializeObject(warehouses, Formatting.Indented);
+            File.WriteAllText(jsonFilePath, jsonData);
         }
     }
 }
