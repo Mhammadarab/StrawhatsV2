@@ -58,7 +58,7 @@ namespace Cargohub.controllers
         }
 
         [HttpPut("clients/{id}")]
-        public async Task<IActionResult> UpdateClient(int id, [FromBody] Client client)
+        public async Task<IActionResult> UpdateClient([FromBody] Client client)
         {
             if (client == null)
             {
@@ -67,7 +67,7 @@ namespace Cargohub.controllers
 
             try
             {
-                await _clientService.Update(id, client);
+                await _clientService.Update(client);
                 return Ok(client);
             }
             catch (KeyNotFoundException ex)

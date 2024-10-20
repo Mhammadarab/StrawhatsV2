@@ -60,20 +60,30 @@ namespace Cargohub.services
             return client;
         }
 
-        public Task Update(int id, Client entity)
+        public Task Update(Client entity)
         {
             var clients = GetAll() ?? new List<Client>();
-            var client = clients.FirstOrDefault(c => c.Id == id);
+            var client = clients.FirstOrDefault(c => c.Id == entity.Id);
 
             if (client == null)
             {
-                throw new KeyNotFoundException($"Client with ID {id} not found.");
+                throw new KeyNotFoundException($"Client with ID {entity.Id} not found.");
             }
 
             client.Name = entity.Name;
-            client.Email = entity.Email;
-            client.Phone = entity.Phone;
             client.Address = entity.Address;
+            client.City = entity.City;
+            client.Zip_Code = entity.Zip_Code;
+            client.Province = entity.Province;
+            client.Country = entity.Country;
+            client.Contact_Name = entity.Contact_Name;
+            client.Contact_Phone = entity.Contact_Phone;
+            client.Contact_Email = entity.Contact_Email;
+            client.Created_At = entity.Created_At;
+            client.Updated_At = DateTime.Now;
+            
+
+            
 
             SaveToFile(clients);
             return Task.CompletedTask;
