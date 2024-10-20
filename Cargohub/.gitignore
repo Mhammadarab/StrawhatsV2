@@ -18,7 +18,6 @@ wwwroot/js
 .cache/
 
 # Ignore JSON files
-*.json
 !appsettings.json
 !Properties/launchSettings.json
 
