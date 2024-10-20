@@ -20,8 +20,8 @@ namespace Cargohub.services
       // Find the next available ID
       var nextId = transfers.Any() ? transfers.Max(t => t.Id) + 1 : 1;
       entity.Id = nextId;
-      entity.CreatedAt = DateTime.UtcNow;
-      entity.UpdatedAt = DateTime.UtcNow;
+      entity.Created_At = DateTime.UtcNow;
+      entity.Updated_At = DateTime.UtcNow;
 
       transfers.Add(entity);
       SaveToFile(transfers);
@@ -74,11 +74,11 @@ namespace Cargohub.services
 
       // Update properties
       existingTransfer.Reference = entity.Reference;
-      existingTransfer.TransferFrom = entity.TransferFrom;
-      existingTransfer.TransferTo = entity.TransferTo;
-      existingTransfer.TransferStatus = entity.TransferStatus;
+      existingTransfer.Transfer_From = entity.Transfer_From;
+      existingTransfer.Transfer_To = entity.Transfer_To;
+      existingTransfer.Transfer_Status = entity.Transfer_Status;
       existingTransfer.Items = entity.Items;
-      existingTransfer.UpdatedAt = DateTime.UtcNow;
+      existingTransfer.Updated_At = DateTime.UtcNow;
 
       SaveToFile(transfers);
       return Task.CompletedTask;
