@@ -1,6 +1,6 @@
 # Ignore database and bin/obj folders
-bin/
-obj/
+bin/*
+obj/*
 
 # Ignore user-generated files by the web server
 wwwroot/js
