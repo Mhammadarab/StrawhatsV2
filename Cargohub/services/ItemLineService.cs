@@ -19,8 +19,8 @@ namespace Cargohub.services
 
             var nextId = itemLines.Any() ? itemLines.Max(il => il.Id) + 1 : 1;
             entity.Id = nextId;
-            entity.CreatedAt = DateTime.Now;
-            entity.UpdatedAt = DateTime.Now;
+            entity.Created_At = DateTime.Now;
+            entity.Updated_At = DateTime.Now;
 
             itemLines.Add(entity);
             await SaveToFile(itemLines);
@@ -76,8 +76,7 @@ namespace Cargohub.services
 
             existingItemLine.Name = entity.Name;
             existingItemLine.Description = entity.Description;
-            existingItemLine.CreatedAt = entity.CreatedAt;
-            existingItemLine.UpdatedAt = DateTime.Now;
+            existingItemLine.Updated_At = DateTime.Now;
 
             await SaveToFile(itemLines);
         }
