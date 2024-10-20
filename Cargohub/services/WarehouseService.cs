@@ -79,8 +79,8 @@ namespace Cargohub.services
             existingWarehouse.Province = entity.Province;
             existingWarehouse.Country = entity.Country;
             existingWarehouse.Contact = entity.Contact;
-            existingWarehouse.CreatedAt = entity.CreatedAt;
-            existingWarehouse.UpdatedAt = entity.UpdatedAt;
+            existingWarehouse.Created_At = entity.Created_At;
+            existingWarehouse.Updated_At = entity.Updated_At;
 
             SaveToFile(warehouses);
             return Task.CompletedTask;
