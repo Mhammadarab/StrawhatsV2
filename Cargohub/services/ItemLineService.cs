@@ -9,11 +9,11 @@ using Newtonsoft.Json;
 
 namespace Cargohub.services
 {
-    public class ItemLineService
+    public class ItemLineService : ICrudService<ItemLine, int>
     {
         private readonly string jsonFilePath = "data/item_lines.json";
 
-        public Task Create(ItemLine entity)
+        public async Task Create(ItemLine entity)
         {
             var itemLines = GetAll() ?? new List<ItemLine>();
 
@@ -23,11 +23,10 @@ namespace Cargohub.services
             entity.UpdatedAt = DateTime.Now;
 
             itemLines.Add(entity);
-            SaveToFile(itemLines);
-            return Task.CompletedTask;
+            await SaveToFile(itemLines);
         }
 
-        public Task Delete(int id)
+        public async Task Delete(int id)
         {
             var itemLines = GetAll() ?? new List<ItemLine>();
             var itemLine = itemLines.FirstOrDefault(il => il.Id == id);
@@ -38,8 +37,7 @@ namespace Cargohub.services
             }
 
             itemLines.Remove(itemLine);
-            SaveToFile(itemLines);
-            return Task.CompletedTask;
+            await SaveToFile(itemLines);
         }
 
         public List<ItemLine> GetAll()
@@ -66,7 +64,7 @@ namespace Cargohub.services
             return itemLine;
         }
 
-        public Task Update(ItemLine entity)
+        public async Task Update(ItemLine entity)
         {
             var itemLines = GetAll() ?? new List<ItemLine>();
             var existingItemLine = itemLines.FirstOrDefault(il => il.Id == entity.Id);
@@ -81,14 +79,13 @@ namespace Cargohub.services
             existingItemLine.CreatedAt = entity.CreatedAt;
             existingItemLine.UpdatedAt = DateTime.Now;
 
-            SaveToFile(itemLines);
-            return Task.CompletedTask;
+            await SaveToFile(itemLines);
         }
 
-        private void SaveToFile(List<ItemLine> itemLines)
+        private async Task SaveToFile(List<ItemLine> itemLines)
         {
             var jsonData = JsonConvert.SerializeObject(itemLines, Formatting.Indented);
-            File.WriteAllText(jsonFilePath, jsonData);
+            await File.WriteAllTextAsync(jsonFilePath, jsonData);
         }
     }
 }
