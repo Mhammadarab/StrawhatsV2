@@ -18,8 +18,8 @@ namespace Cargohub.models
         public string ShippingNotes { get; set; }
         public string PickingNotes { get; set; }
         public int WarehouseId { get; set; }
-        public string ShipTo { get; set; } // Nullable
-        public string BillTo { get; set; } // Nullable
+        public string? ShipTo { get; set; } // Nullable
+        public string? BillTo { get; set; } // Nullable
         public int ShipmentId { get; set; }
         public decimal TotalAmount { get; set; }
         public decimal TotalDiscount { get; set; }
