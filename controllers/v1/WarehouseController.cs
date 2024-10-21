@@ -20,6 +20,24 @@ namespace Cargohub.controllers
             _warehouseService = warehouseService;
         }
 
+        [HttpGet("{warehouse_id}/locations")]
+        public IActionResult GetWarehouseLocations(int warehouse_id)
+        {
+            try
+            {
+                var locations = ((WarehouseService)_warehouseService).GetWarehouseLocations(warehouse_id);
+                if (locations == null || !locations.Any())
+                {
+                    return NotFound($"No locations found for Warehouse ID {warehouse_id}");
+                }
+                return Ok(locations);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+        
         [HttpGet]
         public IActionResult GetWarehouses()
         {

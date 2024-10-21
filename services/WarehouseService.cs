@@ -12,6 +12,7 @@ namespace Cargohub.services
     public class WarehouseService : ICrudService<Warehouse, int>
     {
         private readonly string jsonFilePath = "data/warehouses.json";
+        private readonly string locationsFilePath = "data/locations.json";
 
         public Task Create(Warehouse entity)
         {
@@ -24,6 +25,14 @@ namespace Cargohub.services
             warehouses.Add(entity);
             SaveToFile(warehouses);
             return Task.CompletedTask;
+        }
+
+        public List<Location> GetWarehouseLocations(int warehouseId)
+        {
+            var jsonData = File.ReadAllText(locationsFilePath);
+            var allLocations = JsonConvert.DeserializeObject<List<Location>>(jsonData) ?? new List<Location>();
+
+            return allLocations.Where(location => location.Warehouse_Id == warehouseId).ToList();
         }
 
         public Task Delete(int id)
