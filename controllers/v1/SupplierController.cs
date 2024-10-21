@@ -88,5 +88,19 @@ namespace Cargohub.controllers
                 return NotFound(ex.Message);
             }
         }
+
+        [HttpGet("suppliers/{id}/items")]
+        public async Task<IActionResult> GetSupplierItems(int id) {
+            try
+            {
+                var targetSupplier = _supplierService.GetById(id);
+                return Ok(targetSupplier);
+            }
+            catch (KeyNotFoundException e)
+            {
+                
+                return NotFound(e.Message);
+            }
+        }
     }
 }
