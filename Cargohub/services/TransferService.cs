@@ -28,6 +28,12 @@ namespace Cargohub.services
       return Task.CompletedTask;
     }
 
+    public List<ItemDetail> GetTransferItems(int transferId)
+      {
+          var transfer = GetById(transferId);
+          return transfer?.Items ?? new List<ItemDetail>();
+      }
+
     public Task Delete(int id)
     {
       var transfers = GetAll() ?? new List<Transfer>();

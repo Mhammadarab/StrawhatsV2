@@ -45,6 +45,25 @@ namespace Cargohub.controllers
       }
     }
 
+    [HttpGet("transfers/{transfer_id}/items")]
+    public IActionResult GetTransferItems(int transfer_id)
+      {
+        try
+        {
+            var items = ((TransferService)_transferService).GetTransferItems(transfer_id);
+            if (items == null || !items.Any())
+            {
+                return NotFound($"No items found for Transfer ID {transfer_id}");
+            }
+            return Ok(items);
+        }
+        catch (KeyNotFoundException ex)
+
+        {
+          return NotFound(ex.Message);
+        }
+      }
+
     [HttpPost("transfers")]
     public async Task<IActionResult> CreateTransfer([FromBody] Transfer transfer)
     {
