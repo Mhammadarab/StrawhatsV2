@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddSingleton<ICrudService<Warehouse, int>, WarehouseService>();
 builder.Services.AddSingleton<ICrudService<ItemLine, int>, ItemLineService>();
+builder.Services.AddSingleton<ICrudService<ItemType, int>, ItemTypeService>();
 builder.Services.AddSingleton<ICrudService<Transfer, int>, TransferService>();
 builder.Services.AddSingleton<ICrudService<Order, int>, OrderService>();
 builder.Services.AddSingleton<ICrudService<Shipment, int>, ShipmentService>();
