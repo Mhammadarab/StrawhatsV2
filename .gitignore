@@ -1,0 +1,85 @@
+# Ignore database and bin/obj folders
+bin/*
+obj/*
+
+# Ignore user-generated files by the web server
+wwwroot/js
+
+# Ignore SQLite database and its related files
+*.sqlite-shm
+*.sqlite-wal
+
+# Ignore database locking files
+*.db-shm
+*.db-wal
+
+# Ignore cache files
+*.cache
+.cache/
+
+# Ignore JSON files
+!appsettings.json
+!Properties/launchSettings.json
+
+
+# Ignore NuGet package files and folders
+*.nupkg
+packages/
+.nuget/
+project.lock.json
+project.fragment.lock.json
+
+# Ignore build logs
+*.log
+
+# Ignore Visual Studio files
+.vscode/
+.vs/
+.vscode/*
+*.user
+*.suo
+*.csproj.user
+*.sln.docstates
+
+# Ignore AssemblyInfo.cs and other generated files
+AssemblyInfo.cs
+GeneratedAssemblyInfo.cs
+
+# Ignore config files
+*.config
+*.env
+*.settings
+*.settings.json
+appsettings*.json
+app.config
+web.config
+
+# Ignore NuGet stuff
+*.nupkg
+project.lock.json
+project.fragment.lock.json
+.nuget/
+
+# Ignore temporary files and backup files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Ignore compiled DLLs and EXEs
+*.dll
+*.exe
+
+# Ignore runtime generated files
+dump.rdb
+dump.rdb.bak
+
+# Ignore macOS system files
+.DS_Store
+
+# Ignore generated MSBuild editor config file
+StarterKit.GeneratedMSBuildEditorConfig.editorconfig
+
+# Ignore NuGet dependency graph specification file
+StarterKit.csproj.nuget.dgspec.json
+*.sln
