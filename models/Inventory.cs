@@ -8,16 +8,16 @@ namespace Cargohub.models
     public class Inventory
     {
         public int Id { get; set; }
-        public string ItemId { get; set; }
+        public string Item_Id { get; set; }
         public string Description { get; set; }
-        public string ItemReference { get; set; }
+        public string Item_Reference { get; set; }
         public List<int> Locations { get; set; }
-        public int TotalOnHand { get; set; }
-        public int TotalExpected { get; set; }
-        public int TotalOrdered { get; set; }
-        public int TotalAllocated { get; set; }
-        public int TotalAvailable { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public int Total_On_Hand { get; set; }
+        public int Total_Expected { get; set; }
+        public int Total_Ordered { get; set; }
+        public int Total_Allocated { get; set; }
+        public int Total_Available { get; set; }
+        public DateTime Created_At { get; set; }
+        public DateTime Updated_At { get; set; }
     }
 }
