@@ -14,7 +14,7 @@ builder.Services.AddSingleton<ICrudService<Supplier, int>, SupplierService>();
 
 
 builder.Services.AddSingleton<ICrudService<ItemGroup, int>, ItemGroupService>();
-
+builder.Services.AddSingleton<ICrudService<Client, int>, ClientsService>();
 builder.Services.AddSingleton<ICrudService<Location, int>, LocationsService>();
 
 
