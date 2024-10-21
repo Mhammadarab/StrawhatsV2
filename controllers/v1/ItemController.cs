@@ -10,9 +10,9 @@ namespace Cargohub.Controllers.v1
     [ApiController]
     public class ItemController : Controller
     {
-        private readonly ICrudService<Item, string> _itemService;
+        private readonly IItemService _itemService;
 
-        public ItemController(ICrudService<Item, string> itemService)
+        public ItemController(IItemService itemService)
         {
             _itemService = itemService;
         }
@@ -33,6 +33,26 @@ namespace Cargohub.Controllers.v1
                 return NotFound();
             }
             return Ok(item);
+        }
+
+        [HttpGet("{itemId}/inventory")]
+        public IActionResult GetItemInventory(string itemId)
+        {
+            return Ok(new List<object>());
+        }
+
+        [HttpGet("{itemId}/inventory/totals")]
+        public IActionResult GetItemInventoryTotals(string itemId)
+        {
+            try
+            {
+                var inventoryTotals = _itemService.GetItemInventoryTotals(itemId);
+                return Ok(inventoryTotals);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
         }
 
         [HttpPost]

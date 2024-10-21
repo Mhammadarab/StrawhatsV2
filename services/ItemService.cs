@@ -9,9 +9,10 @@ using Newtonsoft.Json;
 
 namespace Cargohub.services
 {
-    public class ItemService : ICrudService<Item, string>
+    public class ItemService : IItemService
     {
         private readonly string jsonFilePath = "data/items.json";
+        private readonly string inventoriesFilePath = "data/inventories.json";
 
         public async Task Create(Item entity)
         {
@@ -22,7 +23,7 @@ namespace Cargohub.services
             entity.Updated_At = DateTime.Now;
 
             items.Add(entity);
-            await SaveToFile(items);
+            await SaveToFile(jsonFilePath, items);
         }
 
         public async Task Delete(string uid)
@@ -36,7 +37,7 @@ namespace Cargohub.services
             }
 
             items.Remove(item);
-            await SaveToFile(items);
+            await SaveToFile(jsonFilePath, items);
         }
 
         public List<Item> GetAll()
@@ -59,6 +60,10 @@ namespace Cargohub.services
             {
                 throw new KeyNotFoundException($"Item with UID {uid} not found.");
             }
+
+            // Get inventory totals from inventories.json
+            var inventoryTotals = GetInventoryTotalsByItemId(uid);
+            item.InventoryTotals = inventoryTotals;
 
             return item;
         }
@@ -90,13 +95,45 @@ namespace Cargohub.services
             existingItem.SupplierPartNumber = entity.SupplierPartNumber;
             existingItem.Updated_At = DateTime.Now;
 
-            await SaveToFile(items);
+            await SaveToFile(jsonFilePath, items);
         }
 
-        private async Task SaveToFile(List<Item> items)
+        public InventoryTotals GetItemInventoryTotals(string itemId)
         {
-            var jsonData = JsonConvert.SerializeObject(items, Formatting.Indented);
-            await File.WriteAllTextAsync(jsonFilePath, jsonData);
+            return GetInventoryTotalsByItemId(itemId);
+        }
+
+        private InventoryTotals GetInventoryTotalsByItemId(string itemId)
+        {
+            if (!File.Exists(inventoriesFilePath))
+            {
+                return new InventoryTotals();
+            }
+
+            var jsonData = File.ReadAllText(inventoriesFilePath);
+            var inventories = JsonConvert.DeserializeObject<List<Inventory>>(jsonData) ?? new List<Inventory>();
+
+            var inventory = inventories.FirstOrDefault(inv => inv.Item_Id == itemId);
+
+            if (inventory == null)
+            {
+                return new InventoryTotals();
+            }
+
+            return new InventoryTotals
+            {
+                TotalOnHand = inventory.Total_On_Hand,
+                TotalExpected = inventory.Total_Expected,
+                TotalOrdered = inventory.Total_Ordered,
+                TotalAllocated = inventory.Total_Allocated,
+                TotalAvailable = inventory.Total_Available
+            };
+        }
+
+        private async Task SaveToFile<T>(string filePath, List<T> data)
+        {
+            var jsonData = JsonConvert.SerializeObject(data, Formatting.Indented);
+            await File.WriteAllTextAsync(filePath, jsonData);
         }
     }
 }
