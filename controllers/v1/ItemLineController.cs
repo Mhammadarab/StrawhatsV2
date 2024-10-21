@@ -7,17 +7,19 @@ using Cargohub.models;
 using Cargohub.services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Cargohub.Controllers.v1
+namespace Cargohub.controllers.v1
 {
     [Route("api/v1/item_lines/")]
     [ApiController]
     public class ItemLineController : Controller
     {
         private readonly ICrudService<ItemLine, int> _itemLineService;
+        private readonly ItemLineService _itemLineServiceWithItems;
 
-        public ItemLineController(ICrudService<ItemLine, int> itemLineService)
+        public ItemLineController(ICrudService<ItemLine, int> itemLineService, ItemLineService itemLineServiceWithItems)
         {
             _itemLineService = itemLineService;
+            _itemLineServiceWithItems = itemLineServiceWithItems;
         }
 
         [HttpGet]
@@ -43,6 +45,17 @@ namespace Cargohub.Controllers.v1
             {
                 return NotFound(ex.Message);
             }
+        }
+
+        [HttpGet("{id}/items")]
+        public IActionResult GetItemsByItemLineId(int id)
+        {
+            var items = _itemLineServiceWithItems.GetItemsByItemLineId(id);
+            if (items == null || items.Count == 0)
+            {
+                return NotFound();
+            }
+            return Ok(items);
         }
 
         [HttpPost]
