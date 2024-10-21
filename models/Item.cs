@@ -23,7 +23,7 @@ namespace Cargohub.models
         public int SupplierId { get; set; }
         public string SupplierCode { get; set; }
         public string SupplierPartNumber { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public DateTime Created_At { get; set; }
+        public DateTime Updated_At { get; set; }
     }
 }
