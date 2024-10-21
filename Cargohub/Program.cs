@@ -12,6 +12,8 @@ builder.Services.AddSingleton<ICrudService<Order, int>, OrderService>();
 
 builder.Services.AddSingleton<ICrudService<ItemGroup, int>, ItemGroupService>();
 
+builder.Services.AddSingleton<ICrudService<Location, int>, LocationsService>();
+
 
 
 var app = builder.Build();
