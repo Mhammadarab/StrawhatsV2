@@ -35,34 +35,6 @@ namespace Cargohub.Controllers.v1
             return Ok(item);
         }
 
-        [HttpGet("itemline/{itemLineId}")]
-        public IActionResult GetItemsForItemLine(int itemLineId)
-        {
-            var items = _itemService.GetItemsForItemLine(itemLineId);
-            return Ok(items);
-        }
-
-        [HttpGet("itemgroup/{itemGroupId}")]
-        public IActionResult GetItemsForItemGroup(int itemGroupId)
-        {
-            var items = _itemService.GetItemsForItemGroup(itemGroupId);
-            return Ok(items);
-        }
-
-        [HttpGet("itemtype/{itemTypeId}")]
-        public IActionResult GetItemsForItemType(int itemTypeId)
-        {
-            var items = _itemService.GetItemsForItemType(itemTypeId);
-            return Ok(items);
-        }
-
-        [HttpGet("supplier/{supplierId}")]
-        public IActionResult GetItemsForSupplier(int supplierId)
-        {
-            var items = _itemService.GetItemsForSupplier(supplierId);
-            return Ok(items);
-        }
-
         [HttpPost]
         public async Task<IActionResult> CreateItem([FromBody] Item item)
         {

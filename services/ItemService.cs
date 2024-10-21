@@ -63,30 +63,6 @@ namespace Cargohub.services
             return item;
         }
 
-        public List<string> GetItemsForItemLine(int itemLineId)
-        {
-            var items = GetAll();
-            return items.Where(it => it.ItemLine == itemLineId).Select(it => it.Uid).ToList();
-        }
-
-        public List<string> GetItemsForItemGroup(int itemGroupId)
-        {
-            var items = GetAll();
-            return items.Where(it => it.ItemGroup == itemGroupId).Select(it => it.Uid).ToList();
-        }
-
-        public List<string> GetItemsForItemType(int itemTypeId)
-        {
-            var items = GetAll();
-            return items.Where(it => it.ItemType == itemTypeId).Select(it => it.Uid).ToList();
-        }
-
-        public List<Item> GetItemsForSupplier(int supplierId)
-        {
-            var items = GetAll();
-            return items.Where(it => it.SupplierId == supplierId).ToList();
-        }
-
         public async Task Update(Item entity)
         {
             var items = GetAll() ?? new List<Item>();
