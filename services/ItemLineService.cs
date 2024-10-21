@@ -12,6 +12,7 @@ namespace Cargohub.services
     public class ItemLineService : ICrudService<ItemLine, int>
     {
         private readonly string jsonFilePath = "data/item_lines.json";
+        private readonly string itemsFilePath = "data/items.json";
 
         public async Task Create(ItemLine entity)
         {
@@ -79,6 +80,18 @@ namespace Cargohub.services
             existingItemLine.Updated_At = DateTime.Now;
 
             await SaveToFile(itemLines);
+        }
+
+        public List<Item> GetItemsByItemLineId(int itemLineId)
+        {
+            if (!File.Exists(itemsFilePath))
+            {
+                return new List<Item>();
+            }
+
+            var jsonData = File.ReadAllText(itemsFilePath);
+            var items = JsonConvert.DeserializeObject<List<Item>>(jsonData) ?? new List<Item>();
+            return items.Where(it => it.ItemLine == itemLineId).ToList();
         }
 
         private async Task SaveToFile(List<ItemLine> itemLines)
