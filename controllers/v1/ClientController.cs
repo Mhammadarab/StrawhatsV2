@@ -1,4 +1,4 @@
- using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,6 +6,7 @@ using Cargohub.interfaces;
 using Cargohub.models;
 using Cargohub.services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
 
 namespace Cargohub.controllers
 {
@@ -14,10 +15,12 @@ namespace Cargohub.controllers
     public class ClientsController : Controller
     {
         private readonly ICrudService<Client, int> _clientService;
+        private readonly ICrudService<Order, int> _orderService;
 
-        public ClientsController(ICrudService<Client, int> clientService)
+        public ClientsController(ICrudService<Client, int> clientService, ICrudService<Order, int> orderService)
         {
             _clientService = clientService;
+            _orderService = orderService;
         }
 
         [HttpGet]
@@ -29,6 +32,20 @@ namespace Cargohub.controllers
                 return NotFound();
             }
             return Ok(clients);
+        }
+        [HttpGet("{id}/orders")]
+        public async Task<IActionResult> GetClientOrder(int id)
+        {
+            try
+            {
+                var client = _clientService.GetById(id);
+                var orders = _orderService.GetAll().FindAll( o => o.Ship_To == client.Id ||o.Bill_To == client.Id);
+                return Ok(orders);
+            }
+            catch(KeyNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
         }
 
         [HttpGet("{id}")]

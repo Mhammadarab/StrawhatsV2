@@ -89,7 +89,7 @@ namespace Cargohub.controllers
             }
         }
 
-        [HttpGet("suppliers/{id}/items")]
+        [HttpGet("{id}/items")]
         public async Task<IActionResult> GetSupplierItems(int id) {
             try
             {

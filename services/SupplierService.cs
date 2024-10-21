@@ -79,7 +79,7 @@ namespace Cargohub.services
             existingSupplier.Province = entity.Province;
             existingSupplier.Country = entity.Country;
             existingSupplier.Contact_Name = entity.Contact_Name;
-            existingSupplier.Phone_Number = entity.Phone_Number;
+            existingSupplier.PhoneNumber = entity.PhoneNumber;
             existingSupplier.Reference = entity.Reference;
 
             existingSupplier.Updated_At = DateTime.Now;

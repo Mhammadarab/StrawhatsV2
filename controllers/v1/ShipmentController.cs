@@ -92,7 +92,7 @@ namespace Cargohub.controllers
             }
         }
 
-        [HttpGet("shipments/{id}/items")]
+        [HttpGet("{id}/items")]
         public async Task<IActionResult> GetShipmentItems(int id)
         {
             try
@@ -107,7 +107,7 @@ namespace Cargohub.controllers
             }
         }
 
-        [HttpPut("shipments/{id}/items")]
+        [HttpPut("{id}/items")]
         public async Task<IActionResult> UpdateShipmentItems(int id, [FromBody] Shipment shipmentBody)
         {
             try
@@ -124,7 +124,7 @@ namespace Cargohub.controllers
             }
         }
 
-        [HttpGet("shipments/{id}/orders")]
+        [HttpGet("{id}/orders")]
         public async Task<IActionResult> GetShipmentOrder(int id)
         {
             try
@@ -139,7 +139,7 @@ namespace Cargohub.controllers
             }
         }
 
-        [HttpPut("shipments/{id}/orders")]
+        [HttpPut("{id}/orders")]
         public async Task<IActionResult> UpdateShipmentOrder(int id, [FromBody] Order order)
         {
             try

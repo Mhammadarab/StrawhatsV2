@@ -17,7 +17,7 @@ namespace Cargohub.models
         public string Province { get; set; }
         public string Country { get; set; }
         public string Contact_Name { get; set; }
-        public string Phone_Number { get; set; }
+        public string PhoneNumber { get; set; }
         public string Reference { get; set; }
         public DateTime Created_At { get; set; }
         public DateTime Updated_At { get; set; }
