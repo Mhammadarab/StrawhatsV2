@@ -11,6 +11,7 @@ builder.Services.AddSingleton<ICrudService<Transfer, int>, TransferService>();
 builder.Services.AddSingleton<ICrudService<Order, int>, OrderService>();
 
 builder.Services.AddSingleton<ICrudService<ItemGroup, int>, ItemGroupService>();
+builder.Services.AddSingleton<ICrudService<Inventory, int>, InventoryService>();
 
 
 
