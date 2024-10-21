@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cargohub.controllers
 {
-    [Route("api/v1/")]
+    [Route("api/v1/inventories/")]
     [ApiController]
     public class InventoryController : Controller
     {
@@ -19,7 +19,7 @@ namespace Cargohub.controllers
             _inventoryService = inventoryService;
         }
 
-        [HttpGet("inventories")]
+        [HttpGet]
         public IActionResult GetInventories()
         {
         var inventories = _inventoryService.GetAll();
@@ -30,7 +30,7 @@ namespace Cargohub.controllers
         return Ok(inventories);
         }
 
-        [HttpGet("inventories/{id}")]
+        [HttpGet("{id}")]
         public IActionResult GetInventoryById(int id)
         {
         try
@@ -44,7 +44,7 @@ namespace Cargohub.controllers
         }
         }
 
-        [HttpPost("inventories")]
+        [HttpPost]
         public async Task<IActionResult> CreateInventory([FromBody] Inventory inventory)
         {
         if (inventory == null)
@@ -56,7 +56,7 @@ namespace Cargohub.controllers
         return CreatedAtAction(nameof(GetInventoryById), new { id = inventory.Id }, inventory);
         }
 
-        [HttpPut("inventories/{id}")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateInventory([FromBody] Inventory inventory)
         {
         if (inventory == null)
@@ -75,7 +75,7 @@ namespace Cargohub.controllers
         }
         }
 
-        [HttpDelete("inventories/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteInventory(int id)
         {
         try

@@ -6,7 +6,7 @@ using Cargohub.models;
 
 namespace Cargohub.Controllers.v1
 {
-    [Route("api/v1/[controller]")]
+    [Route("api/v1/item_types/")]
     [ApiController]
     public class ItemTypeController : Controller
     {

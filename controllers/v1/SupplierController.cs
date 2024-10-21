@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cargohub.controllers
 {
-    [Route("api/v1/")]
+    [Route("api/v1/suppliers/")]
     [ApiController]
     public class SupplierController : Controller
     {
@@ -19,7 +19,7 @@ namespace Cargohub.controllers
             _supplierService = supplierService;
         }
 
-        [HttpGet("suppliers")]
+        [HttpGet]
         public IActionResult GetSuppliers()
         {
             var suppliers = _supplierService.GetAll();
@@ -30,7 +30,7 @@ namespace Cargohub.controllers
             return Ok(suppliers);
         }
 
-        [HttpGet("suppliers/{id}")]
+        [HttpGet("{id}")]
         public IActionResult GetSupplierById(int id)
         {
             try
@@ -44,7 +44,7 @@ namespace Cargohub.controllers
             }
         }
 
-        [HttpPost("suppliers")]
+        [HttpPost]
         public async Task<IActionResult> CreateSupplier([FromBody] Supplier supplier)
         {
             if (supplier == null)
@@ -56,7 +56,7 @@ namespace Cargohub.controllers
             return CreatedAtAction(nameof(GetSupplierById), new { id = supplier.Id }, supplier);
         }
 
-        [HttpPut("suppliers/{id}")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateSupplier(int id, [FromBody] Supplier supplier)
         {
             if (supplier == null || supplier.Id != id)
@@ -75,7 +75,7 @@ namespace Cargohub.controllers
             }
         }
 
-        [HttpDelete("suppliers/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSupplier(int id)
         {
             try

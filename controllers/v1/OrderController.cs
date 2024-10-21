@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cargohub.controllers
 {
-    [Route("api/v1/")]
+    [Route("api/v1/orders/")]
     [ApiController]
     public class OrderContoller : Controller
     {
@@ -19,7 +19,7 @@ namespace Cargohub.controllers
             _orderService = orderService;
         }
 
-        [HttpGet("orders")]
+        [HttpGet]
         public IActionResult GetOrders()
         {
             var orders = _orderService.GetAll();
@@ -30,7 +30,7 @@ namespace Cargohub.controllers
             return Ok(orders);
         }
 
-        [HttpGet("orders/{id}")]
+        [HttpGet("{id}")]
         public IActionResult GetOrderById(int id)
         {
             try
@@ -44,7 +44,7 @@ namespace Cargohub.controllers
             }
         }
 
-        [HttpPost("orders")]
+        [HttpPost]
         public async Task<IActionResult> CreateOrder([FromBody] Order order)
         {
             if (order == null)
@@ -56,7 +56,7 @@ namespace Cargohub.controllers
             return CreatedAtAction(nameof(GetOrderById), new { id = order.Id }, order);
         }
 
-        [HttpPut("orders/{id}")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOrder(int id, [FromBody] Order order)
         {
             if (order == null || order.Id != id)
@@ -75,7 +75,7 @@ namespace Cargohub.controllers
             }
         }
 
-        [HttpDelete("orders/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
             try

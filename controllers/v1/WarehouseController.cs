@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cargohub.controllers
 {
-    [Route("api/v1/")]
+    [Route("api/v1/warehouses/")]
     [ApiController]
     public class WarehouseController : Controller
     {
@@ -20,7 +20,7 @@ namespace Cargohub.controllers
             _warehouseService = warehouseService;
         }
 
-        [HttpGet("warehouses")]
+        [HttpGet]
         public IActionResult GetWarehouses()
         {
             var warehouses = _warehouseService.GetAll();
@@ -31,7 +31,7 @@ namespace Cargohub.controllers
             return Ok(warehouses);
         }
 
-        [HttpGet("warehouses/{id}")]
+        [HttpGet("{id}")]
         public IActionResult GetWarehouseById(int id)
         {
             try
@@ -45,7 +45,7 @@ namespace Cargohub.controllers
             }
         }
 
-        [HttpPost("warehouses")]
+        [HttpPost]
         public async Task<IActionResult> CreateWarehouse([FromBody] Warehouse warehouse)
         {
             if (warehouse == null)
@@ -57,7 +57,7 @@ namespace Cargohub.controllers
             return CreatedAtAction(nameof(GetWarehouseById), new { id = warehouse.Id }, warehouse);
         }
 
-        [HttpPut("warehouses/{id}")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateWarehouse(int id, [FromBody] Warehouse warehouse)
         {
             if (warehouse == null || warehouse.Id != id)
@@ -76,7 +76,7 @@ namespace Cargohub.controllers
             }
         }
 
-        [HttpDelete("warehouses/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteWarehouse(int id)
         {
             try

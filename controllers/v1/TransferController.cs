@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cargohub.controllers
 {
-  [Route("api/v1/")]
+  [Route("api/v1/transfers/")]
   [ApiController]
   public class TransferController : Controller
   {
@@ -20,7 +20,7 @@ namespace Cargohub.controllers
       _transferService = transferService;
     }
 
-    [HttpGet("transfers")]
+    [HttpGet]
     public IActionResult GetTransfers()
     {
       var transfers = _transferService.GetAll();
@@ -31,7 +31,7 @@ namespace Cargohub.controllers
       return Ok(transfers);
     }
 
-    [HttpGet("transfers/{id}")]
+    [HttpGet("{id}")]
     public IActionResult GetTransferById(int id)
     {
       try
@@ -45,7 +45,7 @@ namespace Cargohub.controllers
       }
     }
 
-    [HttpPost("transfers")]
+    [HttpPost]
     public async Task<IActionResult> CreateTransfer([FromBody] Transfer transfer)
     {
       if (transfer == null)
@@ -57,7 +57,7 @@ namespace Cargohub.controllers
       return CreatedAtAction(nameof(GetTransferById), new { id = transfer.Id }, transfer);
     }
 
-    [HttpPut("transfers/{id}")]
+    [HttpPut("{id}")]
     public async Task<IActionResult> UpdateTransfer(int id, [FromBody] Transfer transfer)
     {
       if (transfer == null || transfer.Id != id)
@@ -76,7 +76,7 @@ namespace Cargohub.controllers
       }
     }
 
-    [HttpDelete("transfers/{id}")]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteTransfer(int id)
     {
       try

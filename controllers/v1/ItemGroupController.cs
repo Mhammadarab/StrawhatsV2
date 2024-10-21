@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cargohub.controllers
 {
-  [Route("api/v1/")]
+  [Route("api/v1/item_groups/")]
   [ApiController]
   public class ItemGroupController : Controller
   {
@@ -19,7 +19,7 @@ namespace Cargohub.controllers
       _itemGroupService = itemGroupService;
     }
 
-    [HttpGet("item_groups")]
+    [HttpGet]
     public IActionResult GetItemGroups()
     {
       var itemGroups = _itemGroupService.GetAll();
@@ -30,7 +30,7 @@ namespace Cargohub.controllers
       return Ok(itemGroups);
     }
 
-    [HttpGet("item_groups/{id}")]
+    [HttpGet("{id}")]
     public IActionResult GetItemGroupById(int id)
     {
       try
@@ -44,7 +44,7 @@ namespace Cargohub.controllers
       }
     }
 
-    [HttpPost("item_groups")]
+    [HttpPost]
     public async Task<IActionResult> CreateItemGroup([FromBody] ItemGroup itemGroup)
     {
       if (itemGroup == null)
@@ -56,7 +56,7 @@ namespace Cargohub.controllers
       return CreatedAtAction(nameof(GetItemGroupById), new { id = itemGroup.Id }, itemGroup);
     }
 
-    [HttpPut("item_groups/{id}")]
+    [HttpPut("{id}")]
     public async Task<IActionResult> UpdateItemGroup(int id, [FromBody] ItemGroup itemGroup)
     {
       if (itemGroup == null || itemGroup.Id != id)
@@ -75,7 +75,7 @@ namespace Cargohub.controllers
       }
     }
 
-    [HttpDelete("item_groups/{id}")]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteItemGroup(int id)
     {
       try

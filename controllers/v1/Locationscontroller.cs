@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cargohub.Controllers.v1
 {
-    [Route("api/v1/")]
+    [Route("api/v1/locations/")]
     [ApiController]
     public class LocationsController : Controller
     {
@@ -20,7 +20,7 @@ namespace Cargohub.Controllers.v1
             _locationService = locationService;
         }
 
-        [HttpGet("locations")]
+        [HttpGet]
         public IActionResult GetLocations()
         {
             var locations = _locationService.GetAll();
@@ -31,7 +31,7 @@ namespace Cargohub.Controllers.v1
             return Ok(locations);
         }
 
-        [HttpGet("locations/{id}")]
+        [HttpGet("{id}")]
         public IActionResult GetLocationById(int id)
         {
             try
@@ -45,7 +45,7 @@ namespace Cargohub.Controllers.v1
             }
         }
 
-        [HttpPost("locations")]
+        [HttpPost]
         public async Task<IActionResult> CreateLocation([FromBody] Location location)
         {
             if (location == null)
@@ -57,7 +57,7 @@ namespace Cargohub.Controllers.v1
             return CreatedAtAction(nameof(GetLocationById), new { id = location.Id }, location);
         }
 
-        [HttpPut("locations/{id}")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateLocation(int id, [FromBody] Location location)
         {
             if (location == null || location.Id != id)
@@ -76,7 +76,7 @@ namespace Cargohub.Controllers.v1
             }
         }
 
-        [HttpDelete("locations/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLocation(int id)
         {
             try

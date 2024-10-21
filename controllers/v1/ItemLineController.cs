@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cargohub.Controllers.v1
 {
-    [Route("api/v1/")]
+    [Route("api/v1/item_lines/")]
     [ApiController]
     public class ItemLineController : Controller
     {
@@ -20,7 +20,7 @@ namespace Cargohub.Controllers.v1
             _itemLineService = itemLineService;
         }
 
-        [HttpGet("itemlines")]
+        [HttpGet]
         public IActionResult GetItemLines()
         {
             var itemLines = _itemLineService.GetAll();
@@ -31,7 +31,7 @@ namespace Cargohub.Controllers.v1
             return Ok(itemLines);
         }
 
-        [HttpGet("itemlines/{id}")]
+        [HttpGet("{id}")]
         public IActionResult GetItemLineById(int id)
         {
             try
@@ -45,7 +45,7 @@ namespace Cargohub.Controllers.v1
             }
         }
 
-        [HttpPost("itemlines")]
+        [HttpPost]
         public async Task<IActionResult> CreateItemLine([FromBody] ItemLine itemLine)
         {
             if (itemLine == null)
@@ -57,7 +57,7 @@ namespace Cargohub.Controllers.v1
             return CreatedAtAction(nameof(GetItemLineById), new { id = itemLine.Id }, itemLine);
         }
 
-        [HttpPut("itemlines/{id}")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateItemLine(int id, [FromBody] ItemLine itemLine)
         {
             if (itemLine == null || itemLine.Id != id)
@@ -76,7 +76,7 @@ namespace Cargohub.Controllers.v1
             }
         }
 
-        [HttpDelete("itemlines/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteItemLine(int id)
         {
             try

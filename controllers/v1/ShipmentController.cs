@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cargohub.controllers
 {
-    [Route("api/v1/")]
+    [Route("api/v1/shipments/")]
     [ApiController]
     public class ShipmentController : Controller
     {
@@ -19,7 +19,7 @@ namespace Cargohub.controllers
             _shipmentService = shipmentService;
         }
 
-        [HttpGet("shipments")]
+        [HttpGet]
         public IActionResult GetShipments()
         {
             var shipments = _shipmentService.GetAll();
@@ -30,7 +30,7 @@ namespace Cargohub.controllers
             return Ok(shipments);
         }
 
-        [HttpGet("shipments/{id}")]
+        [HttpGet("{id}")]
         public IActionResult GetShipmentById(int id)
         {
             try
@@ -44,7 +44,7 @@ namespace Cargohub.controllers
             }
         }
 
-        [HttpPost("shipments")]
+        [HttpPost]
         public async Task<IActionResult> CreateShipment([FromBody] Shipment shipment)
         {
             if (shipment == null)
@@ -56,7 +56,7 @@ namespace Cargohub.controllers
             return CreatedAtAction(nameof(GetShipmentById), new { id = shipment.Id }, shipment);
         }
 
-        [HttpPut("shipments/{id}")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateShipment(int id, [FromBody] Shipment shipment)
         {
             if (shipment == null || shipment.Id != id)
@@ -75,7 +75,7 @@ namespace Cargohub.controllers
             }
         }
 
-        [HttpDelete("shipments/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteShipment(int id)
         {
             try

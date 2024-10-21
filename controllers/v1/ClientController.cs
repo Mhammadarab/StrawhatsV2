@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cargohub.controllers
 {
-    [Route("api/v1/")]
+    [Route("api/v1/clients/")]
     [ApiController]
     public class ClientsController : Controller
     {
@@ -20,7 +20,7 @@ namespace Cargohub.controllers
             _clientService = clientService;
         }
 
-        [HttpGet("clients")]
+        [HttpGet]
         public IActionResult GetClients()
         {
             var clients = _clientService.GetAll();
@@ -31,7 +31,7 @@ namespace Cargohub.controllers
             return Ok(clients);
         }
 
-        [HttpGet("clients/{id}")]
+        [HttpGet("{id}")]
         public IActionResult GetClientById(int id)
         {
             try
@@ -45,7 +45,7 @@ namespace Cargohub.controllers
             }
         }
 
-        [HttpPost("clients")]
+        [HttpPost]
         public async Task<IActionResult> CreateClient([FromBody] Client client)
         {
             if (client == null)
@@ -57,7 +57,7 @@ namespace Cargohub.controllers
             return CreatedAtAction(nameof(GetClientById), new { id = client.Id }, client);
         }
 
-        [HttpPut("clients/{id}")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateClient([FromBody] Client client)
         {
             if (client == null)
@@ -76,7 +76,7 @@ namespace Cargohub.controllers
             }
         }
 
-        [HttpDelete("clients/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteClient(int id)
         {
             try
