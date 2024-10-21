@@ -23,8 +23,39 @@ builder.Services.AddSingleton<ICrudService<Inventory, int>, InventoryService>();
 
 
 var app = builder.Build();
+AuthProvider.Init();
 
 app.UseAuthorization();
+app.Use(async (ctx, next) => 
+{
+    var apiKey = ctx.Request.Headers["API_KEY"].FirstOrDefault();
+    if (apiKey == null)
+    {
+        ctx.Response.StatusCode = 401;
+        await ctx.Response.WriteAsync("API key is missing");
+        return;
+    }
+
+    var user = AuthProvider.GetUser(apiKey);
+    if (user == null)
+    {
+        ctx.Response.StatusCode = 401;
+        await ctx.Response.WriteAsync("Invalid API key");
+        return;
+    }
+
+    var path = ctx.Request.Path.Value.Split('/').Skip(3).FirstOrDefault();
+    var method = ctx.Request.Method.ToLower();
+
+    if (!AuthProvider.HasAccess(user, path, method))
+    {
+        ctx.Response.StatusCode = 403;
+        await ctx.Response.WriteAsync("Access denied");
+        return;
+    }
+
+    await next.Invoke();
+});
 app.UseRouting();
 app.MapControllers();
 

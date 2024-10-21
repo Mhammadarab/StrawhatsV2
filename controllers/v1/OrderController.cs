@@ -88,5 +88,37 @@ namespace Cargohub.controllers
                 return NotFound(ex.Message);
             }
         }
+
+        [HttpGet("orders/{id}/items")]
+        public async Task<IActionResult> GetOrderItems(int id)
+        {
+            try
+            {
+                var order = _orderService.GetById(id);
+                return Ok(order.Items);
+            }
+            catch (KeyNotFoundException ex)
+            {
+
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpPut("orders/{id}/items")]
+        public async Task<IActionResult> UpdateOrderItems(int id, [FromBody] Order orderBody)
+        {
+            try
+            {
+                var targetOrder = _orderService.GetById(id);
+                targetOrder.Items = orderBody.Items;
+                await _orderService.Update(targetOrder);
+                return NoContent();
+            }
+            catch (KeyNotFoundException e)
+            {
+
+                return NotFound(e.Message);
+            }
+        }
     }
 }
