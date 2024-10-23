@@ -1,0 +1,167 @@
+# We worked with JWT Authentication so we have bearer tokens.
+# Those tokens last for 1 hour. You will have to log in as either
+# an admin or a user. and take the bearer token from the response and put it
+# between the brackets. Sorry for the inconvience. 
+# Its easier to test this API using Postman/Thunderclient.
+
+### Register a new User
+POST http://localhost:5097/api/user/register
+Content-Type: application/json
+
+{
+  "firstName": "Alice",
+  "lastName": "Smith",
+  "email": "alicesmith@example.com",
+  "password": "Password123!",
+  "recuringDays": "Tuesday,Thursday"
+}
+
+### User Login
+POST http://localhost:5097/api/user/login
+Content-Type: application/json
+
+{
+  "email": "alicesmith@example.com",
+  "password": "Password123!"
+}
+
+### Admin Login
+POST http://localhost:5097/api/login/login
+Content-Type: application/json
+
+{
+  "username": "admin1",
+  "password": "password"
+}
+
+### Check Admin Login Status
+GET http://localhost:5097/api/login/isAdminLoggedIn
+Authorization: Bearer {{admin_token}}
+
+### Admin Logout
+GET http://localhost:5097/api/login/logout
+Authorization: Bearer {{admin_token}}
+
+### Get All Comments
+GET http://localhost:5097/api/comments
+Authorization: Bearer {{user_token}}
+
+### Get Comments for a TheatreShow
+GET http://localhost:5097/api/comments/1
+Authorization: Bearer {{user_token}}
+
+### Get Comment by ID
+GET http://localhost:5097/api/comments/byId/1
+Authorization: Bearer {{user_token}}
+
+### Add a Comment
+POST http://localhost:5097/api/comments
+Content-Type: application/json
+Authorization: Bearer {{user_token}}
+
+{
+  "theatreShowId": 1,
+  "userId": 1,
+  "commentText": "The show was absolutely fantastic, highly recommend it."
+}
+
+### Update a Comment
+PUT http://localhost:5097/api/comments/1
+Content-Type: application/json
+Authorization: Bearer {{user_token}}
+
+{
+  "commentId": 1,
+  "theatreShowId": 1,
+  "userId": 1,
+  "commentText": "The show was great, but the sound could have been better."
+}
+
+### Delete a Comment
+DELETE http://localhost:5097/api/comments/1
+Authorization: Bearer {{user_token}}
+
+### Rate a Comment
+POST http://localhost:5097/api/comments/1/rate
+Content-Type: application/json
+Authorization: Bearer {{user_token}}
+
+{
+  "userId": 1,
+  "rating": 5
+}
+
+### Get All Theatre Shows
+GET http://localhost:5097/api/theatreshow
+Authorization: Bearer {{user_token}}
+
+### Get a Theatre Show by ID
+GET http://localhost:5097/api/theatreshow/1
+Authorization: Bearer {{user_token}}
+
+### Add a Theatre Show
+POST http://localhost:5097/api/theatreshow
+Content-Type: application/json
+Authorization: Bearer {{admin_token}}
+
+{
+  "title": "Hamlet",
+  "description": "A Shakespearean tragedy",
+  "price": 55.0,
+  "venueId": 1
+}
+
+### Update a Theatre Show
+PUT http://localhost:5097/api/theatreshow/1
+Content-Type: application/json
+Authorization: Bearer {{admin_token}}
+
+{
+  "theatreShowId": 1,
+  "title": "Hamlet Updated",
+  "description": "A classic Shakespearean tragedy",
+  "price": 60.0,
+  "venueId": 1
+}
+
+### Delete a Theatre Show
+DELETE http://localhost:5097/api/theatreshow/1
+Authorization: Bearer {{admin_token}}
+
+### Make a Reservation
+POST http://localhost:5097/api/reservation
+Content-Type: application/json
+Authorization: Bearer {{user_token}}
+
+{
+  "theatreShowDateId": 1,
+  "amountOfTickets": 3,
+  "customerId": 1
+}
+
+### Get All Reservations
+GET http://localhost:5097/api/reservation
+Authorization: Bearer {{admin_token}}
+
+### Get a Reservation by ID
+GET http://localhost:5097/api/reservation/1
+Authorization: Bearer {{admin_token}}
+
+### Update a Reservation
+PUT http://localhost:5097/api/reservation/1
+Content-Type: application/json
+Authorization: Bearer {{admin_token}}
+
+{
+  "reservationId": 1,
+  "amountOfTickets": 2,
+  "customerId": 1,
+  "used": false
+}
+
+### Delete a Reservation
+DELETE http://localhost:5097/api/reservation/1
+Authorization: Bearer {{admin_token}}
+
+### Publicly Accessible Theatre Shows
+GET http://localhost:5097/api/public/theatreshow
