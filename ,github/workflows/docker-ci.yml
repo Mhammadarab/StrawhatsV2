@@ -1,0 +1,39 @@
+name: Docker Image CI
+
+on:
+  workflow_dispatch: 
+  push:
+    branches: [ "main", "staging" ]
+env:
+  IMAGE_NAME: cargohub
+  OWNER: '${{ github.repository_owner }}'
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    
+    - name: 'Login to GitHub Container Registry'
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{github.actor}}
+        password: ${{secrets.GITHUB_TOKEN}}
+
+    - name: set lower case owner name
+      run: |
+        echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
+        
+    - uses: actions/checkout@v4
+    - name: Build and Push the Docker image
+      run: |
+        docker build . --tag ghcr.io/$OWNER_LC/$IMAGE_NAME:${{ github.ref_name }}
+        docker push ghcr.io/$OWNER_LC/$IMAGE_NAME:${{ github.ref_name }}
+
+    - name: Send HTTP request
+      uses: tyrrrz/action-http-request@master
+      with:
+        url: https://145.24.223.81:8080/api/stacks/webhooks/6cca59f6-c495-462a-871e-9911659ad9d0
+        method: POST
+        preventFailureOnNoResponse: true
+        ignoreSsl: true
