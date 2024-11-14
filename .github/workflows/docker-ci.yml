@@ -36,7 +36,7 @@ jobs:
     - name: Send HTTP request
       uses: tyrrrz/action-http-request@master
       with:
-        url: https://145.24.223.81:8080/api/stacks/webhooks/6cca59f6-c495-462a-871e-9911659ad9d0
+        url: https://52.90.108.213:9443/api/stacks/webhooks/c033a3b4-1224-4e87-8589-794ca0b71d30
         method: POST
         preventFailureOnNoResponse: true
         ignoreSsl: true
