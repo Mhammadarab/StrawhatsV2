@@ -1,0 +1,62 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: cargohub
+  OWNER: '${{ github.repository_owner }}'
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    
+    - name: 'Login to GitHub Container Registry'
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set lower case owner name
+      run: |
+        echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
+        
+    - uses: actions/checkout@v4
+    - name: Build and Push the Docker image
+      run: |
+        docker build . --tag ghcr.io/$OWNER_LC/$IMAGE_NAME:${{ github.ref_name }}
+        docker push ghcr.io/$OWNER_LC/$IMAGE_NAME:${{ github.ref_name }}
+
+    - name: Send HTTP request with curl
+      run: |
+        curl -X POST -k "https://52.90.108.213:9443/api/stacks/webhooks/c033a3b4-1224-4e87-8589-794ca0b71d30"
+
+  code_quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.x'
+
+      - name: Install dependencies
+        run: dotnet restore
+
+      - name: Run code formatting check
+        run: dotnet format --verify-no-changes
+        continue-on-error: true
+
+      - name: Build the solution
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Run code analysis
+        run: dotnet build --configuration Release /warnaserror
