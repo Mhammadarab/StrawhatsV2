@@ -22,7 +22,6 @@ builder.Services.AddSingleton<ICrudService<Location, int>, LocationsService>();
 builder.Services.AddSingleton<ICrudService<Inventory, int>, InventoryService>();
 
 
-//test
 var app = builder.Build();
 AuthProvider.Init();
 

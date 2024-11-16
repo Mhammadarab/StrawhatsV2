@@ -44,9 +44,38 @@ namespace Cargohub.services
             };
         }
 
+        public static List<User> GetUsers()
+        {
+            return _users;
+        }
+
         public static User GetUser(string apiKey)
         {
             return _users.FirstOrDefault(x => x.ApiKey == apiKey);
+        }
+
+        public static void AddUser(User user)
+        {
+            _users.Add(user);
+        }
+
+        public static void UpdateUser(string apiKey, User updatedUser)
+        {
+            var user = GetUser(apiKey);
+            if (user != null)
+            {
+                user.App = updatedUser.App;
+                user.EndpointAccess = updatedUser.EndpointAccess;
+            }
+        }
+
+        public static void DeleteUser(string apiKey)
+        {
+            var user = GetUser(apiKey);
+            if (user != null)
+            {
+                _users.Remove(user);
+            }
         }
 
         public static bool HasAccess(User user, string path, string method)
