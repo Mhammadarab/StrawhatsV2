@@ -20,6 +20,9 @@ builder.Services.AddSingleton<ICrudService<ItemGroup, int>, ItemGroupService>();
 builder.Services.AddSingleton<ICrudService<Client, int>, ClientsService>();
 builder.Services.AddSingleton<ICrudService<Location, int>, LocationsService>();
 builder.Services.AddSingleton<ICrudService<Inventory, int>, InventoryService>();
+builder.Services.AddSingleton<CrossDockingService>();
+builder.Services.AddSingleton<ShipmentService>();
+
 
 
 
@@ -27,7 +30,7 @@ var app = builder.Build();
 AuthProvider.Init();
 
 app.UseAuthorization();
-app.Use(async (ctx, next) => 
+app.Use(async (ctx, next) =>
 {
     var apiKey = ctx.Request.Headers["API_KEY"].FirstOrDefault();
     if (apiKey == null)
