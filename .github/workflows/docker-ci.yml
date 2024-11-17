@@ -5,37 +5,48 @@ on:
     branches:
       - main
       - staging
+  pull_request:
+    branches:
+      - main
+      - staging
   workflow_dispatch:
 
 env:
   IMAGE_NAME: cargohub
-  OWNER: '${{ github.repository_owner }}'
-  
+  OWNER: "${{ github.repository_owner }}"
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    
-    - name: 'Login to GitHub Container Registry'
-      uses: docker/login-action@v1
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v4
 
-    - name: Set lower case owner name
-      run: |
-        echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
-        
-    - uses: actions/checkout@v4
-    - name: Build and Push the Docker image
-      run: |
-        docker build . --tag ghcr.io/$OWNER_LC/$IMAGE_NAME:${{ github.ref_name }}
-        docker push ghcr.io/$OWNER_LC/$IMAGE_NAME:${{ github.ref_name }}
+      - name: "Login to GitHub Container Registry"
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Send HTTP request with curl
-      run: |
-        curl -X POST -k "https://52.90.108.213:9443/api/stacks/webhooks/c033a3b4-1224-4e87-8589-794ca0b71d30"
+      - name: Set lower case owner name
+        run: |
+          echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
+
+      - name: Build the Docker image (PR or branch test)
+        if: github.event_name == 'pull_request'
+        run: |
+          docker build . --tag ghcr.io/$OWNER_LC/$IMAGE_NAME:test-${{ github.run_id }}
+
+      - name: Build and Push the Docker image (push to staging/main)
+        if: github.event_name == 'push'
+        run: |
+          docker build . --tag ghcr.io/$OWNER_LC/$IMAGE_NAME:${{ github.ref_name }}
+          docker push ghcr.io/$OWNER_LC/$IMAGE_NAME:${{ github.ref_name }}
+
+      - name: Send HTTP request with curl (only on push)
+        if: github.event_name == 'push'
+        run: |
+          curl -X POST -k "https://52.90.108.213:9443/api/stacks/webhooks/c033a3b4-1224-4e87-8589-794ca0b71d30"
 
   code_quality:
     runs-on: ubuntu-latest
@@ -46,7 +57,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.x'
+          dotnet-version: "8.x"
 
       - name: Install dependencies
         run: dotnet restore
