@@ -3,48 +3,68 @@ using Cargohub.models;
 
 public class CrossDockingService
 {
-  private readonly ICrudService<Shipment, int> _shipmentService;
-  private readonly ICrudService<Order, int> _orderService;
+    private readonly ICrudService<Shipment, int> _shipmentService;
+    private readonly ICrudService<Order, int> _orderService;
 
-  public CrossDockingService(
-      ICrudService<Shipment, int> shipmentService,
-      ICrudService<Order, int> orderService)
-  {
-    _shipmentService = shipmentService;
-    _orderService = orderService;
-  }
+    public CrossDockingService(
+        ICrudService<Shipment, int> shipmentService,
+        ICrudService<Order, int> orderService)
+    {
+        _shipmentService = shipmentService;
+        _orderService = orderService;
+    }
 
-  public string ReceiveShipment(int shipmentId)
+    public string ReceiveShipment(int shipmentId)
   {
     var shipment = _shipmentService.GetById(shipmentId);
     if (shipment == null)
     {
-      throw new KeyNotFoundException($"Shipment with ID {shipmentId} not found.");
+        throw new KeyNotFoundException($"Shipment with ID {shipmentId} not found.");
     }
 
-    // Explicitly update each item's CrossDockingStatus
+    if (shipment.Shipment_Status == "Delivered")
+    {
+        throw new InvalidOperationException($"Shipment with ID {shipmentId} has already been delivered and cannot be updated.");
+    }
+
+    if (shipment.Shipment_Status == "Transit")
+    {
+        // Items might still need to be marked as "Transit" if not already set
+        foreach (var item in shipment.Items)
+        {
+            if (item.CrossDockingStatus != "Transit")
+            {
+                item.CrossDockingStatus = "Transit";
+            }
+        }
+        _shipmentService.Update(shipment);
+        return $"Shipment with ID {shipmentId} is already in transit. Items were updated if needed.";
+    }
+
+    // Set shipment and item statuses to "Transit" for "Pending" shipments
     foreach (var item in shipment.Items)
     {
-      item.CrossDockingStatus = "In Transit";
+        item.CrossDockingStatus = "Transit";
     }
-
-    // Update the shipment status
-    shipment.Shipment_Status = "In Transit";
-
-    // Persist the changes
+    shipment.Shipment_Status = "Transit";
     _shipmentService.Update(shipment);
 
-    return "Shipment received and items marked as 'In Transit'.";
+    return $"Shipment with ID {shipmentId} has been received and marked as 'Transit'.";
   }
 
-  public List<object> MatchItems(int? shipmentId, int pageNumber, int pageSize)
-  {
+
+    public List<object> MatchItems(int? shipmentId, int pageNumber, int pageSize)
+    {
     var shipments = _shipmentService.GetAll();
 
-    // Filter by shipmentId if provided
+    // Filter shipments by ID and ensure they are in 'Transit'
     if (shipmentId.HasValue)
     {
-      shipments = shipments.Where(s => s.Id == shipmentId.Value).ToList();
+        shipments = shipments.Where(s => s.Id == shipmentId.Value && s.Shipment_Status == "Transit").ToList();
+    }
+    else
+    {
+        shipments = shipments.Where(s => s.Shipment_Status == "Transit").ToList();
     }
 
     // Apply pagination
@@ -57,60 +77,58 @@ public class CrossDockingService
 
     foreach (var shipment in shipments)
     {
-      foreach (var item in shipment.Items)
-      {
-        var orderItem = orders.SelectMany(o => o.Items)
-                              .FirstOrDefault(o => o.Item_Id == item.Item_Id);
-
-        if (orderItem != null)
+        foreach (var item in shipment.Items.Where(i => i.CrossDockingStatus != "Shipped"))
         {
-          matches.Add(new
-          {
-            ItemId = item.Item_Id,
-            ShipmentId = shipment.Id,
-            OrderId = orders.First(o => o.Items.Contains(orderItem)).Id,
-            Amount = Math.Min(item.Amount, orderItem.Amount),
-            Status = "Matched"
-          });
+            var orderItem = orders.SelectMany(o => o.Items)
+                                  .FirstOrDefault(o => o.Item_Id == item.Item_Id);
 
-          item.CrossDockingStatus = "Matched";
+            if (orderItem != null)
+            {
+                matches.Add(new
+                {
+                    ItemId = item.Item_Id,
+                    ShipmentId = shipment.Id,
+                    OrderId = orders.First(o => o.Items.Contains(orderItem)).Id,
+                    Amount = Math.Min(item.Amount, orderItem.Amount),
+                    Status = "Matched"
+                });
+
+                item.CrossDockingStatus = "Matched";
+            }
         }
-      }
     }
 
     return matches;
-  }
+    }
 
 
-  public string ShipItems(int shipmentId)
-  {
+    public string ShipItems(int shipmentId)
+{
     var shipment = _shipmentService.GetById(shipmentId);
     if (shipment == null)
     {
-      throw new KeyNotFoundException($"Shipment with ID {shipmentId} not found.");
+        throw new KeyNotFoundException($"Shipment with ID {shipmentId} not found.");
+    }
+
+    if (shipment.Shipment_Status == "Pending")
+    {
+        throw new InvalidOperationException($"Shipment with ID {shipmentId} must be in transit before it can be shipped.");
+    }
+
+    if (shipment.Shipment_Status == "Delivered")
+    {
+        throw new InvalidOperationException($"Shipment with ID {shipmentId} has already been delivered and cannot be updated.");
     }
 
     foreach (var item in shipment.Items)
     {
-      item.CrossDockingStatus = "Shipped";
+        item.CrossDockingStatus = "Shipped";
     }
 
-    if (shipment.Items.All(i => i.CrossDockingStatus == "Shipped"))
-    {
-      shipment.Shipment_Status = "Completed";
-    }
-
+    shipment.Shipment_Status = "Delivered";
     _shipmentService.Update(shipment);
 
-    foreach (var item in shipment.Items)
-    {
-      Console.WriteLine($"Updating Item {item.Item_Id}: Setting CrossDockingStatus to 'In Transit'");
-      item.CrossDockingStatus = "In Transit";
-    }
+    return $"Shipment with ID {shipmentId} has been shipped and marked as 'Delivered'.";
+}
 
-    Console.WriteLine($"Updating Shipment {shipment.Id}: Setting Shipment_Status to 'In Transit'");
-
-
-    return "Items marked as 'Shipped'.";
-  }
 }
