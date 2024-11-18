@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Cargohub.interfaces;
 using Cargohub.models;
 using Cargohub.services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
 
@@ -23,6 +24,7 @@ namespace Cargohub.controllers
             _orderService = orderService;
         }
 
+        [AdminOnly]
         [HttpGet]
         public IActionResult GetClients()
         {
