@@ -2,10 +2,11 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 public class AdminOnly : Attribute, IAsyncActionFilter
 {
-    private readonly string _apiKey = "a1b2c3d4e5"; // Your API key
+    private readonly List<string> _apiKeys = new List<string> { "a1b2c3d4e5", "f6g7h8i9j0", "k1l2m3n4o5" }; // Your list of API keys
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
@@ -18,7 +19,7 @@ public class AdminOnly : Attribute, IAsyncActionFilter
         }
 
         var authHeader = headers["API_KEY"].ToString();
-        if (authHeader != _apiKey)
+        if (!_apiKeys.Contains(authHeader))
         {
             context.HttpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
             return;
