@@ -40,6 +40,26 @@ namespace Cargohub.services
                         { "clients", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } },
                         { "shipments", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } }
                     }
+                },
+                new User
+                {
+                    ApiKey = "k1l2m3n4o",
+                    App = "CargoHUB Dashboard 3",
+                    EndpointAccess = new Dictionary<string, EndpointAccess>
+                    {
+                        { "full", new EndpointAccess { Full = false } },
+                        { "warehouses", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } },
+                        { "locations", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } },
+                        { "transfers", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } },
+                        { "items", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } },
+                        { "item_lines", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } },
+                        { "item_groups", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } },
+                        { "item_types", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } },
+                        { "suppliers", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } },
+                        { "orders", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } },
+                        { "clients", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } },
+                        { "shipments", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } }
+                    }
                 }
             };
         }

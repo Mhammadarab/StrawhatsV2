@@ -24,7 +24,6 @@ namespace Cargohub.controllers
             _orderService = orderService;
         }
 
-        [AdminOnly]
         [HttpGet]
         public IActionResult GetClients()
         {
