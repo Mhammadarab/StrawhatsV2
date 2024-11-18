@@ -77,29 +77,36 @@ public class CrossDockingService
 
     foreach (var shipment in shipments)
     {
-        foreach (var item in shipment.Items.Where(i => i.CrossDockingStatus != "Shipped"))
+        // Find the order with the same shipment ID
+        var matchingOrder = orders.FirstOrDefault(o => o.Shipment_Id == shipment.Id);
+
+        if (matchingOrder != null)
         {
-            var orderItem = orders.SelectMany(o => o.Items)
-                                  .FirstOrDefault(o => o.Item_Id == item.Item_Id);
-
-            if (orderItem != null)
+            foreach (var shipmentItem in shipment.Items)
             {
-                matches.Add(new
-                {
-                    ItemId = item.Item_Id,
-                    ShipmentId = shipment.Id,
-                    OrderId = orders.First(o => o.Items.Contains(orderItem)).Id,
-                    Amount = Math.Min(item.Amount, orderItem.Amount),
-                    Status = "Matched"
-                });
+                // Check if the item exists in the order and match quantities
+                var orderItem = matchingOrder.Items.FirstOrDefault(o => o.Item_Id == shipmentItem.Item_Id);
 
-                item.CrossDockingStatus = "Matched";
+                if (orderItem != null)
+                {
+                    matches.Add(new
+                    {
+                        ItemId = shipmentItem.Item_Id,
+                        ShipmentId = shipment.Id,
+                        OrderId = matchingOrder.Id,
+                        Amount = Math.Min(shipmentItem.Amount, orderItem.Amount),
+                        Status = "Matched"
+                    });
+
+                    shipmentItem.CrossDockingStatus = "Matched";
+                }
             }
         }
     }
 
     return matches;
-    }
+    } 
+
 
 
     public string ShipItems(int shipmentId)
