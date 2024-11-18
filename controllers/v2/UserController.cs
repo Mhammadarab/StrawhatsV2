@@ -31,32 +31,47 @@ namespace Cargohub.Controllers.v2
         [HttpPost]
         public IActionResult CreateUser([FromBody] User user)
         {
-            AuthProvider.AddUser(user);
-            return CreatedAtAction(nameof(GetUserByApiKey), new { apiKey = user.ApiKey }, user);
+            try
+            {
+                AuthProvider.AddUser(user);
+                return CreatedAtAction(nameof(GetUserByApiKey), new { apiKey = user.ApiKey }, user);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("{apiKey}")]
         public IActionResult UpdateUser(string apiKey, [FromBody] User updatedUser)
         {
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null)
+            try
             {
-                return NotFound();
+                AuthProvider.UpdateUser(apiKey, updatedUser);
+                return NoContent();
             }
-            AuthProvider.UpdateUser(apiKey, updatedUser);
-            return NoContent();
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpDelete("{apiKey}")]
         public IActionResult DeleteUser(string apiKey)
         {
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null)
+            try
             {
-                return NotFound();
+                AuthProvider.DeleteUser(apiKey);
+                return NoContent();
             }
-            AuthProvider.DeleteUser(apiKey);
-            return NoContent();
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
     }
 }
