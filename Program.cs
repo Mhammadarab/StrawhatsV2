@@ -4,6 +4,11 @@ using Cargohub.services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<AdminOnly>(); 
+});
+
 builder.Services.AddControllers();
 builder.Services.AddSingleton<ICrudService<Warehouse, int>, WarehouseService>();
 builder.Services.AddSingleton<IItemService, ItemService>();
@@ -20,14 +25,17 @@ builder.Services.AddSingleton<ICrudService<ItemGroup, int>, ItemGroupService>();
 builder.Services.AddSingleton<ICrudService<Client, int>, ClientsService>();
 builder.Services.AddSingleton<ICrudService<Location, int>, LocationsService>();
 builder.Services.AddSingleton<ICrudService<Inventory, int>, InventoryService>();
+
+builder.Services.AddSingleton<UserService>();
+
 builder.Services.AddSingleton<CrossDockingService>();
 builder.Services.AddSingleton<ShipmentService>();
 
 
 
 
+
 var app = builder.Build();
-AuthProvider.Init();
 
 app.UseAuthorization();
 app.Use(async (ctx, next) =>
