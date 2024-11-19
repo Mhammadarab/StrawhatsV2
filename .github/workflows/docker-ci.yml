@@ -54,8 +54,16 @@ jobs:
         with:
           dotnet-version: "8.x"
 
+      # Debugging Step: Check .NET Info
+      - name: Check .NET Info
+        run: dotnet --info
+
       - name: Install dependencies
         run: dotnet restore
+
+      # Debugging Step: Check Installed SDKs
+      - name: List Installed SDKs
+        run: dotnet --list-sdks
 
       - name: Run code formatting check (continue on error)
         run: dotnet format --verify-no-changes
