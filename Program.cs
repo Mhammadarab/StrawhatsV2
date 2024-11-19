@@ -4,6 +4,11 @@ using Cargohub.services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<AdminOnly>(); 
+});
+
 builder.Services.AddControllers();
 builder.Services.AddSingleton<ICrudService<Warehouse, int>, WarehouseService>();
 builder.Services.AddSingleton<IItemService, ItemService>();
