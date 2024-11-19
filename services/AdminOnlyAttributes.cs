@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 public class AdminOnly : Attribute, IAsyncActionFilter
 {
-    private readonly List<string> _apiKeys = new List<string> { "a1b2c3d4e5", "f6g7h8i9j0",}; // Your list of API keys
+    private readonly List<string> _apiKeys = new List<string> { "a1b2c3d4e5", "f6g7h8i9j0"}; // Your list of API keys
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {

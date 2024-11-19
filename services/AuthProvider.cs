@@ -62,9 +62,6 @@ namespace Cargohub.services
                             { "shipments", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } }
                         }
                     }
-
-                },
-            };
                 };
                 SaveUsers();
             }
