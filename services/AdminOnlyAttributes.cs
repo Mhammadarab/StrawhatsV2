@@ -1,12 +1,34 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Newtonsoft.Json;
+using Cargohub.models;
 
 public class AdminOnly : Attribute, IAsyncActionFilter
 {
-    private readonly List<string> _apiKeys = new List<string> { "a1b2c3d4e5", "f6g7h8i9j0"}; // Your list of API keys
+    private static List<User> _users;
+    private static readonly string filePath = Path.Combine("Data", "users.json");
+
+    static AdminOnly()
+    {
+        LoadUsers();
+    }
+
+    private static void LoadUsers()
+    {
+        if (File.Exists(filePath))
+        {
+            var jsonData = File.ReadAllText(filePath);
+            _users = JsonConvert.DeserializeObject<List<User>>(jsonData) ?? new List<User>();
+        }
+        else
+        {
+            _users = new List<User>();
+        }
+    }
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
@@ -18,8 +40,10 @@ public class AdminOnly : Attribute, IAsyncActionFilter
             return;
         }
 
-        var authHeader = headers["API_KEY"].ToString();
-        if (!_apiKeys.Contains(authHeader))
+        var apiKey = headers["API_KEY"].ToString();
+        var user = _users.FirstOrDefault(u => u.ApiKey == apiKey);
+
+        if (user == null)
         {
             context.HttpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
             return;
