@@ -1,0 +1,90 @@
+name: CI/CD - Main Branch
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: cargohub
+  OWNER: "${{ github.repository_owner }}"
+  DOTNET_INSTALL_DIR: "./.dotnet"
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@main
+        with:
+          dotnet-version: "8.x"
+
+      - name: Build the Docker image
+        run: |
+          docker build . --tag ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:build-${{ github.run_id }}
+
+      - name: Notify Discord about Build Completion
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d '{"content": "🚀 **Build stage completed successfully** for main branch. Proceeding to testing stage."}' \
+          https://discord.com/api/webhooks/1308371538604593252/uvcFk3Jkv4qu8RafmSzttiMdFyqX1VRY_i7M1rN85Ne9TdQhBMIQVRYGllOBFJRPrE60
+
+  test:
+    runs-on: self-hosted
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@main
+        with:
+          dotnet-version: "8.x"
+
+      - name: Install dependencies
+        run: dotnet restore
+
+      - name: Run code formatting check
+        run: dotnet format --verify-no-changes
+
+      - name: Run tests
+        run: dotnet test --configuration Release --no-restore
+
+      - name: Notify Discord about Test Completion
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d '{"content": "✅ **Testing stage completed successfully** for main branch. Proceeding to deployment stage."}' \
+          https://discord.com/api/webhooks/1308371538604593252/uvcFk3Jkv4qu8RafmSzttiMdFyqX1VRY_i7M1rN85Ne9TdQhBMIQVRYGllOBFJRPrE60
+
+  deploy:
+    runs-on: self-hosted
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push the Docker image
+        run: |
+          docker build . --tag ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:latest
+          docker push ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:latest
+
+      - name: Notify Portainer Stack Update
+        run: |
+          curl -X POST -k "https://52.90.108.213:9443/api/stacks/webhooks/c033a3b4-1224-4e87-8589-794ca0b71d30"
+
+      - name: Notify Discord about Deployment Completion
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d '{"content": "🎉 **Deployment stage completed successfully** for main branch. The pipeline has finished."}' \
+          https://discord.com/api/webhooks/1308371538604593252/uvcFk3Jkv4qu8RafmSzttiMdFyqX1VRY_i7M1rN85Ne9TdQhBMIQVRYGllOBFJRPrE60
