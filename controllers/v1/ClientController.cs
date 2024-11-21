@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Cargohub.interfaces;
 using Cargohub.models;
 using Cargohub.services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
 

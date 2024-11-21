@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace Cargohub.models
 {
+
     public class User
     {
         public string ApiKey { get; set; }
