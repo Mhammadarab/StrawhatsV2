@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Cargohub.models
 {
@@ -11,7 +9,7 @@ namespace Cargohub.models
         public string Item_Id { get; set; }
         public string Description { get; set; }
         public string Item_Reference { get; set; }
-        public List<int> Locations { get; set; }
+        public Dictionary<int, int> Locations {get;  set;}
         public int Total_On_Hand { get; set; }
         public int Total_Expected { get; set; }
         public int Total_Ordered { get; set; }
