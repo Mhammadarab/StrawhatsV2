@@ -1,0 +1,8 @@
+/api/v2/user/newapikey123 was handled with status code 405
+/api/v2/user/newapikey123 was handled with status code 405
+/api/v2/user/newapikey123 was handled with status code 405
+/api/v2/user/newapikey123 was handled with status code 405
+/api/v2/user/newapikey123 was handled with status code 405
+/api/v2/user was handled with status code 201
+/api/v2/user was handled with status code 405
+/api/v2/user/newapikey123 was handled with status code 204

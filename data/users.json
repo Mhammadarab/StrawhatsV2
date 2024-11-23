@@ -114,5 +114,25 @@
         "Delete": true
       }
     }
+  },
+  {
+    "ApiKey": "newapikey123",
+    "App": "New App",
+    "EndpointAccess": {
+      "full": {
+        "Full": false,
+        "Get": true,
+        "Post": true,
+        "Put": false,
+        "Delete": false
+      },
+      "clients": {
+        "Full": false,
+        "Get": true,
+        "Post": false,
+        "Put": false,
+        "Delete": false
+      }
+    }
   }
 ]

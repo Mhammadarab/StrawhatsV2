@@ -32,9 +32,6 @@ builder.Services.AddSingleton<CrossDockingService>();
 builder.Services.AddSingleton<ShipmentService>();
 
 
-
-
-
 var app = builder.Build();
 
 app.UseAuthorization();
@@ -68,6 +65,14 @@ app.Use(async (ctx, next) =>
 
     await next.Invoke();
 });
+
+app.Use(async (context, next) =>
+{
+    await next.Invoke();
+    var msg = $"{context.Request.Path} was handled with status code {context.Response.StatusCode}\n";
+    await System.IO.File.AppendAllTextAsync("log.txt", msg);
+});
+
 app.UseRouting();
 app.MapControllers();
 
