@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Cargohub.models;
 using Cargohub.services;
 
@@ -73,6 +74,27 @@ namespace Cargohub.Controllers.v2
             {
                 return NotFound(ex.Message);
             }
+        }
+
+        private async Task LogChange(string action, string targetApiKey, User oldUser, User newUser)
+        {
+            var logMessage = $"API_KEY {User.Identity.Name} {action} API_KEY {targetApiKey}";
+
+            if (oldUser != null && newUser != null)
+            {
+                logMessage += $"\nOld User: {JsonConvert.SerializeObject(oldUser, Formatting.Indented)}";
+                logMessage += $"\nNew User: {JsonConvert.SerializeObject(newUser, Formatting.Indented)}";
+            }
+            else if (oldUser != null)
+            {
+                logMessage += $"\nDeleted User: {JsonConvert.SerializeObject(oldUser, Formatting.Indented)}";
+            }
+            else if (newUser != null)
+            {
+                logMessage += $"\nCreated User: {JsonConvert.SerializeObject(newUser, Formatting.Indented)}";
+            }
+
+            await System.IO.File.AppendAllTextAsync("log.txt", logMessage + "\n");
         }
     }
 }

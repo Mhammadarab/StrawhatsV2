@@ -49,7 +49,6 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v2",
         Description = "API documentation for version 2 of Cargohub API"
     });
-
     // Add API key security definition
     options.AddSecurityDefinition("API_KEY", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
@@ -87,7 +86,6 @@ builder.Services.AddSwaggerGen(options =>
     // Group actions by their GroupName (e.g., Users, Clients)
     options.TagActionsBy(apiDesc => new[] { apiDesc.GroupName });
 });
-
 
 var app = builder.Build();
 
@@ -133,6 +131,36 @@ app.Use(async (ctx, next) =>
 
     await next.Invoke();
 });
+
+app.Use(async (context, next) =>
+{
+    await next.Invoke();
+    
+    var apiKey = context.Request.Headers["API_KEY"].FirstOrDefault();
+    string msg;
+
+    switch (context.Request.Method)
+    {
+        case "POST":
+            msg = $"{DateTime.Now} API_KEY: {apiKey} Made a POST Request to create apikey.\n";
+            break;
+        case "GET":
+            msg = $"{DateTime.Now} API_KEY: {apiKey} Made a GET Request to {context.Request.Path}\n";
+            break;
+        case "PUT":
+            msg = $"{DateTime.Now} API_KEY: {apiKey} Made a PUT Request to {context.Request.Path}\n";
+            break;
+        case "DELETE":
+            msg = $"{DateTime.Now} API_KEY: {apiKey} Made a DELETE Request to {context.Request.Path}\n";
+            break;
+        default:
+            msg = $"{DateTime.Now} API_KEY: {apiKey} Made a {context.Request.Method} Request to {context.Request.Path}\n";
+            break;
+    }
+    
+    await System.IO.File.AppendAllTextAsync("log.txt", msg);
+});
+
 app.UseRouting();
 app.MapControllers();
 

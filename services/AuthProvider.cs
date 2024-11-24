@@ -67,6 +67,11 @@ namespace Cargohub.services
             }
         }
 
+         public static void ReloadUsers()
+        {
+            LoadUsers();
+        }
+
         private static void SaveUsers()
         {
             var jsonData = JsonConvert.SerializeObject(_users, Formatting.Indented);
