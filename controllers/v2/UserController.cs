@@ -6,7 +6,8 @@ using Cargohub.services;
 
 namespace Cargohub.Controllers.v2
 {
-    [Route("api/v2/[controller]")]
+    [ApiExplorerSettings(GroupName = "Users")]
+    [Route("api/v2/users")]
     [ApiController]
     public class UserController : ControllerBase
     {

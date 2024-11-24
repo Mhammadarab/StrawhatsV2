@@ -8,7 +8,8 @@ using Cargohub.models;
 
 namespace Cargohub.Controllers.v2
 {
-    [Route("api/v2/[controller]")]
+    [ApiExplorerSettings(GroupName = "ItemLines")]
+    [Route("api/v2/item_lines")]
     [ApiController]
     public class ItemLineController : Controller
     {
