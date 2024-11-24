@@ -6,6 +6,7 @@ using Cargohub.models;
 
 namespace Cargohub.Controllers.v1
 {
+    [ApiExplorerSettings(GroupName = "Items")]
     [Route("api/v1/items/")]
     [ApiController]
     public class ItemController : Controller

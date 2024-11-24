@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cargohub.controllers.v2
 {
+    [ApiExplorerSettings(GroupName = "Warehouses")]
     [Route("api/v2/warehouses")]
     [ApiController]
     public class WarehouseController : Controller
@@ -17,11 +18,6 @@ namespace Cargohub.controllers.v2
         public WarehouseController(ICrudService<Warehouse, int> warehouseService)
         {
             _warehouseService = warehouseService;
-        }
-        [HttpGet]
-        public IActionResult GetWarehouses()
-        {
-            return Ok("List of all warehouses in v2");
         }
 
         [HttpGet("{id}/capacities")]

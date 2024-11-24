@@ -8,6 +8,7 @@ using Cargohub.services;
 
 namespace Cargohub.controllers.v1
 {
+    [ApiExplorerSettings(GroupName = "ItemTypes")]
     [Route("api/v1/item_types/")]
     [ApiController]
     public class ItemTypeController : Controller
