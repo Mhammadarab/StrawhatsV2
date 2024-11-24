@@ -71,7 +71,26 @@ app.Use(async (context, next) =>
     await next.Invoke();
     
     var apiKey = context.Request.Headers["API_KEY"].FirstOrDefault();
-    var msg = $"{DateTime.Now} API_KEY: {apiKey} Made a {context.Request.Method} Request to API_KEY: \n";
+    string msg;
+
+    switch (context.Request.Method)
+    {
+        case "POST":
+            msg = $"{DateTime.Now} API_KEY: {apiKey} Made a POST Request to create apikey.\n";
+            break;
+        case "GET":
+            msg = $"{DateTime.Now} API_KEY: {apiKey} Made a GET Request to {context.Request.Path}\n";
+            break;
+        case "PUT":
+            msg = $"{DateTime.Now} API_KEY: {apiKey} Made a PUT Request to {context.Request.Path}\n";
+            break;
+        case "DELETE":
+            msg = $"{DateTime.Now} API_KEY: {apiKey} Made a DELETE Request to {context.Request.Path}\n";
+            break;
+        default:
+            msg = $"{DateTime.Now} API_KEY: {apiKey} Made a {context.Request.Method} Request to {context.Request.Path}\n";
+            break;
+    }
     
     await System.IO.File.AppendAllTextAsync("log.txt", msg);
 });

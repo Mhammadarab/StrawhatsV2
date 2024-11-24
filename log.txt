@@ -23,3 +23,7 @@
 11/24/2024 4:23:44 PM API_KEY: a1b2c3d4e5 Made a DELETE Request to API_KEY: 
 11/24/2024 4:26:25 PM API_KEY: a1b2c3d4e5 Deleted a POST Request to API_KEY: 
 11/24/2024 4:26:31 PM API_KEY: a1b2c3d4e5 Deleted a DELETE Request to API_KEY: 
+11/24/2024 10:25:24 PM API_KEY: a1b2c3d4e5 Made a POST Request to API_KEY: 
+11/24/2024 10:30:01 PM Deleted a DELETE Request to API_KEY:  by user with API_KEY: a1b2c3d4e5
+11/24/2024 10:32:42 PM API_KEY: a1b2c3d4e5 Made a POST Request to /api/v2/user with API_KEY: a1b2c3d4e5
+11/24/2024 10:40:14 PM API_KEY: a1b2c3d4e5 Made a DELETE Request to /api/v2/user/newapikey123
