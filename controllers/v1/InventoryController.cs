@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cargohub.controllers
 {
-    [ApiExplorerSettings(GroupName = "Inventories")]
     [Route("api/v1/inventories/")]
     [ApiController]
     public class InventoryController : Controller
@@ -74,9 +73,13 @@ namespace Cargohub.controllers
             // item is hazardous
             if (item.Classifications_Id.Contains(hazardousClassification.Id))
             {
-                foreach (var locationId in inventory.Locations)
+                foreach (var locationId in inventory.Locations.Keys)
                 {
-                    var location = _locationsService.GetById(locationId);
+                    var isParsed = int.TryParse(locationId, out int parsedLocationId);
+                    if (!isParsed) {
+                        return BadRequest("Invalid locationId");
+                    }
+                    var location = _locationsService.GetById(parsedLocationId);
                     if (location == null)
                     {
                         return BadRequest("Location not found");
