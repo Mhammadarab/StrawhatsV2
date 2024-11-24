@@ -48,14 +48,22 @@ namespace Cargohub.controllers
         [HttpPost]
         public async Task<IActionResult> CreateInventory([FromBody] Inventory inventory)
         {
-        if (inventory == null)
-        {
-            return BadRequest("Inventory data is null.");
+            if (inventory == null)
+            {
+                return BadRequest("Inventory data is null.");
+            }
+
+            try
+            {
+                await _inventoryService.Create(inventory);
+                return CreatedAtAction(nameof(GetInventoryById), new { id = inventory.Id }, inventory);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message); // Handle invalid keys in Locations
+            }
         }
 
-        await _inventoryService.Create(inventory);
-        return CreatedAtAction(nameof(GetInventoryById), new { id = inventory.Id }, inventory);
-        }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateInventory([FromBody] Inventory inventory)
