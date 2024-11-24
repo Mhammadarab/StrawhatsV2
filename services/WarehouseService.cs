@@ -13,6 +13,9 @@ namespace Cargohub.services
     {
         private readonly string jsonFilePath = "data/warehouses.json";
         private readonly string locationsFilePath = "data/locations.json";
+        private readonly string inventoriesFilePath = "data/inventories.json";
+
+        
 
         public Task Create(Warehouse entity)
         {
@@ -33,6 +36,12 @@ namespace Cargohub.services
             var allLocations = JsonConvert.DeserializeObject<List<Location>>(jsonData) ?? new List<Location>();
 
             return allLocations.Where(location => location.Warehouse_Id == warehouseId).ToList();
+        }
+
+        private List<Inventory> GetInventories()
+        {
+            var jsonData = File.ReadAllText(inventoriesFilePath);
+            return JsonConvert.DeserializeObject<List<Inventory>>(jsonData) ?? new List<Inventory>();
         }
 
         public Task Delete(int id)
@@ -93,6 +102,33 @@ namespace Cargohub.services
 
             SaveToFile(warehouses);
             return Task.CompletedTask;
+        }
+
+         public (int totalCapacity, int currentCapacity) CalculateWarehouseCapacities(int warehouseId)
+        {
+            var inventories = GetInventories();
+            var warehouseLocations = GetWarehouseLocations(warehouseId);
+
+            if (!warehouseLocations.Any())
+                throw new KeyNotFoundException($"No locations found for Warehouse ID {warehouseId}");
+
+            int totalCapacity = 0;
+            int currentCapacity = 0;
+
+            foreach (var inventory in inventories)
+            {
+                foreach (var location in inventory.Locations)
+                {
+                    // Check if the location belongs to the warehouse
+                    if (warehouseLocations.Any(loc => loc.Id == Convert.ToInt32(location.Key)))
+                    {
+                        totalCapacity += location.Value; // Capacity per location
+                        currentCapacity += location.Value; // Adjust based on utilization logic if needed
+                    }
+                }
+            }
+
+            return (totalCapacity, currentCapacity);
         }
 
         private void SaveToFile(List<Warehouse> warehouses)
