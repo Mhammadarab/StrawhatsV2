@@ -131,6 +131,32 @@ namespace Cargohub.services
             return (totalCapacity, currentCapacity);
         }
 
+        public List<object> CalculateAllWarehouseCapacities(int pageNumber, int pageSize)
+        {
+            var warehouses = GetAll();
+            var pagedWarehouses = warehouses
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var capacities = new List<object>();
+
+            foreach (var warehouse in pagedWarehouses)
+            {
+                var (totalCapacity, currentCapacity) = CalculateWarehouseCapacities(warehouse.Id);
+                capacities.Add(new
+                {
+                    WarehouseId = warehouse.Id,
+                    WarehouseName = warehouse.Name,
+                    TotalCapacity = totalCapacity,
+                    CurrentCapacity = currentCapacity
+                });
+            }
+
+            return capacities;
+        }
+
+
         private void SaveToFile(List<Warehouse> warehouses)
         {
             var jsonData = JsonConvert.SerializeObject(warehouses, Formatting.Indented);

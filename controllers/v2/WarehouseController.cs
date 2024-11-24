@@ -20,6 +20,27 @@ namespace Cargohub.controllers.v2
             _warehouseService = warehouseService;
         }
 
+        [HttpGet("capacities")]
+        public IActionResult GetAllWarehouseCapacities(int pageNumber = 1, int pageSize = 10)
+        {
+            try
+            {
+                var capacities = ((WarehouseService)_warehouseService).CalculateAllWarehouseCapacities(pageNumber, pageSize);
+                return Ok(new
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = ((WarehouseService)_warehouseService).GetAll().Count,
+                    Data = capacities
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
         [HttpGet("{id}/capacities")]
         public IActionResult GetWarehouseCapacities(int id)
         {
