@@ -69,7 +69,10 @@ app.Use(async (ctx, next) =>
 app.Use(async (context, next) =>
 {
     await next.Invoke();
-    var msg = $"{context.Request.Path} was handled with status code {context.Response.StatusCode}\n";
+    
+    var apiKey = context.Request.Headers["API_KEY"].FirstOrDefault();
+    var msg = $"{DateTime.Now} API_KEY: {apiKey} Made a {context.Request.Method} Request to API_KEY: \n";
+    
     await System.IO.File.AppendAllTextAsync("log.txt", msg);
 });
 
