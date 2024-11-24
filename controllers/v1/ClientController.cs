@@ -11,6 +11,7 @@ using Microsoft.VisualBasic;
 
 namespace Cargohub.controllers
 {
+    [ApiExplorerSettings(GroupName = "Clients")]
     [Route("api/v1/clients/")]
     [ApiController]
     public class ClientsController : Controller

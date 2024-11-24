@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Cargohub.interfaces;
 using Cargohub.models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Cargohub.services
 {
@@ -13,7 +14,7 @@ namespace Cargohub.services
     {
         private readonly string jsonFilePath = "data/inventories.json";
 
-        public Task Create (Inventory entity)
+        public Task Create(Inventory entity)
         {
             var inventories = GetAll() ?? new List<Inventory>();
 
@@ -21,11 +22,16 @@ namespace Cargohub.services
             var nextId = inventories.Any() ? inventories.Max(i => i.Id) + 1 : 1;
             entity.Id = nextId;
 
+            // Ensure Locations is a dictionary
+            if (entity.Locations == null)
+            {
+                entity.Locations = new Dictionary<int, int>();
+            }
+
             inventories.Add(entity);
             SaveToFile(inventories);
             return Task.CompletedTask;
         }
-
         public Task Delete(int id)
         {
             var inventories = GetAll() ?? new List<Inventory>();
@@ -44,8 +50,20 @@ namespace Cargohub.services
         public List<Inventory> GetAll()
         {
             var jsonData = File.ReadAllText(jsonFilePath);
-            return JsonConvert.DeserializeObject<List<Inventory>>(jsonData) ?? new List<Inventory>();
+            var inventories = JsonConvert.DeserializeObject<List<Inventory>>(jsonData);
+
+            foreach (var inventory in inventories)
+            {
+                // Ensure Locations is always deserialized as a dictionary
+                if (inventory.Locations == null)
+                {
+                    inventory.Locations = new Dictionary<int, int>();
+                }
+            }
+
+            return inventories;
         }
+
 
         public Inventory GetById(int id)
         {
@@ -83,12 +101,61 @@ namespace Cargohub.services
             inventory.Created_At = entity.Created_At;
             inventory.Updated_At = DateTime.UtcNow;
 
-
-
-
-
             SaveToFile(inventories);
             return Task.CompletedTask;
+        }
+
+        public List<string> AuditInventory(Dictionary<int, Dictionary<int, int>> physicalCountsByLocation)
+        {
+            var inventories = GetAll();
+            var discrepancies = new List<string>();
+
+            foreach (var auditEntry in physicalCountsByLocation)
+            {
+                var inventory = inventories.FirstOrDefault(i => i.Id == auditEntry.Key);
+
+                if (inventory == null)
+                {
+                    discrepancies.Add($"Inventory ID {auditEntry.Key} not found.");
+                    continue;
+                }
+
+                int totalPhysicalCount = auditEntry.Value.Values.Sum();
+
+                // Check and update discrepancies for locations
+                foreach (var locationEntry in auditEntry.Value)
+                {
+                    int locationId = locationEntry.Key;
+                    int physicalCount = locationEntry.Value;
+
+                    if (inventory.Locations.ContainsKey(locationId))
+                    {
+                        int systemCount = inventory.Locations[locationId];
+                        if (systemCount != physicalCount)
+                        {
+                            discrepancies.Add(
+                                $"Discrepancy for Inventory ID {inventory.Id} at Location {locationId}: System = {systemCount}, Physical = {physicalCount}"
+                            );
+
+                            // Update to physical count
+                            inventory.Locations[locationId] = physicalCount;
+                        }
+                    }
+                    else
+                    {
+                        discrepancies.Add(
+                            $"Location {locationId} not found for Inventory ID {inventory.Id}. Adding new location."
+                        );
+                        inventory.Locations[locationId] = physicalCount;
+                    }
+                }
+
+                // Update total on hand
+                inventory.Total_On_Hand = inventory.Locations.Values.Sum();
+            }
+
+            SaveToFile(inventories);
+            return discrepancies;
         }
 
         private void SaveToFile(List<Inventory> inventories)
