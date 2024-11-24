@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cargohub.controllers
 {
+  [ApiExplorerSettings(GroupName = "Transfers")]
   [Route("api/v1/transfers/")]
   [ApiController]
   public class TransferController : Controller

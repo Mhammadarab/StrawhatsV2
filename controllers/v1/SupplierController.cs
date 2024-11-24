@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cargohub.controllers
 {
+    [ApiExplorerSettings(GroupName = "Suppliers")]
     [Route("api/v1/suppliers/")]
     [ApiController]
     public class SupplierController : Controller

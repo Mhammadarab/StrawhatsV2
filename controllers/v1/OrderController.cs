@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cargohub.controllers
 {
+    [ApiExplorerSettings(GroupName = "Orders")]
     [Route("api/v1/orders/")]
     [ApiController]
     public class OrderContoller : Controller

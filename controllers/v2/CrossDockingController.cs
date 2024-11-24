@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cargohub.Controllers.v2
 {
+    [ApiExplorerSettings(GroupName = "CrossDocking")]
     [Route("api/v2/cross-docking")]
     [ApiController]
     public class CrossDockingController : ControllerBase
