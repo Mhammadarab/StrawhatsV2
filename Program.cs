@@ -104,8 +104,17 @@ if (app.Environment.IsDevelopment())
 app.UseAuthorization();
 app.Use(async (ctx, next) =>
 {
+    var path = ctx.Request.Path.Value;
+
+    // Allow Swagger endpoints without API key validation
+    if (path.StartsWith("/swagger") || path.StartsWith("/index.html"))
+    {
+        await next();
+        return;
+    }
+
     var apiKey = ctx.Request.Headers["API_KEY"].FirstOrDefault();
-    if (apiKey == null)
+    if (string.IsNullOrEmpty(apiKey))
     {
         ctx.Response.StatusCode = 401;
         await ctx.Response.WriteAsync("API key is missing");
@@ -120,18 +129,9 @@ app.Use(async (ctx, next) =>
         return;
     }
 
-    var path = ctx.Request.Path.Value.Split('/').Skip(3).FirstOrDefault();
-    var method = ctx.Request.Method.ToLower();
-
-    if (!AuthProvider.HasAccess(user, path, method))
-    {
-        ctx.Response.StatusCode = 403;
-        await ctx.Response.WriteAsync("Access denied");
-        return;
-    }
-
-    await next.Invoke();
+    await next();
 });
+
 
 app.UseRouting();
 app.MapControllers();
