@@ -106,8 +106,7 @@ app.Use(async (ctx, next) =>
 {
     var path = ctx.Request.Path.Value;
 
-    // Allow Swagger endpoints without API key validation
-    if (path.StartsWith("/swagger") || path.StartsWith("/index.html"))
+    if (path.StartsWith("/swagger") || path.StartsWith("/index.html") || path.Contains("/swagger"))
     {
         await next();
         return;
