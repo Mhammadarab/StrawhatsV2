@@ -1,12 +1,12 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Cargohub.models;
 using Cargohub.services;
 
 namespace Cargohub.Controllers.v2
 {
-    [Route("api/v2/[controller]")]
+    [ApiExplorerSettings(GroupName = "Users")]
+    [Route("api/v2/users")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -23,7 +23,7 @@ namespace Cargohub.Controllers.v2
             var user = AuthProvider.GetUser(apiKey);
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User not found.");
             }
             return Ok(user);
         }
@@ -31,9 +31,20 @@ namespace Cargohub.Controllers.v2
         [HttpPost]
         public IActionResult CreateUser([FromBody] User user)
         {
+            var adminApiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(adminApiKey))
+            {
+                return Unauthorized("API_KEY header is required for authorization.");
+            }
+
+            if (user == null || string.IsNullOrEmpty(user.ApiKey))
+            {
+                return BadRequest("User data or API key is missing.");
+            }
+
             try
             {
-                AuthProvider.AddUser(user);
+                AuthProvider.AddUser(adminApiKey, user);
                 return CreatedAtAction(nameof(GetUserByApiKey), new { apiKey = user.ApiKey }, user);
             }
             catch (InvalidOperationException ex)
@@ -45,14 +56,29 @@ namespace Cargohub.Controllers.v2
         [HttpPut("{apiKey}")]
         public IActionResult UpdateUser(string apiKey, [FromBody] User updatedUser)
         {
+            var adminApiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(adminApiKey))
+            {
+                return Unauthorized("API_KEY header is required for authorization.");
+            }
+
+            if (updatedUser == null)
+            {
+                return BadRequest("User data is null.");
+            }
+
             try
             {
-                AuthProvider.UpdateUser(apiKey, updatedUser);
+                AuthProvider.UpdateUser(adminApiKey, apiKey, updatedUser);
                 return NoContent();
             }
             catch (KeyNotFoundException ex)
             {
                 return NotFound(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Forbid(ex.Message);
             }
             catch (InvalidOperationException ex)
             {
@@ -63,10 +89,20 @@ namespace Cargohub.Controllers.v2
         [HttpDelete("{apiKey}")]
         public IActionResult DeleteUser(string apiKey)
         {
+            var adminApiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(adminApiKey))
+            {
+                return Unauthorized("API_KEY header is required for authorization.");
+            }
+
             try
             {
-                AuthProvider.DeleteUser(apiKey);
+                AuthProvider.DeleteUser(adminApiKey, apiKey);
                 return NoContent();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Forbid(ex.Message);
             }
             catch (KeyNotFoundException ex)
             {

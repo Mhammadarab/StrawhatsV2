@@ -62,6 +62,8 @@ namespace Cargohub.models
         [JsonProperty("updated_at")]
         public DateTime Updated_At { get; set; }
         public InventoryTotals InventoryTotals { get; set; }
+        public List<int> Classifications_Id {get; set;}
+
     }
 
     public class InventoryTotals

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cargohub.controllers.v1
 {
+    [ApiExplorerSettings(GroupName = "ItemLines")]
     [Route("api/v1/item_lines/")]
     [ApiController]
     public class ItemLineController : Controller

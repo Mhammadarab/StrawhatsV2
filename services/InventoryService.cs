@@ -22,16 +22,34 @@ namespace Cargohub.services
             var nextId = inventories.Any() ? inventories.Max(i => i.Id) + 1 : 1;
             entity.Id = nextId;
 
-            // Ensure Locations is a dictionary
+            // Ensure Locations is a valid dictionary
             if (entity.Locations == null)
             {
-                entity.Locations = new Dictionary<int, int>();
+                entity.Locations = new Dictionary<string, int>();
+            }
+            else
+            {
+                // Convert string keys to ensure consistency (keys must be valid integers)
+                var validatedLocations = new Dictionary<string, int>();
+                foreach (var location in entity.Locations)
+                {
+                    if (int.TryParse(location.Key, out _))
+                    {
+                        validatedLocations[location.Key] = location.Value;
+                    }
+                    else
+                    {
+                        throw new ArgumentException($"Invalid location type key: {location.Key}. Keys must integers.");
+                    }
+                }
+                entity.Locations = validatedLocations;
             }
 
             inventories.Add(entity);
             SaveToFile(inventories);
             return Task.CompletedTask;
         }
+
         public Task Delete(int id)
         {
             var inventories = GetAll() ?? new List<Inventory>();
@@ -57,7 +75,7 @@ namespace Cargohub.services
                 // Ensure Locations is always deserialized as a dictionary
                 if (inventory.Locations == null)
                 {
-                    inventory.Locations = new Dictionary<int, int>();
+                    inventory.Locations = new Dictionary<string, int>();
                 }
             }
 
@@ -128,9 +146,9 @@ namespace Cargohub.services
                     int locationId = locationEntry.Key;
                     int physicalCount = locationEntry.Value;
 
-                    if (inventory.Locations.ContainsKey(locationId))
+                    if (inventory.Locations.ContainsKey(locationId.ToString()))
                     {
-                        int systemCount = inventory.Locations[locationId];
+                        int systemCount = inventory.Locations[locationId.ToString()];
                         if (systemCount != physicalCount)
                         {
                             discrepancies.Add(
@@ -138,7 +156,7 @@ namespace Cargohub.services
                             );
 
                             // Update to physical count
-                            inventory.Locations[locationId] = physicalCount;
+                            inventory.Locations[locationId.ToString()] = physicalCount;
                         }
                     }
                     else
@@ -146,7 +164,7 @@ namespace Cargohub.services
                         discrepancies.Add(
                             $"Location {locationId} not found for Inventory ID {inventory.Id}. Adding new location."
                         );
-                        inventory.Locations[locationId] = physicalCount;
+                        inventory.Locations[locationId.ToString()] = physicalCount;
                     }
                 }
 

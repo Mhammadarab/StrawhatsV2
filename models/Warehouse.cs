@@ -18,5 +18,6 @@ namespace Cargohub.models
         public Contact Contact { get; set; } // Contact details nested class
         public DateTime Created_At { get; set; }
         public DateTime Updated_At { get; set; }
+        public List<int> Classifications_Id {get; set;}
     }
 }
