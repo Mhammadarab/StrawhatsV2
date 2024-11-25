@@ -11,6 +11,7 @@ namespace Cargohub.services
     {
         private static List<User> _users;
         private static readonly string filePath = Path.Combine("Data", "users.json");
+        private static readonly string logFilePath = Path.Combine("Logs", "user_logs.json");
 
         static AuthProvider()
         {
@@ -50,16 +51,7 @@ namespace Cargohub.services
                         {
                             { "full", new EndpointAccess { Full = false } },
                             { "warehouses", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } },
-                            { "locations", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } },
-                            { "transfers", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } },
-                            { "items", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } },
-                            { "item_lines", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } },
-                            { "item_groups", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } },
-                            { "item_types", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } },
-                            { "suppliers", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } },
-                            { "orders", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } },
-                            { "clients", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } },
-                            { "shipments", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } }
+                            { "locations", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } }
                         }
                     }
                 };
@@ -67,7 +59,7 @@ namespace Cargohub.services
             }
         }
 
-         public static void ReloadUsers()
+        public static void ReloadUsers()
         {
             LoadUsers();
         }
@@ -76,6 +68,35 @@ namespace Cargohub.services
         {
             var jsonData = JsonConvert.SerializeObject(_users, Formatting.Indented);
             File.WriteAllText(filePath, jsonData);
+        }
+
+        private static void LogChange(string action, string performedBy, User oldUser = null, User newUser = null)
+        {
+            var logEntry = new
+            {
+                Timestamp = DateTime.UtcNow,
+                Action = action,
+                PerformedBy = performedBy,
+                OldUser = oldUser,
+                NewUser = newUser
+            };
+
+            var logFilePath = Path.Combine("logs", "user_changes.json");
+            Directory.CreateDirectory("logs");
+
+            List<object> logs;
+            if (File.Exists(logFilePath))
+            {
+                var jsonData = File.ReadAllText(logFilePath);
+                logs = JsonConvert.DeserializeObject<List<object>>(jsonData) ?? new List<object>();
+            }
+            else
+            {
+                logs = new List<object>();
+            }
+
+            logs.Add(logEntry);
+            File.WriteAllText(logFilePath, JsonConvert.SerializeObject(logs, Formatting.Indented));
         }
 
         public static List<User> GetUsers()
@@ -88,17 +109,19 @@ namespace Cargohub.services
             return _users.FirstOrDefault(x => x.ApiKey == apiKey);
         }
 
-        public static void AddUser(User user)
+        public static void AddUser(string performedBy, User user)
         {
             if (_users.Any(x => x.ApiKey == user.ApiKey))
             {
                 throw new InvalidOperationException("A user with this API key already exists.");
             }
+
             _users.Add(user);
             SaveUsers();
+            LogChange("Created", performedBy, newUser: user);
         }
 
-        public static void UpdateUser(string apiKey, User updatedUser)
+        public static void UpdateUser(string performedBy, string apiKey, User updatedUser)
         {
             var user = GetUser(apiKey);
             if (user == null)
@@ -111,58 +134,52 @@ namespace Cargohub.services
                 throw new InvalidOperationException("A user with this API key already exists.");
             }
 
+            var oldUser = JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(user)); // Deep clone
             user.App = updatedUser.App;
             user.EndpointAccess = updatedUser.EndpointAccess;
+
             SaveUsers();
+            LogChange("Updated", performedBy, oldUser, updatedUser);
         }
 
-        public static void DeleteUser(string apiKey)
+        public static void DeleteUser(string performedBy, string apiKey)
         {
             var user = GetUser(apiKey);
             if (user == null)
             {
                 throw new KeyNotFoundException("User not found.");
             }
+
             _users.Remove(user);
             SaveUsers();
+
+            // Log the deletion of the user
+            LogChange("Deleted", performedBy, oldUser: user);
         }
+
 
         public static bool HasAccess(User user, string path, string method)
         {
             // Check for full access
-            if (user.EndpointAccess.ContainsKey("full") && user.EndpointAccess["full"].Full)
+            if (user.EndpointAccess.TryGetValue("full", out var fullAccess) && fullAccess.Full)
             {
                 return true;
             }
 
-            // Check for method-specific access
-            if (user.EndpointAccess.ContainsKey("full"))
-            {
-                var access = user.EndpointAccess["full"];
-                return method switch
-                {
-                    "get" => access.Get,
-                    "post" => access.Post,
-                    "put" => access.Put,
-                    "delete" => access.Delete,
-                    _ => false
-                };
-            }
-
             // Check for path-specific access
-            if (user.EndpointAccess.ContainsKey(path))
+            if (user.EndpointAccess.TryGetValue(path, out var specificAccess))
             {
-                var access = user.EndpointAccess[path];
                 return method switch
                 {
-                    "get" => access.Get,
-                    "post" => access.Post,
-                    "put" => access.Put,
-                    "delete" => access.Delete,
+                    "get" => specificAccess.Get,
+                    "post" => specificAccess.Post,
+                    "put" => specificAccess.Put,
+                    "delete" => specificAccess.Delete,
                     _ => false
                 };
             }
 
+            // Deny access by default
             return false;
         }
     }
