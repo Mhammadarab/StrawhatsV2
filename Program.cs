@@ -29,9 +29,6 @@ builder.Services.AddSingleton<ICrudService<Classifications, int>, Classification
 builder.Services.AddSingleton<ICrudService<Item, string>, ItemService>();
 builder.Services.AddSingleton<InventoryService>();
 
-
-builder.Services.AddSingleton<UserService>();
-
 builder.Services.AddSingleton<CrossDockingService>();
 builder.Services.AddSingleton<ShipmentService>();
 
@@ -89,6 +86,8 @@ builder.Services.AddSwaggerGen(options =>
     options.TagActionsBy(apiDesc => new[] { apiDesc.GroupName });
 });
 
+
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -132,35 +131,6 @@ app.Use(async (ctx, next) =>
     }
 
     await next.Invoke();
-});
-
-app.Use(async (context, next) =>
-{
-    await next.Invoke();
-    
-    var apiKey = context.Request.Headers["API_KEY"].FirstOrDefault();
-    string msg;
-
-    switch (context.Request.Method)
-    {
-        case "POST":
-            msg = $"{DateTime.Now} API_KEY: {apiKey} Made a POST Request to create apikey.\n";
-            break;
-        case "GET":
-            msg = $"{DateTime.Now} API_KEY: {apiKey} Made a GET Request to {context.Request.Path}\n";
-            break;
-        case "PUT":
-            msg = $"{DateTime.Now} API_KEY: {apiKey} Made a PUT Request to {context.Request.Path}\n";
-            break;
-        case "DELETE":
-            msg = $"{DateTime.Now} API_KEY: {apiKey} Made a DELETE Request to {context.Request.Path}\n";
-            break;
-        default:
-            msg = $"{DateTime.Now} API_KEY: {apiKey} Made a {context.Request.Method} Request to {context.Request.Path}\n";
-            break;
-    }
-    
-    await System.IO.File.AppendAllTextAsync("log.txt", msg);
 });
 
 app.UseRouting();
