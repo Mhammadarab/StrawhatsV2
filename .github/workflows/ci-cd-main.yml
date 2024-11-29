@@ -3,7 +3,7 @@ name: CI/CD - Main Branch
 on:
   push:
     branches:
-      - 94-i-want-to-modularize-the-cicd-pipeline-into-separate-workflow-files-for-build-test-and-deploy-so-that-the-pipeline-is-easier-to-maintain-reuse-and-secure-by-using-secrets-for-sensitive-data-like-webhook-urls
+      - main
   pull_request:
     branches:
       - main
@@ -20,3 +20,14 @@ jobs:
   deploy:
     needs: test
     uses: ./.github/workflows/deploy.yml
+
+  notify:
+    needs: [deploy]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Notify Discord
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d '{"content": "🚦 **CI/CD Workflow Status**: `'"${{ job.status }}"'` for branch: `main`."}' \
+          "${{ secrets.DISCORD_WEBHOOK_URL }}"
