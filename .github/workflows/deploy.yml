@@ -2,6 +2,10 @@ name: Deploy
 
 on: [workflow_call]
 
+env:
+  OWNER: ${{ github.repository_owner }}
+  IMAGE_NAME: cargohub
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -19,6 +23,12 @@ jobs:
       - name: Set lower case owner name
         run: |
           echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
+
+      - name: Debug Variables
+        run: |
+          echo "OWNER=${OWNER}"
+          echo "OWNER_LC=${OWNER,,}"
+          echo "IMAGE_NAME=${IMAGE_NAME}"
 
       - name: Build and Push the Docker image (push to main)
         if: github.event_name == 'push'
