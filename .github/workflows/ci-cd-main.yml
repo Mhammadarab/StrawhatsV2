@@ -20,14 +20,3 @@ jobs:
   deploy:
     needs: test
     uses: ./.github/workflows/deploy.yml
-
-  notify:
-    needs: [deploy]
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      - name: Notify Discord
-        run: |
-          curl -X POST -H "Content-Type: application/json" \
-          -d '{"content": "🚦 **CI/CD Workflow Status**: `'"${{ job.status }}"'` for branch: `main`."}' \
-          "${{ secrets.DISCORD_WEBHOOK_URL }}"
