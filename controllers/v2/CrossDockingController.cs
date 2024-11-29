@@ -19,7 +19,7 @@ namespace Cargohub.Controllers.v2
         /// </summary>
         /// <param name="shipmentId">Optional shipment ID to filter matches.</param>
         /// <param name="pageNumber">Page number for pagination.</param>
-        /// <param name="pageSize">Page size for pagination.</param>
+        /// <param name="pageSize">Page size for pagination</param>
         /// <returns>A list of matched items.</returns>
         [HttpGet("match")]
         public IActionResult MatchItems([FromQuery] int? shipmentId = null, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
