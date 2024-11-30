@@ -1,12 +1,12 @@
-name: CI/CD - Main Branch
+name: CI/CD - Staging Branch
 
 on:
   push:
     branches:
-      - main
+      - staging
   pull_request:
     branches:
-      - main
+      - staging
   workflow_dispatch:
 
 jobs:
@@ -16,7 +16,3 @@ jobs:
   test:
     needs: build
     uses: ./.github/workflows/test.yml
-
-  deploy:
-    needs: test
-    uses: ./.github/workflows/deploy.yml
