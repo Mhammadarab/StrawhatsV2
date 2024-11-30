@@ -1,0 +1,30 @@
+[
+  {
+    "Timestamp": "2024-11-30T17:24:06.687449Z",
+    "PerformedBy": "a1b2c3d4e5",
+    "AuditData": {
+      "11720": {
+        "30113": 20,
+        "30437": 30,
+        "9010": 40
+      }
+    },
+    "Discrepancies": [
+      "Discrepancy for Inventory ID 11720 at Location 30113: System = 18, Physical = 20",
+      "Discrepancy for Inventory ID 11720 at Location 30437: System = 18, Physical = 30",
+      "Discrepancy for Inventory ID 11720 at Location 9010: System = 18, Physical = 40"
+    ]
+  },
+  {
+    "Timestamp": "2024-11-30T17:24:54.19268Z",
+    "PerformedBy": "a1b2c3d4e5",
+    "AuditData": {
+      "11720": {
+        "30113": 20
+      }
+    },
+    "Discrepancies": [
+      "Discrepancy for Inventory ID 11720 at Location 30113: System = 18, Physical = 20"
+    ]
+  }
+]

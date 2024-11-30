@@ -48,10 +48,17 @@ namespace Cargohub.controllers.v2
             if (physicalCountsByLocation == null || physicalCountsByLocation.Count == 0)
                 return BadRequest("Audit data is empty.");
 
-            var discrepancies = _inventoryService.AuditInventory(physicalCountsByLocation);
+            // Extract the API_KEY from the headers
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+                return Unauthorized("API_KEY header is required.");
+
+            // Perform the audit operation
+            var discrepancies = _inventoryService.AuditInventory(apiKey, physicalCountsByLocation);
+
             return Ok(new
             {
-                Message = "Audit completed.",
+                Message = "Audit completed. Discrepancies have been logged.",
                 Discrepancies = discrepancies
             });
         }
