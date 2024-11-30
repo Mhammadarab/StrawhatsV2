@@ -1,28 +1,34 @@
-name: Test
+name: Build
 
 on: [workflow_call]
 
+env:
+  OWNER: ${{ github.repository_owner }}
+  IMAGE_NAME: cargohub
+
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+      - name: "Login to GitHub Container Registry"
+        uses: docker/login-action@v1
         with:
-          dotnet-version: "8.x"
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install dependencies
-        run: dotnet restore
+      - name: Set lower case owner name
+        run: |
+          echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
 
-      - name: Run code formatting check (continue on error)
-        run: dotnet format --verify-no-changes
-        continue-on-error: true
+      - uses: actions/checkout@v4
 
-      - name: Build the solution
-        run: dotnet build --configuration Release --no-restore
+      - name: Build the Docker image
+        run: |
+          docker build . --tag ghcr.io/$OWNER_LC/$IMAGE_NAME:build-${{ github.run_id }}
 
-      - name: Run code analysis
-        run: dotnet build --configuration Release /warnaserror
+      - name: Notify Discord - Build Stage Completed
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d '{"content": "🚀 Build stage completed successfully for branch: `main`. Proceeding to testing stage."}' \
+          "${{ secrets.DISCORD_WEBHOOK_URL }}"

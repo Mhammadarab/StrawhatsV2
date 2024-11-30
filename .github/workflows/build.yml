@@ -23,11 +23,12 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - name: Debug Environment Variables
-        run: |
-          echo "OWNER=${OWNER}"
-          echo "IMAGE_NAME=${IMAGE_NAME}"
-
       - name: Build the Docker image
         run: |
           docker build . --tag ghcr.io/$OWNER_LC/$IMAGE_NAME:build-${{ github.run_id }}
+
+      - name: Notify Discord - Build Stage Completed
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d '{"content": "🚀 Build stage completed successfully for branch: `main`. Proceeding to testing stage."}' \
+          "${{ secrets.DISCORD_WEBHOOK_URL }}"
