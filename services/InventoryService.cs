@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Cargohub.services
 {
-    public class InventoryService : ICrudService<Inventory, int>
+    public class InventoryService
     {
         private readonly string jsonFilePath = "data/inventories.json";
 
@@ -65,7 +65,7 @@ namespace Cargohub.services
             return Task.CompletedTask;
         }
 
-        public List<Inventory> GetAll()
+        public List<Inventory> GetAll(int? pageNumber = null, int? pageSize = null)
         {
             var jsonData = File.ReadAllText(jsonFilePath);
             var inventories = JsonConvert.DeserializeObject<List<Inventory>>(jsonData);
@@ -77,6 +77,15 @@ namespace Cargohub.services
                 {
                     inventory.Locations = new Dictionary<string, int>();
                 }
+            }
+
+            // Apply pagination only if both pageNumber and pageSize are provided
+            if (pageNumber.HasValue && pageSize.HasValue && pageNumber > 0 && pageSize > 0)
+            {
+                inventories = inventories
+                    .Skip((pageNumber.Value - 1) * pageSize.Value)
+                    .Take(pageSize.Value)
+                    .ToList();
             }
 
             return inventories;

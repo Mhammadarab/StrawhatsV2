@@ -24,7 +24,7 @@ builder.Services.AddSingleton<ICrudService<Supplier, int>, SupplierService>();
 builder.Services.AddSingleton<ICrudService<ItemGroup, int>, ItemGroupService>();
 builder.Services.AddSingleton<ICrudService<Client, int>, ClientsService>();
 builder.Services.AddSingleton<ICrudService<Location, int>, LocationsService>();
-builder.Services.AddSingleton<ICrudService<Inventory, int>, InventoryService>();
+builder.Services.AddSingleton<InventoryService>();
 builder.Services.AddSingleton<ICrudService<Classifications, int>, ClassificationService>();
 builder.Services.AddSingleton<ICrudService<Item, string>, ItemService>();
 builder.Services.AddSingleton<InventoryService>();
