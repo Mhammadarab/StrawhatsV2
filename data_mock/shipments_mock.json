@@ -1,0 +1,159 @@
+[
+    {
+      "id": 1,
+      "order_id": 1,
+      "source_id": 45,
+      "order_date": "2021-06-15",
+      "request_date": "2021-06-17",
+      "shipment_date": "2021-06-19",
+      "shipment_type": "O",
+      "shipment_status": "Shipped",
+      "notes": "Handle with care.",
+      "carrier_code": "UPS",
+      "carrier_description": "United Parcel Service",
+      "service_code": "Standard",
+      "payment_type": "Prepaid",
+      "transfer_mode": "Air",
+      "total_package_count": 10,
+      "total_package_weight": 150.50,
+      "created_at": "2021-06-16T10:00:00Z",
+      "updated_at": "2021-06-17T12:00:00Z",
+      "items": [
+        {
+          "item_id": "P001001",
+          "amount": 10
+        },
+        {
+          "item_id": "P001002",
+          "amount": 5
+        },
+        {
+          "item_id": "P001003",
+          "amount": 20
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "order_id": 2,
+      "source_id": 12,
+      "order_date": "2020-03-10",
+      "request_date": "2020-03-12",
+      "shipment_date": "2020-03-14",
+      "shipment_type": "O",
+      "shipment_status": "Delivered",
+      "notes": "Leave at the front desk.",
+      "carrier_code": "FedEx",
+      "carrier_description": "Federal Express",
+      "service_code": "Express",
+      "payment_type": "Prepaid",
+      "transfer_mode": "Air",
+      "total_package_count": 15,
+      "total_package_weight": 200.75,
+      "created_at": "2020-03-11T14:00:00Z",
+      "updated_at": "2020-03-12T16:00:00Z",
+      "items": [
+        {
+          "item_id": "P001004",
+          "amount": 15
+        },
+        {
+          "item_id": "P001005",
+          "amount": 10
+        },
+        {
+          "item_id": "P001006",
+          "amount": 25
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "order_id": 3,
+      "source_id": 34,
+      "order_date": "2019-11-05",
+      "request_date": "2019-11-07",
+      "shipment_date": "2019-11-09",
+      "shipment_type": "O",
+      "shipment_status": "In Transit",
+      "notes": "Fragile items.",
+      "carrier_code": "DHL",
+      "carrier_description": "DHL Express",
+      "service_code": "NextDay",
+      "payment_type": "Prepaid",
+      "transfer_mode": "Air",
+      "total_package_count": 20,
+      "total_package_weight": 250.25,
+      "created_at": "2019-11-06T09:00:00Z",
+      "updated_at": "2019-11-07T11:00:00Z",
+      "items": [
+        {
+          "item_id": "P001007",
+          "amount": 8
+        },
+        {
+          "item_id": "P001008",
+          "amount": 12
+        },
+        {
+          "item_id": "P001009",
+          "amount": 18
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "order_id": 4,
+      "source_id": 56,
+      "order_date": "2018-07-20",
+      "request_date": "2018-07-22",
+      "shipment_date": "2018-07-24",
+      "shipment_type": "O",
+      "shipment_status": "Pending",
+      "notes": "Call before delivery.",
+      "carrier_code": "TNT",
+      "carrier_description": "TNT Express",
+      "service_code": "Economy",
+      "payment_type": "Prepaid",
+      "transfer_mode": "Ground",
+      "total_package_count": 25,
+      "total_package_weight": 300.00,
+      "created_at": "2018-07-21T13:00:00Z",
+      "updated_at": "2018-07-22T15:00:00Z",
+      "items": [
+        {
+          "item_id": "P001010",
+          "amount": 20
+        },
+        {
+          "item_id": "P001011",
+          "amount": 10
+        },
+        {
+          "item_id": "P001012",
+          "amount": 30
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "order_id": 5,
+      "source_id": 78,
+      "order_date": "2017-05-15",
+      "request_date": "2017-05-17",
+      "shipment_date": "2017-05-19",
+      "shipment_type": "O",
+      "shipment_status": "Cancelled",
+      "notes": "Customer cancelled the order.",
+      "carrier_code": "USPS",
+      "carrier_description": "United States Postal Service",
+      "service_code": "Priority",
+      "payment_type": "Prepaid",
+      "transfer_mode": "Ground",
+      "total_package_count": 5,
+      "total_package_weight": 50.00,
+      "created_at": "2017-05-16T11:00:00Z",
+      "updated_at": "2017-05-17T13:00:00Z",
+      "items": []
+    }
+  ]

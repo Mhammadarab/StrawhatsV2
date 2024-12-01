@@ -1,0 +1,92 @@
+[
+    {
+      "id": 1,
+      "code": "ABCD1234",
+      "name": "Amsterdam Central Warehouse",
+      "address": "123 Main St",
+      "zip": "1011AB",
+      "city": "Amsterdam",
+      "province": "Noord-Holland",
+      "country": "NL",
+      "contact": {
+        "name": "John Doe",
+        "phone": "+31 20 123 4567",
+        "email": "johndoe@example.com"
+      },
+      "created_at": "2021-01-01 10:00:00",
+      "updated_at": "2021-06-01 12:00:00",
+      "classifications_id": [1, 3]
+    },
+    {
+      "id": 2,
+      "code": "EFGH5678",
+      "name": "Rotterdam Storage Facility",
+      "address": "456 Another St",
+      "zip": "3012CD",
+      "city": "Rotterdam",
+      "province": "Zuid-Holland",
+      "country": "NL",
+      "contact": {
+        "name": "Jane Smith",
+        "phone": "+31 10 765 4321",
+        "email": "janesmith@example.com"
+      },
+      "created_at": "2020-05-15 08:30:00",
+      "updated_at": "2021-07-20 14:45:00",
+      "classifications_id": [2, 4]
+    },
+    {
+      "id": 3,
+      "code": "IJKL9101",
+      "name": "Utrecht Distribution Center",
+      "address": "789 Some Ave",
+      "zip": "3511DE",
+      "city": "Utrecht",
+      "province": "Utrecht",
+      "country": "NL",
+      "contact": {
+        "name": "Alice Johnson",
+        "phone": "+31 30 987 6543",
+        "email": "alicejohnson@example.com"
+      },
+      "created_at": "2019-11-11 09:00:00",
+      "updated_at": "2021-08-15 16:30:00",
+      "classifications_id": [1, 5]
+    },
+    {
+      "id": 4,
+      "code": "MNOP1121",
+      "name": "Eindhoven Logistics Hub",
+      "address": "1010 Industrial Rd",
+      "zip": "5611AA",
+      "city": "Eindhoven",
+      "province": "Noord-Brabant",
+      "country": "NL",
+      "contact": {
+        "name": "Bob Brown",
+        "phone": "+31 40 123 9876",
+        "email": "bobbrown@example.com"
+      },
+      "created_at": "2018-03-22 07:45:00",
+      "updated_at": "2021-09-10 11:15:00",
+      "classifications_id": [3, 4]
+    },
+    {
+      "id": 5,
+      "code": "QRST3141",
+      "name": "Groningen Cargo Terminal",
+      "address": "2020 Cargo Blvd",
+      "zip": "9711AA",
+      "city": "Groningen",
+      "province": "Groningen",
+      "country": "NL",
+      "contact": {
+        "name": "Charlie Davis",
+        "phone": "+31 50 321 6549",
+        "email": "charliedavis@example.com"
+      },
+      "created_at": "2017-07-30 06:30:00",
+      "updated_at": "2021-10-05 13:00:00",
+      "classifications_id": [2, 5]
+    }
+  ]
