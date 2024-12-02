@@ -28,16 +28,28 @@ namespace Cargohub.services
             await SaveToFile(jsonFilePath, Classificationss);
         }
 
-        public List<Classifications> GetAll()
+        public List<Classifications> GetAll(int? pageNumber = null, int? pageSize = null)
         {
             if (!File.Exists(jsonFilePath))
             {
-                return [];
+                return new List<Classifications>();
             }
 
             var jsonData = File.ReadAllText(jsonFilePath);
-            return JsonConvert.DeserializeObject<List<Classifications>>(jsonData) ?? new List<Classifications>();
+            var classifications = JsonConvert.DeserializeObject<List<Classifications>>(jsonData) ?? new List<Classifications>();
+
+            // Apply pagination only if pageNumber and pageSize are provided and valid
+            if (pageNumber.HasValue && pageSize.HasValue && pageNumber > 0 && pageSize > 0)
+            {
+                classifications = classifications
+                    .Skip((pageNumber.Value - 1) * pageSize.Value)
+                    .Take(pageSize.Value)
+                    .ToList();
+            }
+
+            return classifications;
         }
+
 
         public Classifications GetById(int Id)
         {

@@ -41,7 +41,7 @@ namespace Cargohub.services
             await SaveToFile(itemTypes);
         }
 
-        public List<ItemType> GetAll()
+        public List<ItemType> GetAll(int? pageNumber = null, int? pageSize = null)
         {
             if (!File.Exists(jsonFilePath))
             {
@@ -49,8 +49,20 @@ namespace Cargohub.services
             }
 
             var jsonData = File.ReadAllText(jsonFilePath);
-            return JsonConvert.DeserializeObject<List<ItemType>>(jsonData) ?? new List<ItemType>();
+            var itemTypes = JsonConvert.DeserializeObject<List<ItemType>>(jsonData) ?? new List<ItemType>();
+
+            // Apply pagination only if pageNumber and pageSize are provided and valid
+            if (pageNumber.HasValue && pageSize.HasValue && pageNumber > 0 && pageSize > 0)
+            {
+                itemTypes = itemTypes
+                    .Skip((pageNumber.Value - 1) * pageSize.Value)
+                    .Take(pageSize.Value)
+                    .ToList();
+            }
+
+            return itemTypes;
         }
+
 
         public ItemType GetById(int id)
         {

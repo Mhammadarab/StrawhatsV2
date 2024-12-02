@@ -36,10 +36,20 @@ public class ShipmentService : ICrudService<Shipment, int>
         return Task.CompletedTask;
     }
 
-    public List<Shipment> GetAll()
+    public List<Shipment> GetAll(int? pageNumber = null, int? pageSize = null)
     {
         var jsonData = File.ReadAllText(jsonFilePath);
-        return JsonConvert.DeserializeObject<List<Shipment>>(jsonData) ?? new List<Shipment>();
+        var shipments = JsonConvert.DeserializeObject<List<Shipment>>(jsonData) ?? new List<Shipment>();
+
+        if (pageNumber.HasValue && pageSize.HasValue && pageNumber > 0 && pageSize > 0)
+        {
+            shipments = shipments
+                .Skip((pageNumber.Value - 1) * pageSize.Value)
+                .Take(pageSize.Value)
+                .ToList();
+        }
+
+        return shipments;
     }
 
     public Shipment GetById(int id)

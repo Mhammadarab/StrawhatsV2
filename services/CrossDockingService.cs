@@ -53,59 +53,71 @@ public class CrossDockingService
   }
 
 
-    public List<object> MatchItems(int? shipmentId, int pageNumber, int pageSize)
+    public List<object> MatchItems(int? shipmentId = null, int? pageNumber = null, int? pageSize = null)
     {
-    var shipments = _shipmentService.GetAll();
+        var shipments = _shipmentService.GetAll();
 
-    // Filter shipments by ID and ensure they are in 'Transit'
-    if (shipmentId.HasValue)
-    {
-        shipments = shipments.Where(s => s.Id == shipmentId.Value && s.Shipment_Status == "Transit").ToList();
-    }
-    else
-    {
-        shipments = shipments.Where(s => s.Shipment_Status == "Transit").ToList();
-    }
-
-    // Apply pagination
-    shipments = shipments.Skip((pageNumber - 1) * pageSize)
-                         .Take(pageSize)
-                         .ToList();
-
-    var orders = _orderService.GetAll();
-    var matches = new List<object>();
-
-    foreach (var shipment in shipments)
-    {
-        // Find the order with the same shipment ID
-        var matchingOrder = orders.FirstOrDefault(o => o.Shipment_Id == shipment.Id);
-
-        if (matchingOrder != null)
+        // Filter shipments by ID and ensure they are in 'Transit'
+        if (shipmentId.HasValue)
         {
-            foreach (var shipmentItem in shipment.Items)
+            shipments = shipments.Where(s => s.Id == shipmentId.Value && s.Shipment_Status == "Transit").ToList();
+        }
+        else
+        {
+            shipments = shipments.Where(s => s.Shipment_Status == "Transit").ToList();
+        }
+
+        // Apply pagination to shipments if pageNumber and pageSize are provided
+        if (pageNumber.HasValue && pageSize.HasValue && pageNumber > 0 && pageSize > 0)
+        {
+            shipments = shipments.Skip((pageNumber.Value - 1) * pageSize.Value)
+                                .Take(pageSize.Value)
+                                .ToList();
+        }
+
+        var orders = _orderService.GetAll();
+        var matches = new List<object>();
+
+        foreach (var shipment in shipments)
+        {
+            // Find the order with the same shipment ID
+            var matchingOrder = orders.FirstOrDefault(o => o.Shipment_Id == shipment.Id);
+
+            if (matchingOrder != null)
             {
-                // Check if the item exists in the order and match quantities
-                var orderItem = matchingOrder.Items.FirstOrDefault(o => o.Item_Id == shipmentItem.Item_Id);
-
-                if (orderItem != null)
+                foreach (var shipmentItem in shipment.Items)
                 {
-                    matches.Add(new
-                    {
-                        ItemId = shipmentItem.Item_Id,
-                        ShipmentId = shipment.Id,
-                        OrderId = matchingOrder.Id,
-                        Amount = Math.Min(shipmentItem.Amount, orderItem.Amount),
-                        Status = "Matched"
-                    });
+                    // Check if the item exists in the order and match quantities
+                    var orderItem = matchingOrder.Items.FirstOrDefault(o => o.Item_Id == shipmentItem.Item_Id);
 
-                    shipmentItem.CrossDockingStatus = "Matched";
+                    if (orderItem != null)
+                    {
+                        matches.Add(new
+                        {
+                            ItemId = shipmentItem.Item_Id,
+                            ShipmentId = shipment.Id,
+                            OrderId = matchingOrder.Id,
+                            Amount = Math.Min(shipmentItem.Amount, orderItem.Amount),
+                            Status = "Matched"
+                        });
+
+                        shipmentItem.CrossDockingStatus = "Matched";
+                    }
                 }
             }
         }
+
+        // Apply pagination to matches if pageNumber and pageSize are provided
+        if (pageNumber.HasValue && pageSize.HasValue && pageNumber > 0 && pageSize > 0)
+        {
+            matches = matches.Skip((pageNumber.Value - 1) * pageSize.Value)
+                            .Take(pageSize.Value)
+                            .ToList();
+        }
+
+        return matches;
     }
 
-    return matches;
-    } 
 
 
 

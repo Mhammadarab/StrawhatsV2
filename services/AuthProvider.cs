@@ -99,10 +99,23 @@ namespace Cargohub.services
             File.WriteAllText(logFilePath, JsonConvert.SerializeObject(logs, Formatting.Indented));
         }
 
-        public static List<User> GetUsers()
+        public static List<User> GetUsers(int? pageNumber = null, int? pageSize = null)
         {
-            return _users;
+            // Ensure _users is not null
+            var users = _users ?? new List<User>();
+
+            // Apply pagination only if pageNumber and pageSize are provided and valid
+            if (pageNumber.HasValue && pageSize.HasValue && pageNumber > 0 && pageSize > 0)
+            {
+                users = users
+                    .Skip((pageNumber.Value - 1) * pageSize.Value)
+                    .Take(pageSize.Value)
+                    .ToList();
+            }
+
+            return users;
         }
+
 
         public static User GetUser(string apiKey)
         {

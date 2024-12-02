@@ -1,0 +1,117 @@
+[
+    {
+        "uid": "P000101",
+        "code": "aBc12345X",
+        "description": "Innovative modular solution",
+        "short_description": "new",
+        "upc_code": "1234567890123",
+        "model_number": "MN-1234",
+        "commodity_code": "AB-123",
+        "item_line": 21,
+        "item_group": 45,
+        "item_type": 10,
+        "unit_purchase_quantity": 50,
+        "unit_order_quantity": 20,
+        "pack_order_quantity": 15,
+        "supplier_id": 12,
+        "supplier_code": "SUP101",
+        "supplier_part_number": "X-12345-ABC",
+        "created_at": "2018-01-15 10:00:00",
+        "updated_at": "2019-02-20 12:00:00",
+        "classifications_id": [
+            1
+        ]
+    },
+    {
+        "uid": "P000102",
+        "code": "dEf67890Y",
+        "description": "Advanced interactive system",
+        "short_description": "old",
+        "upc_code": "9876543210987",
+        "model_number": "XY-5678",
+        "commodity_code": "CD-456",
+        "item_line": 32,
+        "item_group": 67,
+        "item_type": 20,
+        "unit_purchase_quantity": 30,
+        "unit_order_quantity": 25,
+        "pack_order_quantity": 10,
+        "supplier_id": 23,
+        "supplier_code": "SUP202",
+        "supplier_part_number": "Y-67890-DEF",
+        "created_at": "2017-03-25 14:30:00",
+        "updated_at": "2020-05-15 16:45:00",
+        "classifications_id": [
+            1
+        ]
+    },
+    {
+        "uid": "P000103",
+        "code": "gHi34567Z",
+        "description": "User-friendly dynamic interface",
+        "short_description": "test",
+        "upc_code": "4567890123456",
+        "model_number": "QR-3456",
+        "commodity_code": "EF-789",
+        "item_line": 43,
+        "item_group": 89,
+        "item_type": 30,
+        "unit_purchase_quantity": 40,
+        "unit_order_quantity": 30,
+        "pack_order_quantity": 20,
+        "supplier_id": 34,
+        "supplier_code": "SUP303",
+        "supplier_part_number": "Z-34567-GHI",
+        "created_at": "2016-05-10 08:15:00",
+        "updated_at": "2018-07-25 10:30:00",
+        "classifications_id": [
+            1
+        ]
+    },
+    {
+        "uid": "P000104",
+        "code": "jKl89012W",
+        "description": "Seamless scalable architecture",
+        "short_description": "prod",
+        "upc_code": "7890123456789",
+        "model_number": "ST-7890",
+        "commodity_code": "GH-012",
+        "item_line": 54,
+        "item_group": 12,
+        "item_type": 40,
+        "unit_purchase_quantity": 60,
+        "unit_order_quantity": 35,
+        "pack_order_quantity": 25,
+        "supplier_id": 45,
+        "supplier_code": "SUP404",
+        "supplier_part_number": "W-89012-JKL",
+        "created_at": "2015-07-20 12:45:00",
+        "updated_at": "2017-09-10 14:00:00",
+        "classifications_id": [
+            1
+        ]
+    },
+    {
+        "uid": "P000105",
+        "code": "mNo45678V",
+        "description": "Robust fault-tolerant network",
+        "short_description": "dev",
+        "upc_code": "0123456789012",
+        "model_number": "UV-4567",
+        "commodity_code": "IJ-345",
+        "item_line": 65,
+        "item_group": 34,
+        "item_type": 50,
+        "unit_purchase_quantity": 70,
+        "unit_order_quantity": 40,
+        "pack_order_quantity": 30,
+        "supplier_id": 56,
+        "supplier_code": "SUP505",
+        "supplier_part_number": "V-45678-MNO",
+        "created_at": "2014-09-30 16:00:00",
+        "updated_at": "2016-11-20 18:15:00",
+        "classifications_id": [
+            1
+        ]
+    }
+]
