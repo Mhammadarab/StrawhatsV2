@@ -49,11 +49,23 @@ namespace Cargohub.services
       return Task.CompletedTask;
     }
 
-    public List<Transfer> GetAll()
+    public List<Transfer> GetAll(int? pageNumber = null, int? pageSize = null)
     {
-      var jsonData = File.ReadAllText(jsonFilePath);
-      return JsonConvert.DeserializeObject<List<Transfer>>(jsonData) ?? new List<Transfer>();
+        var jsonData = File.ReadAllText(jsonFilePath);
+        var transfers = JsonConvert.DeserializeObject<List<Transfer>>(jsonData) ?? new List<Transfer>();
+
+        // Apply pagination only if pageNumber and pageSize are provided and valid
+        if (pageNumber.HasValue && pageSize.HasValue && pageNumber > 0 && pageSize > 0)
+        {
+            transfers = transfers
+                .Skip((pageNumber.Value - 1) * pageSize.Value)
+                .Take(pageSize.Value)
+                .ToList();
+        }
+
+        return transfers;
     }
+
 
     public Transfer GetById(int id)
     {

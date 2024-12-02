@@ -59,11 +59,23 @@ namespace Cargohub.services
             return Task.CompletedTask;
         }
 
-        public List<Warehouse> GetAll()
+        public List<Warehouse> GetAll(int? pageNumber = null, int? pageSize = null)
         {
             var jsonData = File.ReadAllText(jsonFilePath);
-            return JsonConvert.DeserializeObject<List<Warehouse>>(jsonData) ?? new List<Warehouse>();
+            var warehouses = JsonConvert.DeserializeObject<List<Warehouse>>(jsonData) ?? new List<Warehouse>();
+
+            // Apply pagination only if pageNumber and pageSize are provided and valid
+            if (pageNumber.HasValue && pageSize.HasValue && pageNumber > 0 && pageSize > 0)
+            {
+                warehouses = warehouses
+                    .Skip((pageNumber.Value - 1) * pageSize.Value)
+                    .Take(pageSize.Value)
+                    .ToList();
+            }
+
+            return warehouses;
         }
+
 
         public Warehouse GetById(int id)
         {

@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Cargohub.services
 {
-    public class InventoryService
+    public class InventoryService : ICrudService<Inventory, int>
     {
         private readonly string jsonFilePath = "data/inventories.json";
 
