@@ -9,10 +9,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
 
-namespace Cargohub.controllers.v1
+namespace Cargohub.controllers.v2
 {
     [ApiExplorerSettings(GroupName = "Clients")]
-    [Route("api/v1/clients/")]
+    [Route("api/v2/clients/")]
     [ApiController]
     public class ClientsController : Controller
     {
@@ -25,16 +25,39 @@ namespace Cargohub.controllers.v1
             _orderService = orderService;
         }
 
+
         [HttpGet]
-        public IActionResult GetClients()
+        public IActionResult GetClients([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
         {
-            var clients = _clientService.GetAll();
+            // Validate pagination parameters if provided
+            if ((pageNumber.HasValue && pageNumber <= 0) || (pageSize.HasValue && pageSize <= 0))
+            {
+                return BadRequest("Page number and page size must be greater than zero if provided.");
+            }
+
+            var clients = _clientService.GetAll(pageNumber, pageSize);
+
             if (clients == null || !clients.Any())
             {
                 return NotFound();
             }
+
+            var totalRecords = _clientService.GetAll(null, null).Count; // Total count without pagination
+
+            // Return metadata only if pagination is applied
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                return Ok(new
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalRecords = totalRecords,
+                    Clients = clients
+                });
+            }
             return Ok(clients);
         }
+        
         [HttpGet("{id}/orders")]
         public async Task<IActionResult> GetClientOrder(int id)
         {

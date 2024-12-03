@@ -6,10 +6,10 @@ using Cargohub.interfaces;
 using Cargohub.models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Cargohub.controllers.v1
+namespace Cargohub.controllers.v2
 {
     [ApiExplorerSettings(GroupName = "Suppliers")]
-    [Route("api/v1/suppliers/")]
+    [Route("api/v2/suppliers/")]
     [ApiController]
     public class SupplierController : Controller
     {
@@ -21,12 +21,31 @@ namespace Cargohub.controllers.v1
         }
 
         [HttpGet]
-        public IActionResult GetSuppliers()
+        public IActionResult GetSuppliers([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
         {
-            var suppliers = _supplierService.GetAll();
+            if ((pageNumber.HasValue && pageNumber <= 0) || (pageSize.HasValue && pageSize <= 0))
+            {
+                return BadRequest("Page number and page size must be greater than zero if provided.");
+            }
+
+            var suppliers = _supplierService.GetAll(pageNumber, pageSize);
+
             if (suppliers == null || !suppliers.Any())
             {
                 return NotFound();
+            }
+
+            var totalRecords = _supplierService.GetAll(null, null).Count;
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                return Ok(new
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalRecords = totalRecords,
+                    Suppliers = suppliers
+                });
             }
             return Ok(suppliers);
         }
