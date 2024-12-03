@@ -121,21 +121,37 @@ namespace Cargohub.controllers.v2
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateInventory([FromBody] Inventory inventory)
+        public IActionResult UpdateInventory(int id, [FromBody] Inventory inventory)
         {
             if (inventory == null)
             {
                 return BadRequest("Inventory data is null.");
             }
 
+            if (id != inventory.Id)
+            {
+                return BadRequest("Mismatched inventory ID.");
+            }
+
             try
             {
-                await _inventoryService.Update(inventory);
+                var existingInventory = _inventoryService.GetAll().FirstOrDefault(i => i.Id == id);
+                if (existingInventory == null)
+                {
+                    return NotFound($"Inventory with ID {id} not found.");
+                }
+
+                // Update inventory
+                _inventoryService.Update(inventory);
                 return Ok(inventory);
             }
             catch (KeyNotFoundException ex)
             {
                 return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
             }
         }
 
