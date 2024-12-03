@@ -35,7 +35,7 @@ class TestItemTypesAPI(unittest.TestCase):
     def test_update_item_type(self):
         """Test updating an existing item type (happy path)."""
         put_response = requests.put(f"{self.base_url}/{self.existing_item_type_id}", json=self.updated_item_type, headers=self.headers)
-        self.assertEqual(put_response.status_code, 200)
+        self.assertEqual(put_response.status_code, 204)
         print(f"PUT /item_types/{self.existing_item_type_id} - Status Code: {put_response.status_code}")
 
         # Verify that the item type was updated successfully
@@ -48,14 +48,15 @@ class TestItemTypesAPI(unittest.TestCase):
     # Happy path test
     def test_delete_item_type(self):
         """Test deleting an existing item type (happy path)."""
-        delete_response = requests.delete(f"{self.base_url}/{self.existing_item_type_id}", headers=self.headers)
-        self.assertEqual(delete_response.status_code, 200)
-        print(f"DELETE /item_types/{self.existing_item_type_id} - Status Code: {delete_response.status_code}")
+        item_type_id = self.existing_item_type_id
+        delete_response = requests.delete(f"{self.base_url}/{item_type_id}", headers=self.headers)
+        self.assertEqual(delete_response.status_code, 204)
+        print(f"DELETE /item_types/{item_type_id} - Status Code: {delete_response.status_code}")
 
-        # Verify that the item type was deleted
-        get_response = requests.get(f"{self.base_url}/{self.existing_item_type_id}", headers=self.headers)
-        self.assertEqual(get_response.status_code, 200)
-        self.assertEqual(get_response.text.strip(), "null")
+        # Verify that the item line was deleted
+        get_response = requests.get(f"{self.base_url}/{item_type_id}", headers=self.headers)
+        self.assertEqual(get_response.status_code, 404)
+        self.assertEqual(get_response.text.strip(), f"ItemType with ID {item_type_id} not found.")
 
     # Unhappy path test
     def test_get_item_type_with_invalid_api_key(self):
@@ -72,7 +73,7 @@ class TestItemTypesAPI(unittest.TestCase):
         updated_item_type["name"] = "Invalid ID Update"
 
         response = requests.put(f"{self.base_url}/{invalid_id}", json=updated_item_type, headers=self.headers)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 400)
         print(f"PUT /item_types/{invalid_id} - Status Code: {response.status_code}")
 
     # Unhappy path test
@@ -80,7 +81,7 @@ class TestItemTypesAPI(unittest.TestCase):
         """Test deleting an item type with an invalid ID, expecting controlled response."""
         invalid_id = 999999
         response = requests.delete(f"{self.base_url}/{invalid_id}", headers=self.headers)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 404)
         print(f"DELETE /item_types/{invalid_id} - Status Code: {response.status_code}")
 
 if __name__ == '__main__':

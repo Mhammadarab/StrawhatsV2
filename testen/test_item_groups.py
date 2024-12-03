@@ -36,7 +36,7 @@ class TestItemGroupsAPI(unittest.TestCase):
     def test_update_item_group(self):
         """Test updating an existing item group (happy path)."""
         put_response = requests.put(f"{self.base_url}/{self.existing_item_group_id}", json=self.updated_item_group, headers=self.headers)
-        self.assertEqual(put_response.status_code, 200)
+        self.assertEqual(put_response.status_code, 204)
         print(f"PUT /item_groups/{self.existing_item_group_id} - Status Code: {put_response.status_code}")
 
         # Verify the item group update by fetching it again
@@ -49,14 +49,15 @@ class TestItemGroupsAPI(unittest.TestCase):
     # Happy path test
     def test_delete_item_group(self):
         """Test deleting an existing item group (happy path)."""
-        delete_response = requests.delete(f"{self.base_url}/{self.existing_item_group_id}", headers=self.headers)
-        self.assertEqual(delete_response.status_code, 200)
-        print(f"DELETE /item_groups/{self.existing_item_group_id} - Status Code: {delete_response.status_code}")
+        item_group_id = self.existing_item_group_id
+        delete_response = requests.delete(f"{self.base_url}/{item_group_id}", headers=self.headers)
+        self.assertEqual(delete_response.status_code, 204)
+        print(f"DELETE /item_groups/{item_group_id} - Status Code: {delete_response.status_code}")
 
-        # Verify deletion
-        get_response = requests.get(f"{self.base_url}/{self.existing_item_group_id}", headers=self.headers)
-        self.assertEqual(get_response.status_code, 200)
-        self.assertEqual(get_response.text.strip(), "null")
+        # Verify that the item line was deleted
+        get_response = requests.get(f"{self.base_url}/{item_group_id}", headers=self.headers)
+        self.assertEqual(get_response.status_code, 404)
+        self.assertEqual(get_response.text.strip(), f"ItemGroup with ID {item_group_id} not found.")
 
     # Unhappy path test
     def test_get_item_group_with_invalid_api_key(self):
@@ -73,7 +74,7 @@ class TestItemGroupsAPI(unittest.TestCase):
         updated_item_group["name"] = "Invalid ID Group"
 
         response = requests.put(f"{self.base_url}/{invalid_id}", json=updated_item_group, headers=self.headers)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 400)
         print(f"PUT /item_groups/{invalid_id} - Status Code: {response.status_code}")
 
     # Unhappy path test
@@ -81,7 +82,7 @@ class TestItemGroupsAPI(unittest.TestCase):
         """Test deleting an item group with an invalid ID, expecting controlled response."""
         invalid_id = 999999
         response = requests.delete(f"{self.base_url}/{invalid_id}", headers=self.headers)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 404)
         print(f"DELETE /item_groups/{invalid_id} - Status Code: {response.status_code}")
 
 if __name__ == '__main__':
