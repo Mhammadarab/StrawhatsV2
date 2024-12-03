@@ -7,10 +7,10 @@ using Cargohub.models;
 using Cargohub.services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Cargohub.controllers.v1
+namespace Cargohub.controllers.v2
 {
     [ApiExplorerSettings(GroupName = "Orders")]
-    [Route("api/v1/orders/")]
+    [Route("api/v2/orders/")]
     [ApiController]
     public class OrderContoller : Controller
     {
@@ -21,15 +21,35 @@ namespace Cargohub.controllers.v1
         }
 
         [HttpGet]
-        public IActionResult GetOrders()
+        public IActionResult GetOrders([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
         {
-            var orders = _orderService.GetAll();
+            if ((pageNumber.HasValue && pageNumber <= 0) || (pageSize.HasValue && pageSize <= 0))
+            {
+                return BadRequest("Page number and page size must be greater than zero if provided.");
+            }
+
+            var orders = _orderService.GetAll(pageNumber, pageSize);
+
             if (orders == null || !orders.Any())
             {
                 return NotFound();
             }
+
+            var totalRecords = _orderService.GetAll(null, null).Count;
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                return Ok(new
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalRecords = totalRecords,
+                    Orders = orders
+                });
+            }
             return Ok(orders);
         }
+        
 
         [HttpGet("{id}")]
         public IActionResult GetOrderById(int id)
