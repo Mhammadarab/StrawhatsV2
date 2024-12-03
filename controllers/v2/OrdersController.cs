@@ -7,10 +7,10 @@ using Cargohub.models;
 using Cargohub.services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Cargohub.controllers.v1
+namespace Cargohub.controllers.v2
 {
     [ApiExplorerSettings(GroupName = "Orders")]
-    [Route("api/v1/orders/")]
+    [Route("api/v2/orders/")]
     [ApiController]
     public class OrderContoller : Controller
     {

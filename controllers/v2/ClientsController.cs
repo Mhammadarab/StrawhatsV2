@@ -9,10 +9,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
 
-namespace Cargohub.controllers.v1
+namespace Cargohub.controllers.v2
 {
     [ApiExplorerSettings(GroupName = "Clients")]
-    [Route("api/v1/clients/")]
+    [Route("api/v2/clients/")]
     [ApiController]
     public class ClientsController : Controller
     {

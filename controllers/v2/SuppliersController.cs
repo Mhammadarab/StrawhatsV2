@@ -6,10 +6,10 @@ using Cargohub.interfaces;
 using Cargohub.models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Cargohub.controllers.v1
+namespace Cargohub.controllers.v2
 {
     [ApiExplorerSettings(GroupName = "Suppliers")]
-    [Route("api/v1/suppliers/")]
+    [Route("api/v2/suppliers/")]
     [ApiController]
     public class SupplierController : Controller
     {
