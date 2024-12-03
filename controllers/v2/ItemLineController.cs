@@ -24,13 +24,35 @@ namespace Cargohub.Controllers.v2
         }
 
         [HttpGet]
-        public IActionResult GetItemLines()
+        public IActionResult GetItemLines([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
         {
-            var itemLines = _itemLineService.GetAll();
+
+            // Validate pagination parameters if provided
+            if ((pageNumber.HasValue && pageNumber <= 0) || (pageSize.HasValue && pageSize <= 0))
+            {
+                return BadRequest("Page number and page size must be greater than zero if provided.");
+            }
+            var itemLines = _itemLineService.GetAll(pageNumber, pageSize);
             if (itemLines == null || !itemLines.Any())
             {
-                return NotFound();
+                return NotFound("No inventories found.");
             }
+
+            var totalRecords = _itemLineService.GetAll(null, null).Count; // Total count without pagination
+
+            // Return metadata only if pagination is applied
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                return Ok(new
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalRecords = totalRecords,
+                    ItemLines = itemLines
+                });
+            }
+
+            // Return plain list if pagination is not applied
             return Ok(itemLines);
         }
 
