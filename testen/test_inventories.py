@@ -19,7 +19,7 @@ class TestInventoriesAPIV2(unittest.TestCase):
 
         # Inventory data
         self.test_inventory = {
-            "id": uuid.uuid4().int % 10000,  # Unique ID
+            "id": uuid.uuid4().int % 1738,  # Unique ID
             "item_Id": "P000002",
             "description": "Focused transitional alliance",
             "item_Reference": f"ref{uuid.uuid4().int % 10000}",
@@ -75,7 +75,7 @@ class TestInventoriesAPIV2(unittest.TestCase):
         # DELETE request to remove the inventory
         inventory_id = self.test_inventory["id"]
         delete_response = requests.delete(f"{self.base_url}/{inventory_id}", headers=self.headers)
-        self.assertEqual(delete_response.status_code, 200)
+        self.assertEqual(delete_response.status_code, 204)
 
         # Simulate deletion from the mock file
         mock_data = [inv for inv in self._read_mock_file() if inv["id"] != inventory_id]
@@ -126,7 +126,7 @@ class TestInventoriesAPIV2(unittest.TestCase):
         })
         inventory_id = self.test_inventory["id"]
         response = requests.put(f"{self.base_url}/{inventory_id}", json=updated_inventory, headers=self.headers)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 204)
 
         # Simulate update in the mock file
         for inv in mock_data:

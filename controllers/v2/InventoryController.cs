@@ -143,7 +143,7 @@ namespace Cargohub.controllers.v2
 
                 // Update inventory
                 _inventoryService.Update(inventory);
-                return Ok(inventory);
+                return NoContent();
             }
             catch (KeyNotFoundException ex)
             {
@@ -161,7 +161,7 @@ namespace Cargohub.controllers.v2
             try
             {
                 await _inventoryService.Delete(id);
-                return Ok("Inventory deleted successfully.");
+                return NoContent();
             }
             catch (KeyNotFoundException ex)
             {
