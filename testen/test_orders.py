@@ -94,7 +94,7 @@ class TestOrdersAPI(unittest.TestCase):
         # DELETE request to remove the order
         order_id = self.new_order["id"]
         delete_response = requests.delete(f"{self.base_url}/{order_id}", headers=self.headers)
-        self.assertEqual(delete_response.status_code, 200)
+        self.assertEqual(delete_response.status_code, 204)
 
         # Simulate deletion from the mock file
         mock_data = [order for order in self._read_mock_file() if order["id"] != order_id]
@@ -146,7 +146,7 @@ class TestOrdersAPI(unittest.TestCase):
         })
         order_id = self.new_order["id"]
         response = requests.put(f"{self.base_url}/{order_id}", json=updated_order, headers=self.headers)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 204)
 
         # Simulate update in the mock file
         for order in mock_data:
