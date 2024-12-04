@@ -83,6 +83,3 @@ StarterKit.GeneratedMSBuildEditorConfig.editorconfig
 # Ignore NuGet dependency graph specification file
 StarterKit.csproj.nuget.dgspec.json
 *.sln
-
-# Ignore the entire data folder
-/data/
