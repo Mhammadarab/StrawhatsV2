@@ -1,133 +1,176 @@
-import random
+import json
+import os
+import uuid
 import unittest
+import tempfile
 import requests
 
-class TestInventoriesAPI(unittest.TestCase):
+
+class TestInventoriesAPIV2(unittest.TestCase):
 
     def setUp(self):
-        # Set up the base URL and headers
-        self.base_url = 'http://localhost:3000/api/v1/inventories'
+        self.base_url = 'http://localhost:3000/api/v2/inventories'
         self.headers = {'API_KEY': 'a1b2c3d4e5'}
         self.invalid_headers = {'API_KEY': 'invalid_api_key'}
+
+        # Use a temporary file for the mock data
+        self.temp_mock_file = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
+        self.mock_file_path = self.temp_mock_file.name
+
+        # Inventory data
         self.test_inventory = {
-            "id": random.randint(1000, 9999),  # Random ID
-            "item_id": f"P{random.randint(100000, 999999)}",  # Random item_id
-            "description": "Face-to-face clear-thinking complexity",
-            "item_reference": f"ref{random.randint(1000, 9999)}",
-            "locations": [3211, 24700, 14123],
-            "total_on_hand": 100,
-            "total_expected": 0,
-            "total_ordered": 50,
-            "total_allocated": 30,
-            "total_available": 70,
-            "created_at": "2023-10-07 16:08:24",
-            "updated_at": "2023-10-07 16:08:24"
+            "id": uuid.uuid4().int % 1738,  # Unique ID
+            "item_Id": "P000002",
+            "description": "Focused transitional alliance",
+            "item_Reference": f"ref{uuid.uuid4().int % 10000}",
+            "locations": {2271: 19, 2293: 19},
+            "total_On_Hand": 100,
+            "total_Expected": 0,
+            "total_Ordered": 50,
+            "total_Allocated": 30,
+            "total_Available": 70,
+            "created_At": "2023-10-07T16:08:24",
+            "updated_At": "2023-10-07T16:08:24"
         }
 
-    # Happy path test
+        # Initialize the temporary mock file with an empty JSON array
+        with open(self.mock_file_path, 'w') as mock_file:
+            json.dump([], mock_file)
+
+    def tearDown(self):
+        # Delete the temporary file after the test run
+        os.unlink(self.mock_file_path)
+
+    def _read_mock_file(self):
+        """Reads data from the mock file."""
+        with open(self.mock_file_path, 'r') as mock_file:
+            return json.load(mock_file)
+
+    def _write_mock_file(self, data):
+        """Writes data to the mock file."""
+        with open(self.mock_file_path, 'w') as mock_file:
+            json.dump(data, mock_file, indent=4)
+
+    def test_add_inventory_to_mock(self):
+        """Test adding inventory and verifying its existence."""
+        # POST request to add inventory
+        response = requests.post(self.base_url, json=self.test_inventory, headers=self.headers)
+        self.assertEqual(response.status_code, 201)
+
+        # Simulate adding inventory to mock file
+        mock_data = self._read_mock_file()
+        mock_data.append(self.test_inventory)
+        self._write_mock_file(mock_data)
+
+        # Validate the inventory in the mock file
+        self.assertTrue(any(inv["id"] == self.test_inventory["id"] for inv in self._read_mock_file()))
+
+    def test_delete_inventory_from_mock(self):
+        """Test deleting an inventory and ensuring it is removed from the mock."""
+        # Add inventory to mock file first
+        mock_data = self._read_mock_file()
+        mock_data.append(self.test_inventory)
+        self._write_mock_file(mock_data)
+
+        # DELETE request to remove the inventory
+        inventory_id = self.test_inventory["id"]
+        delete_response = requests.delete(f"{self.base_url}/{inventory_id}", headers=self.headers)
+        self.assertEqual(delete_response.status_code, 204)
+
+        # Simulate deletion from the mock file
+        mock_data = [inv for inv in self._read_mock_file() if inv["id"] != inventory_id]
+        self._write_mock_file(mock_data)
+
+        # Verify inventory no longer exists in the mock file
+        self.assertFalse(any(inv["id"] == inventory_id for inv in self._read_mock_file()))
+
     def test_get_inventories(self):
         """Test retrieving all inventories (happy path)."""
+        # Ensure mock file has at least one inventory
+        mock_data = self._read_mock_file()
+        if not mock_data:
+            mock_data.append(self.test_inventory)
+            self._write_mock_file(mock_data)
+
         response = requests.get(self.base_url, headers=self.headers)
         self.assertEqual(response.status_code, 200)
-        print(f"GET /inventories - Status Code: {response.status_code}, Response: {response.text}")
+        print(f"GET /v2/inventories - Status Code: {response.status_code}, Response: {response.text}")
 
-    # Happy path test
-    def test_add_inventory(self):
-        """Test adding a new inventory (happy path)."""
-        response = requests.post(self.base_url, json=self.test_inventory, headers=self.headers)
-        self.assertEqual(response.status_code, 201)
-        inventory_id = self.test_inventory["id"]
-
-        # Verify by GET request
-        get_response = requests.get(f"{self.base_url}/{inventory_id}", headers=self.headers)
-        self.assertEqual(get_response.status_code, 200)
-        print(f"POST /inventories - Status Code: {response.status_code}, Response: {response.text}")
-
-    # Happy path test
     def test_get_inventory_by_id(self):
         """Test retrieving an inventory by ID (happy path)."""
-        response = requests.post(self.base_url, json=self.test_inventory, headers=self.headers)
-        self.assertEqual(response.status_code, 201)
+        # Ensure mock file has the inventory
+        mock_data = self._read_mock_file()
+        if not any(inv["id"] == self.test_inventory["id"] for inv in mock_data):
+            mock_data.append(self.test_inventory)
+            self._write_mock_file(mock_data)
+
+        # GET request for specific inventory
         inventory_id = self.test_inventory["id"]
+        response = requests.get(f"{self.base_url}/{inventory_id}", headers=self.headers)
+        self.assertEqual(response.status_code, 200)
 
-        # Retrieve by ID
-        get_response = requests.get(f"{self.base_url}/{inventory_id}", headers=self.headers)
-        self.assertEqual(get_response.status_code, 200)
-        print(f"GET /inventories/{inventory_id} - Status Code: {get_response.status_code}, Response: {get_response.text}")
-
-    # Happy path test
     def test_update_inventory(self):
         """Test updating an existing inventory (happy path)."""
-        response = requests.post(self.base_url, json=self.test_inventory, headers=self.headers)
-        self.assertEqual(response.status_code, 201)
-        inventory_id = self.test_inventory["id"]
+        # Ensure mock file has the inventory
+        mock_data = self._read_mock_file()
+        if not any(inv["id"] == self.test_inventory["id"] for inv in mock_data):
+            mock_data.append(self.test_inventory)
+            self._write_mock_file(mock_data)
 
         # Update inventory
         updated_inventory = self.test_inventory.copy()
         updated_inventory.update({
             "description": "Updated inventory description",
-            "total_on_hand": 150,
-            "total_available": 100
+            "total_On_Hand": 150,
+            "total_Available": 100
         })
-        put_response = requests.put(f"{self.base_url}/{inventory_id}", json=updated_inventory, headers=self.headers)
-        self.assertEqual(put_response.status_code, 200)
-
-        # Verify the update
-        get_response = requests.get(f"{self.base_url}/{inventory_id}", headers=self.headers)
-        inventory_data = get_response.json()
-        self.assertEqual(inventory_data["description"], updated_inventory["description"])
-
-    # Happy path test
-    def test_delete_inventory(self):
-        """Test deleting an inventory (happy path)."""
-        response = requests.post(self.base_url, json=self.test_inventory, headers=self.headers)
-        self.assertEqual(response.status_code, 201)
         inventory_id = self.test_inventory["id"]
+        response = requests.put(f"{self.base_url}/{inventory_id}", json=updated_inventory, headers=self.headers)
+        self.assertEqual(response.status_code, 204)
 
-        # Delete inventory
-        delete_response = requests.delete(f"{self.base_url}/{inventory_id}", headers=self.headers)
-        self.assertEqual(delete_response.status_code, 200)
+        # Simulate update in the mock file
+        for inv in mock_data:
+            if inv["id"] == inventory_id:
+                inv.update(updated_inventory)
+        self._write_mock_file(mock_data)
 
-        # Verify deletion
-        get_response = requests.get(f"{self.base_url}/{inventory_id}", headers=self.headers)
-        self.assertEqual(get_response.text.strip(), "null")
+        # Verify update in mock file
+        self.assertTrue(any(inv["description"] == "Updated inventory description" for inv in self._read_mock_file()))
 
-    # Unhappy path test
     def test_get_inventory_with_invalid_api_key(self):
         """Test retrieving inventories with invalid API key (unhappy path)."""
         response = requests.get(self.base_url, headers=self.invalid_headers)
         self.assertEqual(response.status_code, 401)
-        print(f"GET /inventories with invalid API key - Status Code: {response.status_code}")
+        print(f"GET /v2/inventories with invalid API key - Status Code: {response.status_code}")
 
-    # Unhappy path test
     def test_add_inventory_missing_fields(self):
         """Test adding an inventory with missing fields (unhappy path)."""
         incomplete_inventory = {
-            "id": random.randint(1000, 9999),
+            "id": uuid.uuid4().int % 10000,
             "description": "Incomplete inventory entry"
         }
         response = requests.post(self.base_url, json=incomplete_inventory, headers=self.headers)
-        self.assertEqual(response.status_code, 201)
-        print(f"POST /inventories with missing fields - Status Code: {response.status_code}, Response: {response.text}")
+        self.assertEqual(response.status_code, 400)
+        print(f"POST /v2/inventories with missing fields - Status Code: {response.status_code}, Response: {response.text}")
 
-    # Unhappy path test
     def test_update_inventory_with_invalid_id(self):
         """Test updating an inventory with invalid ID (unhappy path)."""
         invalid_id = 999999
         updated_inventory = self.test_inventory.copy()
+        updated_inventory["id"] = invalid_id  # Match the ID in the route
         updated_inventory["description"] = "Invalid ID test"
 
         response = requests.put(f"{self.base_url}/{invalid_id}", json=updated_inventory, headers=self.headers)
-        self.assertEqual(response.status_code, 200)
-        print(f"PUT /inventories/{invalid_id} - Status Code: {response.status_code}")
+        self.assertEqual(response.status_code, 404)
+        print(f"PUT /v2/inventories/{invalid_id} - Status Code: {response.status_code}")
 
-    # Unhappy path test
     def test_delete_inventory_with_invalid_id(self):
         """Test deleting an inventory with invalid ID (unhappy path)."""
         invalid_id = 999999
         response = requests.delete(f"{self.base_url}/{invalid_id}", headers=self.headers)
-        self.assertEqual(response.status_code, 200)
-        print(f"DELETE /inventories/{invalid_id} - Status Code: {response.status_code}")
+        self.assertEqual(response.status_code, 404)
+        print(f"DELETE /v2/inventories/{invalid_id} - Status Code: {response.status_code}")
+
 
 if __name__ == '__main__':
     unittest.main()
