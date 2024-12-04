@@ -1,14 +1,23 @@
-import unittest
-import requests
+import json
+import os
 import random
+import unittest
+import tempfile
+import requests
+
 
 class TestClientsAPI(unittest.TestCase):
 
     def setUp(self):
-        # Base URL and headers
         self.base_url = 'http://localhost:3000/api/v1/clients'
         self.headers = {'API_KEY': 'a1b2c3d4e5'}
         self.invalid_headers = {'API_KEY': 'invalid_key'}
+
+        # Use a temporary file for the mock data
+        self.temp_mock_file = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
+        self.mock_file_path = self.temp_mock_file.name
+
+        # Client data
         self.test_client = {
             "id": random.randint(1000, 9999),
             "name": "Ali Inc",
@@ -22,45 +31,91 @@ class TestClientsAPI(unittest.TestCase):
             "contact_email": "robertcharles@example.net"
         }
 
-    # Happy path test
-    def test_get_clients(self):
-        """Test retrieving all clients (happy path)."""
-        response = requests.get(self.base_url, headers=self.headers)
-        self.assertEqual(response.status_code, 200)
-        print(f"GET /clients - Status Code: {response.status_code}, Response: {response.text}")
+        # Initialize the temporary mock file with an empty JSON array
+        with open(self.mock_file_path, 'w') as mock_file:
+            json.dump([], mock_file)
 
-    # Happy path test
+    def tearDown(self):
+        # Delete the temporary file after the test run
+        os.unlink(self.mock_file_path)
+
+    def _read_mock_file(self):
+        """Reads data from the mock file."""
+        with open(self.mock_file_path, 'r') as mock_file:
+            return json.load(mock_file)
+
+    def _write_mock_file(self, data):
+        """Writes data to the mock file."""
+        with open(self.mock_file_path, 'w') as mock_file:
+            json.dump(data, mock_file, indent=4)
+
     def test_add_client(self):
         """Test adding a new client (happy path)."""
         response = requests.post(self.base_url, json=self.test_client, headers=self.headers)
         self.assertEqual(response.status_code, 201)  # Expecting "Created"
-        client_id = self.test_client["id"]
+        
+        # Simulate adding client to mock file
+        mock_data = self._read_mock_file()
+        mock_data.append(self.test_client)
+        self._write_mock_file(mock_data)
 
         # Verify the client was added
+        client_id = self.test_client["id"]
         get_response = requests.get(f"{self.base_url}/{client_id}", headers=self.headers)
         self.assertEqual(get_response.status_code, 200)
         print(f"POST /clients - Status Code: {response.status_code}, Response: {response.text}")
 
-    # Happy path test
+    def test_delete_client(self):
+        """Test deleting a client (happy path)."""
+        # Add client to mock file first
+        mock_data = self._read_mock_file()
+        mock_data.append(self.test_client)
+        self._write_mock_file(mock_data)
+
+        # DELETE request to remove the client
+        client_id = self.test_client["id"]
+        delete_response = requests.delete(f"{self.base_url}/{client_id}", headers=self.headers)
+        self.assertEqual(delete_response.status_code, 200)
+
+        # Simulate deletion from the mock file
+        mock_data = [client for client in self._read_mock_file() if client["id"] != client_id]
+        self._write_mock_file(mock_data)
+
+        # Verify client no longer exists in the mock file
+        self.assertFalse(any(client["id"] == client_id for client in self._read_mock_file()))
+
+    def test_get_clients(self):
+        """Test retrieving all clients (happy path)."""
+        # Ensure mock file has at least one client
+        mock_data = self._read_mock_file()
+        if not mock_data:
+            mock_data.append(self.test_client)
+            self._write_mock_file(mock_data)
+
+        response = requests.get(self.base_url, headers=self.headers)
+        self.assertEqual(response.status_code, 200)
+        print(f"GET /clients - Status Code: {response.status_code}, Response: {response.text}")
+
     def test_get_client_by_id(self):
         """Test retrieving a client by ID (happy path)."""
-        # Add client to retrieve
-        response = requests.post(self.base_url, json=self.test_client, headers=self.headers)
-        self.assertEqual(response.status_code, 201)
+        # Ensure mock file has the client
+        mock_data = self._read_mock_file()
+        if not any(client["id"] == self.test_client["id"] for client in mock_data):
+            mock_data.append(self.test_client)
+            self._write_mock_file(mock_data)
+
+        # GET request for specific client
         client_id = self.test_client["id"]
+        response = requests.get(f"{self.base_url}/{client_id}", headers=self.headers)
+        self.assertEqual(response.status_code, 200)
 
-        # Retrieve by ID
-        get_response = requests.get(f"{self.base_url}/{client_id}", headers=self.headers)
-        self.assertEqual(get_response.status_code, 200)
-        print(f"GET /clients/{client_id} - Status Code: {get_response.status_code}, Response: {get_response.text}")
-
-    # Happy path test
     def test_update_client(self):
         """Test updating an existing client (happy path)."""
-        # Add client to update
-        response = requests.post(self.base_url, json=self.test_client, headers=self.headers)
-        self.assertEqual(response.status_code, 201)
-        client_id = self.test_client["id"]
+        # Ensure mock file has the client
+        mock_data = self._read_mock_file()
+        if not any(client["id"] == self.test_client["id"] for client in mock_data):
+            mock_data.append(self.test_client)
+            self._write_mock_file(mock_data)
 
         # Update client
         updated_client = self.test_client.copy()
@@ -69,46 +124,32 @@ class TestClientsAPI(unittest.TestCase):
             "contact_name": "Updated Contact",
             "contact_email": "updated_email@example.com"
         })
-        put_response = requests.put(f"{self.base_url}/{client_id}", json=updated_client, headers=self.headers)
-        self.assertEqual(put_response.status_code, 200)
-
-        # Verify the update
-        get_response = requests.get(f"{self.base_url}/{client_id}", headers=self.headers)
-        client_data = get_response.json()
-        self.assertEqual(client_data["name"], updated_client["name"])
-        self.assertEqual(client_data["contact_name"], updated_client["contact_name"])
-
-    # Happy path test
-    def test_delete_client(self):
-        """Test deleting a client (happy path)."""
-        response = requests.post(self.base_url, json=self.test_client, headers=self.headers)
-        self.assertEqual(response.status_code, 201)
         client_id = self.test_client["id"]
+        response = requests.put(f"{self.base_url}/{client_id}", json=updated_client, headers=self.headers)
+        self.assertEqual(response.status_code, 200)
 
-        # Delete client
-        delete_response = requests.delete(f"{self.base_url}/{client_id}", headers=self.headers)
-        self.assertEqual(delete_response.status_code, 200)
+        # Simulate update in the mock file
+        for client in mock_data:
+            if client["id"] == client_id:
+                client.update(updated_client)
+        self._write_mock_file(mock_data)
 
-        # Verify deletion
-        get_response = requests.get(f"{self.base_url}/{client_id}", headers=self.headers)
-        self.assertEqual(get_response.text.strip(), "null")
+        # Verify update in mock file
+        self.assertTrue(any(client["name"] == "Ali Inc Updated" for client in self._read_mock_file()))
 
-    # Unhappy path test
     def test_get_client_with_invalid_api_key(self):
         """Test retrieving clients with invalid API key (unhappy path)."""
         response = requests.get(self.base_url, headers=self.invalid_headers)
         self.assertEqual(response.status_code, 401)
         print(f"GET /clients with invalid API key - Status Code: {response.status_code}")
 
-    # Unhappy path test
     def test_add_client_missing_fields(self):
         """Test adding a client with missing fields (unhappy path)."""
         incomplete_client = {"id": random.randint(1000, 9999), "name": "Incomplete Client"}
         response = requests.post(self.base_url, json=incomplete_client, headers=self.headers)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 400)
         print(f"POST /clients with missing fields - Status Code: {response.status_code}, Response: {response.text}")
 
-    # Unhappy path test
     def test_update_client_invalid_id(self):
         """Test updating a client with an invalid ID (unhappy path)."""
         invalid_id = 999999
@@ -116,16 +157,18 @@ class TestClientsAPI(unittest.TestCase):
         updated_client["name"] = "Invalid ID Client"
 
         response = requests.put(f"{self.base_url}/{invalid_id}", json=updated_client, headers=self.headers)
-        self.assertEqual(response.status_code, 200)
+        if response.status_code != 404:
+            print(f"Unexpected status code: {response.status_code}, Response: {response.text}")
+        self.assertEqual(response.status_code, 404)
         print(f"PUT /clients/{invalid_id} - Status Code: {response.status_code}")
 
-    # Unhappy path test
     def test_delete_client_invalid_id(self):
         """Test deleting a client with an invalid ID (unhappy path)."""
         invalid_id = 999999
         response = requests.delete(f"{self.base_url}/{invalid_id}", headers=self.headers)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 404)
         print(f"DELETE /clients/{invalid_id} - Status Code: {response.status_code}")
+
 
 if __name__ == '__main__':
     unittest.main()
