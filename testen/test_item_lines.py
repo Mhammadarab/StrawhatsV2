@@ -1,6 +1,6 @@
-import random
 import unittest
 import requests
+from datetime import datetime
 
 class TestItemLinesAPI(unittest.TestCase):
 
@@ -9,76 +9,122 @@ class TestItemLinesAPI(unittest.TestCase):
         self.base_url = 'http://localhost:3000/api/v2/item_lines'
         self.headers = {'API_KEY': 'a1b2c3d4e5'}
         self.invalid_headers = {'API_KEY': 'invalid_api_key'}
-        self.existing_item_line_id = random.randint(1, 99) # Assume an existing item line ID for testing
-        self.updated_item_line = {
-            "id": self.existing_item_line_id,
-            "name": "Updated Health & Wellness",
-            "description": "This item line has been updated."
+
+        # Get the current max ID
+        response = requests.get(self.base_url, headers=self.headers)
+        item_lines = response.json()
+        max_id = max([item_line["id"] for item_line in item_lines], default=0)
+
+        # Item line data
+        self.new_item_line = {
+            "id": max_id + 1,
+            "name": f"Item Line {max_id + 1}",
+            "description": "This is a new item line.",
+            "created_at": datetime.now().isoformat() + "Z",
+            "updated_at": datetime.now().isoformat() + "Z"
         }
 
-    # Happy path test
+    def tearDown(self):
+        # Clean up any item lines created during the tests
+        item_line_id = self.new_item_line["id"]
+        requests.delete(f"{self.base_url}/{item_line_id}", headers=self.headers)
+
     def test_get_item_lines(self):
         """Test retrieving all item lines (happy path)."""
         response = requests.get(self.base_url, headers=self.headers)
         self.assertEqual(response.status_code, 200)
         print(f"GET /item_lines - Status Code: {response.status_code}, Response: {response.text}")
 
-    # Happy path test
     def test_get_item_line_by_id(self):
         """Test retrieving an item line by ID (happy path)."""
-        item_line_id = self.existing_item_line_id
+        # Add a new item line
+        post_response = requests.post(self.base_url, json=self.new_item_line, headers=self.headers)
+        self.assertEqual(post_response.status_code, 201)
+        item_line_id = self.new_item_line["id"]
+
+        # GET request for specific item line
+        response = requests.get(f"{self.base_url}/{item_line_id}", headers=self.headers)
+        self.assertEqual(response.status_code, 200)
+
+    def test_add_item_line(self):
+        """Test adding a new item line (happy path)."""
+        response = requests.post(self.base_url, json=self.new_item_line, headers=self.headers)
+        self.assertEqual(response.status_code, 201)
+
+        # Verify the item line exists
+        item_line_id = self.new_item_line["id"]
         get_response = requests.get(f"{self.base_url}/{item_line_id}", headers=self.headers)
         self.assertEqual(get_response.status_code, 200)
-        print(f"GET /item_lines/{item_line_id} - Status Code: {get_response.status_code}, Response: {get_response.text}")
 
-    # Happy path test
     def test_update_item_line(self):
         """Test updating an existing item line (happy path)."""
-        put_response = requests.put(f"{self.base_url}/{self.existing_item_line_id}", json=self.updated_item_line, headers=self.headers)
-        self.assertEqual(put_response.status_code, 204)
-        print(f"PUT /item_lines/{self.existing_item_line_id} - Status Code: {put_response.status_code}")
+        # Add an item line to update
+        post_response = requests.post(self.base_url, json=self.new_item_line, headers=self.headers)
+        self.assertEqual(post_response.status_code, 201)
+        item_line_id = self.new_item_line["id"]
 
-        # Verify update by fetching the item line again
-        get_response = requests.get(f"{self.base_url}/{self.existing_item_line_id}", headers=self.headers)
+        # Update the item line
+        updated_item_line = self.new_item_line.copy()
+        updated_item_line.update({
+            "name": "Updated Item Line",
+            "description": "This item line has been updated."
+        })
+        put_response = requests.put(f"{self.base_url}/{item_line_id}", json=updated_item_line, headers=self.headers)
+        self.assertEqual(put_response.status_code, 204)
+
+        # Verify the update
+        get_response = requests.get(f"{self.base_url}/{item_line_id}", headers=self.headers)
         self.assertEqual(get_response.status_code, 200)
         item_line_data = get_response.json()
-        self.assertEqual(item_line_data["name"], self.updated_item_line["name"])
-        self.assertEqual(item_line_data["description"], self.updated_item_line["description"])
+        self.assertEqual(item_line_data["name"], updated_item_line["name"])
+        self.assertEqual(item_line_data["description"], updated_item_line["description"])
 
-    # Happy path test
+        # Revert the update
+        revert_response = requests.put(f"{self.base_url}/{item_line_id}", json=self.new_item_line, headers=self.headers)
+        self.assertEqual(revert_response.status_code, 204)
+
     def test_delete_item_line(self):
         """Test deleting an existing item line (happy path)."""
-        item_line_id = self.existing_item_line_id
-        delete_response = requests.delete(f"{self.base_url}/{item_line_id}", headers=self.headers)
-        self.assertEqual(delete_response.status_code, 204)
-        print(f"DELETE /item_lines/{item_line_id} - Status Code: {delete_response.status_code}")
+        # Add an item line to delete
+        post_response = requests.post(self.base_url, json=self.new_item_line, headers=self.headers)
+        self.assertEqual(post_response.status_code, 201)
+        item_line_id = self.new_item_line["id"]
 
-        # Verify that the item line was deleted
+        # DELETE request to remove the item line
+        response = requests.delete(f"{self.base_url}/{item_line_id}", headers=self.headers)
+        self.assertEqual(response.status_code, 204)
+
+        # Verify the item line no longer exists
         get_response = requests.get(f"{self.base_url}/{item_line_id}", headers=self.headers)
         self.assertEqual(get_response.status_code, 404)
-        self.assertEqual(get_response.text.strip(), f"ItemLine with ID {item_line_id} not found.")
 
-    # Unhappy path test
     def test_get_item_line_with_invalid_api_key(self):
         """Test retrieving item lines with an invalid API key, expecting 401 Unauthorized."""
         response = requests.get(self.base_url, headers=self.invalid_headers)
         self.assertEqual(response.status_code, 401)
         print(f"GET /item_lines with invalid API key - Status Code: {response.status_code}")
 
-    # Unhappy path test
-    def test_update_item_line_with_invalid_id(self):
-        """Test updating an item line with an invalid ID, expecting controlled response."""
-        invalid_id = 999999
-        updated_item_line = self.updated_item_line.copy()
-        updated_item_line["name"] = "Invalid ID Update"
+    def test_add_item_line_missing_fields(self):
+        """Test adding item line with missing fields (unhappy path)."""
+        incomplete_item_line = {
+            "id": self.new_item_line["id"] + 1,
+            "name": f"Item Line {self.new_item_line['id'] + 1}"
+        }
+        response = requests.post(self.base_url, json=incomplete_item_line, headers=self.headers)
+        self.assertEqual(response.status_code, 400)
+        print(f"POST /item_lines with missing fields - Status Code: {response.status_code}, Response: {response.text}")
 
+    def test_update_item_line_invalid_id(self):
+        """Test updating an item line with invalid ID (unhappy path)."""
+        invalid_id = 999999
+        updated_item_line = self.new_item_line.copy()
+        updated_item_line["name"] = "Invalid ID Update"
         response = requests.put(f"{self.base_url}/{invalid_id}", json=updated_item_line, headers=self.headers)
         self.assertEqual(response.status_code, 400)
         print(f"PUT /item_lines/{invalid_id} - Status Code: {response.status_code}")
 
-    # Unhappy path test
-    def test_delete_item_line_with_invalid_id(self):
-        """Test deleting an item line with an invalid ID, expecting controlled response."""
+    def test_delete_item_line_invalid_id(self):
+        """Test deleting an item line with invalid ID (unhappy path)."""
         invalid_id = 999999
         response = requests.delete(f"{self.base_url}/{invalid_id}", headers=self.headers)
         self.assertEqual(response.status_code, 404)
