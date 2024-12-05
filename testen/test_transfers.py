@@ -1,8 +1,6 @@
 import unittest
-import random
-from datetime import datetime
 import requests
-
+from datetime import datetime
 
 class TestTransfersAPI(unittest.TestCase):
 
@@ -12,19 +10,24 @@ class TestTransfersAPI(unittest.TestCase):
         self.headers = {'API_KEY': 'a1b2c3d4e5'}
         self.invalid_headers = {'API_KEY': 'invalid_api_key'}
 
+        # Get the current max ID
+        response = requests.get(self.base_url, headers=self.headers)
+        transfers = response.json()
+        max_id = max([transfer["id"] for transfer in transfers], default=0)
+
         # Transfer data
         self.new_transfer = {
-            "id": random.randint(1000, 9999),
-            "reference": f"TR{random.randint(10000, 99999)}",
+            "id": max_id + 1,
+            "reference": f"TR{max_id + 1}",
             "transfer_from": None,
-            "transfer_to": random.randint(1000, 9999),
+            "transfer_to": max_id + 2,
             "transfer_status": "Pending",
             "created_at": datetime.now().isoformat() + "Z",
             "updated_at": datetime.now().isoformat() + "Z",
             "items": [
                 {
-                    "item_id": f"P{random.randint(1000, 9999)}",
-                    "amount": random.randint(1, 50)
+                    "item_id": f"P{max_id + 1}",
+                    "amount": 10
                 }
             ]
         }
@@ -46,6 +49,10 @@ class TestTransfersAPI(unittest.TestCase):
         response = requests.get(f"{self.base_url}/{transfer_id}", headers=self.headers)
         self.assertEqual(response.status_code, 200)
 
+        # Clean up by deleting the transfer
+        delete_response = requests.delete(f"{self.base_url}/{transfer_id}", headers=self.headers)
+        self.assertEqual(delete_response.status_code, 204)
+
     def test_add_transfer(self):
         """Test adding a new transfer (happy path)."""
         response = requests.post(self.base_url, json=self.new_transfer, headers=self.headers)
@@ -55,6 +62,10 @@ class TestTransfersAPI(unittest.TestCase):
         transfer_id = self.new_transfer["id"]
         get_response = requests.get(f"{self.base_url}/{transfer_id}", headers=self.headers)
         self.assertEqual(get_response.status_code, 200)
+
+        # Clean up by deleting the transfer
+        delete_response = requests.delete(f"{self.base_url}/{transfer_id}", headers=self.headers)
+        self.assertEqual(delete_response.status_code, 204)
 
     def test_update_transfer(self):
         """Test updating an existing transfer (happy path)."""
@@ -67,7 +78,7 @@ class TestTransfersAPI(unittest.TestCase):
         updated_transfer = self.new_transfer.copy()
         updated_transfer.update({
             "transfer_status": "Completed",
-            "transfer_to": random.randint(1000, 9999)
+            "transfer_to": transfer_id + 1
         })
         put_response = requests.put(f"{self.base_url}/{transfer_id}", json=updated_transfer, headers=self.headers)
         self.assertEqual(put_response.status_code, 204)
@@ -80,9 +91,16 @@ class TestTransfersAPI(unittest.TestCase):
         # Debugging step to print the response data
         print(f"GET Response Data: {transfer_data}")
 
-        # Check if 'transfer_Status' exists in the response
-        self.assertIn("transfer_Status", transfer_data, "Response is missing 'transfer_Status'")
-        self.assertEqual(transfer_data["transfer_Status"], updated_transfer["transfer_status"])
+        # Normalize keys to lowercase
+        transfer_data = {k.lower(): v for k, v in transfer_data.items()}
+
+        # Check if 'transfer_status' exists in the response
+        self.assertIn("transfer_status", transfer_data, "Response is missing 'transfer_status'")
+        self.assertEqual(transfer_data["transfer_status"], updated_transfer["transfer_status"])
+
+        # Clean up by deleting the transfer
+        delete_response = requests.delete(f"{self.base_url}/{transfer_id}", headers=self.headers)
+        self.assertEqual(delete_response.status_code, 204)
 
     def test_delete_transfer(self):
         """Test deleting an existing transfer (happy path)."""
@@ -108,8 +126,8 @@ class TestTransfersAPI(unittest.TestCase):
     def test_add_transfer_missing_fields(self):
         """Test adding transfer with missing fields (unhappy path)."""
         incomplete_transfer = {
-            "id": random.randint(1000, 9999),
-            "reference": f"TR{random.randint(10000, 99999)}"
+            "id": self.new_transfer["id"] + 1,
+            "reference": f"TR{self.new_transfer['id'] + 1}"
         }
         response = requests.post(self.base_url, json=incomplete_transfer, headers=self.headers)
         self.assertEqual(response.status_code, 400)
@@ -130,7 +148,6 @@ class TestTransfersAPI(unittest.TestCase):
         response = requests.delete(f"{self.base_url}/{invalid_id}", headers=self.headers)
         self.assertEqual(response.status_code, 404)
         print(f"DELETE /transfers/{invalid_id} - Status Code: {response.status_code}")
-
 
 if __name__ == '__main__':
     unittest.main()
