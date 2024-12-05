@@ -1,0 +1,194 @@
+@startuml
+
+package Cargohub.models {
+    class Item {
+        +string Uid
+        +string Code
+        +string Description
+        +string ShortDescription
+        +string UpcCode
+        +string ModelNumber
+        +string CommodityCode
+        +int ItemLine
+        +int ItemGroup
+        +int ItemType
+        +int UnitPurchaseQuantity
+        +int UnitOrderQuantity
+        +int PackOrderQuantity
+        +int SupplierId
+        +string SupplierCode
+        +string SupplierPartNumber
+        +DateTime Created_At
+        +DateTime Updated_At
+        +InventoryTotals InventoryTotals
+        +List<int> Classifications_Id
+    }
+
+    class InventoryTotals {
+        +int TotalOnHand
+        +int TotalExpected
+        +int TotalOrdered
+        +int TotalAllocated
+        +int TotalAvailable
+    }
+
+    class ItemLine {
+        +int Id
+        +string Name
+        +string Description
+        +DateTime Created_At
+        +DateTime Updated_At
+    }
+
+    class ItemGroup {
+        +int Id
+        +string Name
+        +string Description
+        +DateTime Created_At
+        +DateTime Updated_At
+    }
+
+    class ItemType {
+        +int Id
+        +string Name
+        +string Description
+        +DateTime Created_At
+        +DateTime Updated_At
+    }
+
+    class Inventory {
+        +int Id
+        +string Item_Id
+        +string Description
+        +string Item_Reference
+        +Dictionary<string, int> Locations
+        +int Total_On_Hand
+        +int Total_Expected
+        +int Total_Ordered
+        +int Total_Allocated
+        +int Total_Available
+        +DateTime Created_At
+        +DateTime Updated_At
+    }
+
+    class Warehouse {
+        +int Id
+        +string Code
+        +string Name
+        +string Address
+        +string Zip
+        +string City
+        +string Province
+        +string Country
+        +Contact Contact
+        +DateTime Created_At
+        +DateTime Updated_At
+        +List<int> Classifications_Id
+    }
+
+    class Contact {
+        +string Name
+        +string Phone
+        +string Email
+    }
+
+    class Transfer {
+        +int Id
+        +string Reference
+        +int? Transfer_From
+        +int Transfer_To
+        +string Transfer_Status
+        +DateTime Created_At
+        +DateTime Updated_At
+        +List<ItemDetail> Items
+    }
+
+    class ItemDetail {
+        +string Item_Id
+        +int Amount
+        +string CrossDockingStatus
+    }
+
+    class Shipment {
+        +int Id
+        +int Order_Id
+        +int Source_Id
+        +DateTime Order_Date
+        +DateTime Request_Date
+        +DateTime Shipment_Date
+        +string Shipment_Type
+        +string Shipment_Status
+        +string Notes
+        +string Carrier_Code
+        +string Carrier_Description
+        +string Service_Code
+        +string Payment_Type
+        +string Transfer_Mode
+        +int Total_Package_Count
+        +double Total_Package_Weight
+        +DateTime Created_At
+        +DateTime Updated_At
+        +List<ItemDetail> Items
+    }
+
+    class Order {
+        +int Id
+        +int Source_Id
+        +DateTime Order_Date
+        +DateTime Request_Date
+        +string Reference
+        +string Reference_Extra
+        +string Order_Status
+        +string Notes
+        +string Shipping_Notes
+        +string Picking_Notes
+        +int Warehouse_Id
+        +int? Ship_To
+        +int? Bill_To
+        +int? Shipment_Id
+        +decimal Total_Amount
+        +decimal Total_Discount
+        +decimal Total_Tax
+        +decimal Total_Surcharge
+        +DateTime Created_At
+        +DateTime Updated_At
+        +List<ItemDetail> Items
+    }
+
+    class Classifications {
+        +int Id
+        +string Name
+        +DateTime Created_At
+        +DateTime Updated_At
+    }
+
+    class User {
+        +string ApiKey
+        +string App
+        +Dictionary<string, EndpointAccess> EndpointAccess
+    }
+
+    class EndpointAccess {
+        +bool Full
+        +bool Get
+        +bool Post
+        +bool Put
+        +bool Delete
+    }
+}
+
+Item --> InventoryTotals
+Item --> ItemLine
+Item --> ItemGroup
+Item --> ItemType
+Item --> Classifications
+Inventory --> Item
+Warehouse --> Contact
+Warehouse --> Classifications
+Transfer --> ItemDetail
+Shipment --> ItemDetail
+Order --> ItemDetail
+Order --> Shipment
+User --> EndpointAccess
+
+@enduml
