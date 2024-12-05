@@ -1,20 +1,23 @@
 import unittest
 import requests
-import random
 from datetime import datetime
 
 class TestShipmentsAPI(unittest.TestCase):
 
     def setUp(self):
-        # Set up the base URL and headers
-        self.base_url = 'http://localhost:3000/api/v1/shipments'
+        self.base_url = 'http://localhost:3000/api/v2/shipments'
         self.headers = {'API_KEY': 'a1b2c3d4e5'}
         self.invalid_headers = {'API_KEY': 'invalid_api_key'}
-        self.new_shipment = {
-            "id": random.randint(1000, 9999),
-            "order_id": random.randint(1, 100),
-            "source_id": random.randint(10, 99),
-            "order_date": datetime.now().isoformat().split('T')[0],
+
+        # Get the current max ID
+        response = requests.get(self.base_url, headers=self.headers)
+        shipments = response.json()
+        max_id = max([shipment["id"] for shipment in shipments], default=0)
+
+        # Shipment data
+        self.test_shipment = {
+            "id": max_id + 1,
+            "reference": f"SH{max_id + 1}",
             "request_date": datetime.now().isoformat().split('T')[0],
             "shipment_date": datetime.now().isoformat().split('T')[0],
             "shipment_type": "I",
@@ -25,122 +28,139 @@ class TestShipmentsAPI(unittest.TestCase):
             "service_code": "Express",
             "payment_type": "Manual",
             "transfer_mode": "Air",
-            "total_package_count": random.randint(1, 50),
-            "total_package_weight": round(random.uniform(100, 1000), 2),
+            "total_package_count": 10,
+            "total_package_weight": 150.5,
             "created_at": datetime.now().isoformat() + "Z",
             "updated_at": datetime.now().isoformat() + "Z",
             "items": [
                 {
-                    "item_id": f"P{random.randint(1000, 9999)}",
-                    "amount": random.randint(1, 50)
+                    "item_id": f"P000001",
+                    "amount": 10,
+                    "crossDockingStatus": None
                 },
                 {
-                    "item_id": f"P{random.randint(1000, 9999)}",
-                    "amount": random.randint(1, 50)
+                    "item_id": f"P000001",
+                    "amount": 20,
+                    "crossDockingStatus": None
                 }
             ]
         }
 
-    # Happy path test
     def test_get_shipments(self):
         """Test retrieving all shipments (happy path)."""
         response = requests.get(self.base_url, headers=self.headers)
         self.assertEqual(response.status_code, 200)
         print(f"GET /shipments - Status Code: {response.status_code}, Response: {response.text}")
 
-    # Happy path test
     def test_get_shipment_by_id(self):
         """Test retrieving a shipment by ID (happy path)."""
-        response = requests.post(self.base_url, json=self.new_shipment, headers=self.headers)
-        self.assertEqual(response.status_code, 201)
-        shipment_id = self.new_shipment["id"]
+        # Add a new shipment
+        post_response = requests.post(self.base_url, json=self.test_shipment, headers=self.headers)
+        self.assertEqual(post_response.status_code, 201)
+        shipment_id = self.test_shipment["id"]
 
-        get_response = requests.get(f"{self.base_url}/{shipment_id}", headers=self.headers)
-        self.assertEqual(get_response.status_code, 200)
-        print(f"GET /shipments/{shipment_id} - Status Code: {get_response.status_code}, Response: {get_response.text}")
+        # GET request for specific shipment
+        response = requests.get(f"{self.base_url}/{shipment_id}", headers=self.headers)
+        self.assertEqual(response.status_code, 200)
 
-    # Happy path test
+        # Clean up by deleting the shipment
+        delete_response = requests.delete(f"{self.base_url}/{shipment_id}", headers=self.headers)
+        self.assertEqual(delete_response.status_code, 204)
+
     def test_add_shipment(self):
         """Test adding a new shipment (happy path)."""
-        response = requests.post(self.base_url, json=self.new_shipment, headers=self.headers)
+        response = requests.post(self.base_url, json=self.test_shipment, headers=self.headers)
         self.assertEqual(response.status_code, 201)
-        shipment_id = self.new_shipment["id"]
 
+        # Verify the shipment exists
+        shipment_id = self.test_shipment["id"]
         get_response = requests.get(f"{self.base_url}/{shipment_id}", headers=self.headers)
         self.assertEqual(get_response.status_code, 200)
-        print(f"GET /shipments/{shipment_id} - Status Code: {get_response.status_code}, Response: {get_response.text}")
 
-    # Happy path test
+        # Clean up by deleting the shipment
+        delete_response = requests.delete(f"{self.base_url}/{shipment_id}", headers=self.headers)
+        self.assertEqual(delete_response.status_code, 204)
+
     def test_update_shipment(self):
         """Test updating an existing shipment (happy path)."""
-        response = requests.post(self.base_url, json=self.new_shipment, headers=self.headers)
-        self.assertEqual(response.status_code, 201)
-        shipment_id = self.new_shipment["id"]
+        # Add a shipment to update
+        post_response = requests.post(self.base_url, json=self.test_shipment, headers=self.headers)
+        self.assertEqual(post_response.status_code, 201)
+        shipment_id = self.test_shipment["id"]
 
-        updated_shipment = self.new_shipment.copy()
+        # Update the shipment
+        updated_shipment = self.test_shipment.copy()
         updated_shipment.update({
-            "shipment_status": "Shipped",
-            "notes": "Updated shipment notes.",
-            "carrier_code": "FedEx",
-            "carrier_description": "Federal Express"
+            "shipment_status": "Completed",
+            "total_package_count": 15
         })
         put_response = requests.put(f"{self.base_url}/{shipment_id}", json=updated_shipment, headers=self.headers)
-        self.assertEqual(put_response.status_code, 200)
+        self.assertEqual(put_response.status_code, 204)
 
+        # Verify the update
         get_response = requests.get(f"{self.base_url}/{shipment_id}", headers=self.headers)
         self.assertEqual(get_response.status_code, 200)
         shipment_data = get_response.json()
+
+        # Debugging step to print the response data
+        print(f"GET Response Data: {shipment_data}")
+
+        # Normalize keys to lowercase
+        shipment_data = {k.lower(): v for k, v in shipment_data.items()}
+
+        # Check if 'shipment_status' exists in the response
+        self.assertIn("shipment_status", shipment_data, "Response is missing 'shipment_status'")
         self.assertEqual(shipment_data["shipment_status"], updated_shipment["shipment_status"])
 
-    # Happy path test
+        # Clean up by deleting the shipment
+        delete_response = requests.delete(f"{self.base_url}/{shipment_id}", headers=self.headers)
+        self.assertEqual(delete_response.status_code, 204)
+
     def test_delete_shipment(self):
         """Test deleting an existing shipment (happy path)."""
-        response = requests.post(self.base_url, json=self.new_shipment, headers=self.headers)
-        self.assertEqual(response.status_code, 201)
-        shipment_id = self.new_shipment["id"]
+        # Add a shipment to delete
+        post_response = requests.post(self.base_url, json=self.test_shipment, headers=self.headers)
+        self.assertEqual(post_response.status_code, 201)
+        shipment_id = self.test_shipment["id"]
 
-        delete_response = requests.delete(f"{self.base_url}/{shipment_id}", headers=self.headers)
-        self.assertEqual(delete_response.status_code, 200)
+        # DELETE request to remove the shipment
+        response = requests.delete(f"{self.base_url}/{shipment_id}", headers=self.headers)
+        self.assertEqual(response.status_code, 204)
 
+        # Verify the shipment no longer exists
         get_response = requests.get(f"{self.base_url}/{shipment_id}", headers=self.headers)
-        self.assertEqual(get_response.status_code, 200)
-        self.assertEqual(get_response.text.strip(), "null")
+        self.assertEqual(get_response.status_code, 404)
 
-    # Unhappy path test
     def test_get_shipment_with_invalid_api_key(self):
-        """Test retrieving shipments with invalid API key, should handle properly (unhappy path)."""
+        """Test retrieving shipments with invalid API key (unhappy path)."""
         response = requests.get(self.base_url, headers=self.invalid_headers)
         self.assertEqual(response.status_code, 401)
         print(f"GET /shipments with invalid API key - Status Code: {response.status_code}, Response: {response.text}")
 
-    # Unhappy path test
     def test_add_shipment_missing_fields(self):
-        """Test adding shipment with missing fields, expecting a controlled response (unhappy path)."""
+        """Test adding shipment with missing fields (unhappy path)."""
         incomplete_shipment = {
-            "id": random.randint(1000, 9999),
-            "order_id": random.randint(1, 100)
-            # Missing other required fields like shipment_status, items, etc.
+            "id": self.test_shipment["id"] + 1,
+            "reference": f"SH{self.test_shipment['id'] + 1}"
         }
         response = requests.post(self.base_url, json=incomplete_shipment, headers=self.headers)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 400)
         print(f"POST /shipments with missing fields - Status Code: {response.status_code}, Response: {response.text}")
 
-    # Unhappy path test
     def test_update_shipment_invalid_id(self):
-        """Test updating a shipment with invalid ID, should respond correctly (unhappy path)."""
+        """Test updating a shipment with invalid ID (unhappy path)."""
         invalid_id = 999999
-        updated_shipment = self.new_shipment.copy()
+        updated_shipment = self.test_shipment.copy()
         updated_shipment["shipment_status"] = "Invalid ID Update"
         response = requests.put(f"{self.base_url}/{invalid_id}", json=updated_shipment, headers=self.headers)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 400)
         print(f"PUT /shipments/{invalid_id} - Status Code: {response.status_code}")
 
-    # Unhappy path test
     def test_delete_shipment_invalid_id(self):
-        """Test deleting a shipment with invalid ID, expecting controlled response (unhappy path)."""
+        """Test deleting a shipment with invalid ID (unhappy path)."""
         invalid_id = 999999
         response = requests.delete(f"{self.base_url}/{invalid_id}", headers=self.headers)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 404)
         print(f"DELETE /shipments/{invalid_id} - Status Code: {response.status_code}")
 
 if __name__ == '__main__':
