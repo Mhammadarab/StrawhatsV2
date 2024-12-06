@@ -53,71 +53,57 @@ public class CrossDockingService
   }
 
 
+    
+
     public List<object> MatchItems(int? shipmentId = null, int? pageNumber = null, int? pageSize = null)
+{
+    var shipments = _shipmentService.GetAll();
+    var orders = _orderService.GetAll();
+
+    var matches = new List<object>();
+    var pendingItems = new List<object>();
+
+    foreach (var shipment in shipments.Where(s => shipmentId == null || s.Id == shipmentId))
     {
-        var shipments = _shipmentService.GetAll();
-
-        // Filter shipments by ID and ensure they are in 'Transit'
-        if (shipmentId.HasValue)
+        var matchingOrder = orders.FirstOrDefault(o => o.Shipment_Id == shipment.Id);
+        if (matchingOrder != null)
         {
-            shipments = shipments.Where(s => s.Id == shipmentId.Value && s.Shipment_Status == "Transit").ToList();
-        }
-        else
-        {
-            shipments = shipments.Where(s => s.Shipment_Status == "Transit").ToList();
-        }
-
-        // Apply pagination to shipments if pageNumber and pageSize are provided
-        if (pageNumber.HasValue && pageSize.HasValue && pageNumber > 0 && pageSize > 0)
-        {
-            shipments = shipments.Skip((pageNumber.Value - 1) * pageSize.Value)
-                                .Take(pageSize.Value)
-                                .ToList();
-        }
-
-        var orders = _orderService.GetAll();
-        var matches = new List<object>();
-
-        foreach (var shipment in shipments)
-        {
-            // Find the order with the same shipment ID
-            var matchingOrder = orders.FirstOrDefault(o => o.Shipment_Id == shipment.Id);
-
-            if (matchingOrder != null)
+            foreach (var shipmentItem in shipment.Items)
             {
-                foreach (var shipmentItem in shipment.Items)
+                var orderItem = matchingOrder.Items.FirstOrDefault(o => o.Item_Id == shipmentItem.Item_Id);
+                if (orderItem != null)
                 {
-                    // Check if the item exists in the order and match quantities
-                    var orderItem = matchingOrder.Items.FirstOrDefault(o => o.Item_Id == shipmentItem.Item_Id);
+                    int matchedAmount = Math.Min(shipmentItem.Amount, orderItem.Amount);
 
-                    if (orderItem != null)
+                    matches.Add(new
                     {
-                        matches.Add(new
-                        {
-                            ItemId = shipmentItem.Item_Id,
-                            ShipmentId = shipment.Id,
-                            OrderId = matchingOrder.Id,
-                            Amount = Math.Min(shipmentItem.Amount, orderItem.Amount),
-                            Status = "Matched"
-                        });
+                        ShipmentId = shipment.Id,
+                        OrderId = matchingOrder.Id,
+                        ItemId = shipmentItem.Item_Id,
+                        MatchedAmount = matchedAmount,
+                        RemainingOrderAmount = orderItem.Amount - matchedAmount
+                    });
 
-                        shipmentItem.CrossDockingStatus = "Matched";
-                    }
+                    // Mark item status
+                    shipmentItem.CrossDockingStatus = "Matched";
+                    orderItem.Amount -= matchedAmount;
+                }
+                else
+                {
+                    pendingItems.Add(new
+                    {
+                        ShipmentId = shipment.Id,
+                        ItemId = shipmentItem.Item_Id,
+                        Amount = shipmentItem.Amount,
+                        Status = "Pending"
+                    });
                 }
             }
         }
-
-        // Apply pagination to matches if pageNumber and pageSize are provided
-        if (pageNumber.HasValue && pageSize.HasValue && pageNumber > 0 && pageSize > 0)
-        {
-            matches = matches.Skip((pageNumber.Value - 1) * pageSize.Value)
-                            .Take(pageSize.Value)
-                            .ToList();
-        }
-
-        return matches;
     }
 
+    return matches.Concat(pendingItems).ToList();
+}
 
 
 
@@ -139,13 +125,52 @@ public class CrossDockingService
         throw new InvalidOperationException($"Shipment with ID {shipmentId} has already been delivered and cannot be updated.");
     }
 
-    foreach (var item in shipment.Items)
+    var orders = _orderService.GetAll();
+    var matchingOrder = orders.FirstOrDefault(o => o.Shipment_Id == shipmentId);
+    if (matchingOrder == null)
     {
-        item.CrossDockingStatus = "Shipped";
+        throw new KeyNotFoundException($"No order found linked to shipment ID {shipmentId}.");
     }
 
+    foreach (var shipmentItem in shipment.Items)
+    {
+        // Find matching order item
+        var orderItem = matchingOrder.Items.FirstOrDefault(o => o.Item_Id == shipmentItem.Item_Id);
+
+        if (orderItem != null)
+        {
+            int fulfilledAmount = Math.Min(shipmentItem.Amount, orderItem.Amount);
+            orderItem.Amount -= fulfilledAmount;
+            shipmentItem.Amount -= fulfilledAmount;
+
+            // Log fulfillment
+            shipmentItem.CrossDockingStatus = "Shipped";
+
+            if (orderItem.Amount == 0)
+            {
+                orderItem.CrossDockingStatus = "Fulfilled";
+            }
+            else
+            {
+                orderItem.CrossDockingStatus = "Partially Fulfilled";
+            }
+        }
+    }
+
+    // Check order fulfillment status
+    if (matchingOrder.Items.All(item => item.Amount == 0))
+    {
+        matchingOrder.Order_Status = "Fulfilled";
+    }
+    else
+    {
+        matchingOrder.Order_Status = "Partially Fulfilled";
+    }
+
+    // Mark shipment as delivered
     shipment.Shipment_Status = "Delivered";
     _shipmentService.Update(shipment);
+    _orderService.Update(matchingOrder);
 
     return $"Shipment with ID {shipmentId} has been shipped and marked as 'Delivered'.";
 }
