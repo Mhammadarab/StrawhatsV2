@@ -45,7 +45,14 @@ namespace Cargohub.Controllers.v2
         {
             try
             {
-                var message = _crossDockingService.ReceiveShipment(shipmentId);
+                // Extract API key from headers
+                var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+                if (string.IsNullOrEmpty(apiKey))
+                {
+                    return Unauthorized("API_KEY header is required.");
+                }
+
+                var message = _crossDockingService.ReceiveShipment(shipmentId, apiKey);
                 return Ok(new { message });
             }
             catch (Exception ex)
@@ -64,7 +71,14 @@ namespace Cargohub.Controllers.v2
         {
             try
             {
-                var message = _crossDockingService.ShipItems(shipmentId);
+                // Extract API key from headers
+                var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+                if (string.IsNullOrEmpty(apiKey))
+                {
+                    return Unauthorized("API_KEY header is required.");
+                }
+
+                var message = _crossDockingService.ShipItems(shipmentId, apiKey);
                 return Ok(new { message });
             }
             catch (Exception ex)
