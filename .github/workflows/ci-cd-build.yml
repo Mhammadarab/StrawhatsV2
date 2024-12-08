@@ -12,7 +12,6 @@ on:
 env:
   DOTNET_INSTALL_DIR: "./.dotnet"
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -31,7 +30,9 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: Notify Discord about Build Completion
+        env:
+          WEBHOOK_URL: ${{secrets.DISCORD_WEBHOOK_URL}}
         run: |
           curl -X POST -H "Content-Type: application/json" \
           -d '{"content": "🚀 **Build stage completed successfully** for staging branch. Proceeding to testing stage."}' \
-          https://discord.com/api/webhooks/1308371538604593252/uvcFk3Jkv4qu8RafmSzttiMdFyqX1VRY_i7M1rN85Ne9TdQhBMIQVRYGllOBFJRPrE60
+          "$WEBHOOK_URL"
