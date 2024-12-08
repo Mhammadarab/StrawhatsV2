@@ -3,7 +3,7 @@ name: CI/CD - test
 on:
   push:
     branches:
-      - 93
+      staging
   pull_request:
     branches:
       - main
