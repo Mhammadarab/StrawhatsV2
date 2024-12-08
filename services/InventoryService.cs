@@ -133,81 +133,86 @@ namespace Cargohub.services
         }
 
         public List<string> AuditInventory(string performedBy, Dictionary<int, Dictionary<int, int>> physicalCountsByLocation)
-{
-    var inventories = GetAll();
-    var discrepancies = new List<string>();
-
-    foreach (var auditEntry in physicalCountsByLocation)
-    {
-        var inventory = inventories.FirstOrDefault(i => i.Id == auditEntry.Key);
-
-        if (inventory == null)
         {
-            discrepancies.Add($"Inventory ID {auditEntry.Key} not found.");
-            continue;
+            var inventories = GetAll();
+            var discrepancies = new List<string>();
+
+            foreach (var auditEntry in physicalCountsByLocation)
+            {
+                var inventory = inventories.FirstOrDefault(i => i.Id == auditEntry.Key);
+
+                if (inventory == null)
+                {
+                    discrepancies.Add($"Inventory ID {auditEntry.Key} not found.");
+                    continue;
+                }
+
+                foreach (var locationEntry in auditEntry.Value)
+                {
+                    int locationId = locationEntry.Key;
+                    int physicalCount = locationEntry.Value;
+
+                    if (inventory.Locations.ContainsKey(locationId.ToString()))
+                    {
+                        int systemCount = inventory.Locations[locationId.ToString()];
+                        if (systemCount != physicalCount)
+                        {
+                            discrepancies.Add(
+                                $"Discrepancy for Inventory ID {inventory.Id} at Location {locationId}: System = {systemCount}, Physical = {physicalCount}"
+                            );
+                            // Update the stock based on the physical count
+                            inventory.Locations[locationId.ToString()] = physicalCount;
+                        }
+                    }
+                    else
+                    {
+                        discrepancies.Add(
+                            $"Location {locationId} not found for Inventory ID {inventory.Id}."
+                        );
+                    }
+                }
+            }
+
+            // Save the updated inventories
+            SaveToFile(inventories);
+
+            // Log the discrepancies
+            LogAuditChange(performedBy, physicalCountsByLocation, discrepancies);
+            return discrepancies;
         }
 
-        foreach (var locationEntry in auditEntry.Value)
+        private void LogAuditChange(string performedBy, Dictionary<int, Dictionary<int, int>> auditData, List<string> discrepancies)
         {
-            int locationId = locationEntry.Key;
-            int physicalCount = locationEntry.Value;
-
-            if (inventory.Locations.ContainsKey(locationId.ToString()))
+            var logEntry = new
             {
-                int systemCount = inventory.Locations[locationId.ToString()];
-                if (systemCount != physicalCount)
-                {
-                    discrepancies.Add(
-                        $"Discrepancy for Inventory ID {inventory.Id} at Location {locationId}: System = {systemCount}, Physical = {physicalCount}"
-                    );
-                }
+                Timestamp = DateTime.UtcNow,
+                PerformedBy = performedBy,
+                AuditData = auditData,
+                Discrepancies = discrepancies
+            };
+
+            var logFilePath = Path.Combine("logs", "inventory_audit.json");
+            Directory.CreateDirectory("logs");
+
+            List<object> logs;
+            if (File.Exists(logFilePath))
+            {
+                var jsonData = File.ReadAllText(logFilePath);
+                logs = JsonConvert.DeserializeObject<List<object>>(jsonData) ?? new List<object>();
             }
             else
             {
-                discrepancies.Add(
-                    $"Location {locationId} not found for Inventory ID {inventory.Id}."
-                );
+                logs = new List<object>();
+            }
+
+            logs.Add(logEntry);
+            File.WriteAllText(logFilePath, JsonConvert.SerializeObject(logs, Formatting.Indented));
+        }
+
+                private void SaveToFile(List<Inventory> inventories)
+                {
+                    var jsonData = JsonConvert.SerializeObject(inventories, Formatting.Indented);
+                    File.WriteAllText(jsonFilePath, jsonData);
+                }
             }
         }
-    }
-
-    // Log the discrepancies
-    LogAuditChange(performedBy, physicalCountsByLocation, discrepancies);
-    return discrepancies;
-}
-
-private void LogAuditChange(string performedBy, Dictionary<int, Dictionary<int, int>> auditData, List<string> discrepancies)
-{
-    var logEntry = new
-    {
-        Timestamp = DateTime.UtcNow,
-        PerformedBy = performedBy,
-        AuditData = auditData,
-        Discrepancies = discrepancies
-    };
-
-    var logFilePath = Path.Combine("logs", "inventory_audit.json");
-    Directory.CreateDirectory("logs");
-
-    List<object> logs;
-    if (File.Exists(logFilePath))
-    {
-        var jsonData = File.ReadAllText(logFilePath);
-        logs = JsonConvert.DeserializeObject<List<object>>(jsonData) ?? new List<object>();
-    }
-    else
-    {
-        logs = new List<object>();
-    }
-
-    logs.Add(logEntry);
-    File.WriteAllText(logFilePath, JsonConvert.SerializeObject(logs, Formatting.Indented));
-}
-
-        private void SaveToFile(List<Inventory> inventories)
-        {
-            var jsonData = JsonConvert.SerializeObject(inventories, Formatting.Indented);
-            File.WriteAllText(jsonFilePath, jsonData);
-        }
-    }
-}
