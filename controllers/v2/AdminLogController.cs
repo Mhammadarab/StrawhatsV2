@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cargohub.interfaces;
-using Cargohub.models;
 using Cargohub.services;
+using Cargohub.models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cargohub.controllers.v2
@@ -15,12 +15,10 @@ namespace Cargohub.controllers.v2
     public class AdminLogController : ControllerBase
     {
         private readonly ICrudService<LogEntry, string> _adminLogService;
-        private readonly InventoryService _inventoryService;
 
-        public AdminLogController(ICrudService<LogEntry, string> adminLogService, InventoryService inventoryService)
+        public AdminLogController(ICrudService<LogEntry, string> adminLogService)
         {
             _adminLogService = adminLogService;
-            _inventoryService = inventoryService;
         }
 
         // GET: api/v2/adminlogs
@@ -77,15 +75,6 @@ namespace Cargohub.controllers.v2
             {
                 return BadRequest("AdminLog data is required.");
             }
-
-            // Convert AuditData from Dictionary<string, Dictionary<string, int>> to Dictionary<int, Dictionary<int, int>>
-            var auditData = adminLog.AuditData.ToDictionary(
-                kvp => int.Parse(kvp.Key),
-                kvp => kvp.Value.ToDictionary(innerKvp => int.Parse(innerKvp.Key), innerKvp => innerKvp.Value)
-            );
-
-            // Update the stock based on the audit data
-            _inventoryService.AuditInventory(adminLog.PerformedBy, auditData);
 
             await _adminLogService.Create(adminLog);
             return CreatedAtAction(nameof(GetAdminLogByTimestamp), new { timestamp = adminLog.Timestamp }, adminLog);
