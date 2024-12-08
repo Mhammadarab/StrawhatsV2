@@ -18,6 +18,7 @@ class TestLocationsAPI(unittest.TestCase):
 
         self.test_location = {
             "id": max_id + 1,
+            "warehouse_id": 69,
             "location_id": 1,
             "code": f"A.{random.randint(1, 9)}.{random.randint(1, 9)}",
             "name": f"Row: A, Rack: {random.randint(1, 5)}, Shelf: {random.randint(1, 5)}"
@@ -60,20 +61,19 @@ class TestLocationsAPI(unittest.TestCase):
         """Test updating an existing location (happy path)."""
         response = requests.post(self.base_url, json=self.test_location, headers=self.headers)
         self.assertEqual(response.status_code, 201)
-        location_id = self.test_location["id"]
 
+        location_id = self.test_location["id"]
         updated_location = self.test_location.copy()
         updated_location.update({
-            "name": "Updated Row: A, Rack: 1, Shelf: 3",
-            "code": "B.1.3"
+            "warehouse_id": 1,
+            "code": "B.1.3",
+            "name": "Updated Row: S, Rack: 1, Shelf: 3"
         })
         put_response = requests.put(f"{self.base_url}/{location_id}", json=updated_location, headers=self.headers)
         self.assertEqual(put_response.status_code, 204)
 
         get_response = requests.get(f"{self.base_url}/{location_id}", headers=self.headers)
         self.assertEqual(get_response.status_code, 200)
-        location_data = get_response.json()
-        print(f"GET Response Data: {location_data}")
 
         delete_response = requests.delete(f"{self.base_url}/{location_id}", headers=self.headers)
         self.assertEqual(delete_response.status_code, 204)

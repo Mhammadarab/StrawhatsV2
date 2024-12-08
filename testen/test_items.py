@@ -110,7 +110,7 @@ class TestItemsAPI(unittest.TestCase):
         # Verify update
         get_response = requests.get(f"{self.base_url}/{item_uid}", headers=self.headers)
         self.assertEqual(get_response.status_code, 200)
-        item_data = get_response.json()
+ 
 
         # Clean up by deleting the item
         delete_response = requests.delete(f"{self.base_url}/{item_uid}", headers=self.headers)
