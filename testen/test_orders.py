@@ -7,7 +7,7 @@ import uuid
 class TestOrdersAPI(unittest.TestCase):
 
     def setUp(self):
-        self.base_url = 'http://localhost:3000/api/v1/orders'
+        self.base_url = 'http://localhost:3000/api/v2/orders'
         self.headers = {'API_KEY': 'a1b2c3d4e5'}
         self.invalid_headers = {'API_KEY': 'invalid_api_key'}
 
