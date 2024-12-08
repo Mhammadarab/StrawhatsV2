@@ -1,10 +1,13 @@
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using Cargohub.services;
-using Cargohub.interfaces;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Cargohub.interfaces;
+using Cargohub.services;
+using Cargohub.models;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Cargohub.Controllers.v2
+namespace Cargohub.controllers.v2
 {
     [ApiExplorerSettings(GroupName = "AdminLogs")]
     [Route("api/v2/adminlogs")]
@@ -20,15 +23,40 @@ namespace Cargohub.Controllers.v2
 
         // GET: api/v2/adminlogs
         [HttpGet]
-        public IActionResult GetStockLogs([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
+        public IActionResult GetAdminLogs([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
         {
-            var logs = _adminLogService.GetAll(pageNumber, pageSize);
-            return Ok(logs);
+            // Validate pagination parameters if provided
+            if ((pageNumber.HasValue && pageNumber <= 0) || (pageSize.HasValue && pageSize <= 0))
+            {
+                return BadRequest("Page number and page size must be greater than zero if provided.");
+            }
+
+            var adminLogs = _adminLogService.GetAll(pageNumber, pageSize);
+
+            if (adminLogs == null || !adminLogs.Any())
+            {
+                return NotFound();
+            }
+
+            var totalRecords = _adminLogService.GetAll(null, null).Count; // Total count without pagination
+
+            // Return metadata only if pagination is applied
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                return Ok(new
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalRecords = totalRecords,
+                    AdminLogs = adminLogs
+                });
+            }
+            return Ok(adminLogs);
         }
 
         // GET: api/v2/adminlogs/{timestamp}
         [HttpGet("{timestamp}")]
-        public IActionResult GetStockLogByTimestamp(string timestamp)
+        public IActionResult GetAdminLogByTimestamp(string timestamp)
         {
             var logEntry = _adminLogService.GetById(timestamp);
             if (logEntry == null)
@@ -41,15 +69,20 @@ namespace Cargohub.Controllers.v2
 
         // POST: api/v2/adminlogs
         [HttpPost]
-        public async Task<IActionResult> CreateStockLog([FromBody] LogEntry newLogEntry)
+        public async Task<IActionResult> CreateAdminLog([FromBody] LogEntry adminLog)
         {
-            await _adminLogService.Create(newLogEntry);
-            return CreatedAtAction(nameof(GetStockLogByTimestamp), new { timestamp = newLogEntry.Timestamp }, newLogEntry);
+            if (adminLog == null)
+            {
+                return BadRequest("AdminLog data is required.");
+            }
+
+            await _adminLogService.Create(adminLog);
+            return CreatedAtAction(nameof(GetAdminLogByTimestamp), new { timestamp = adminLog.Timestamp }, adminLog);
         }
 
         // PUT: api/v2/adminlogs/{timestamp}
         [HttpPut("{timestamp}")]
-        public async Task<IActionResult> UpdateStockLog(string timestamp, [FromBody] LogEntry updatedLogEntry)
+        public async Task<IActionResult> UpdateAdminLog(string timestamp, [FromBody] LogEntry updatedLogEntry)
         {
             if (updatedLogEntry == null || updatedLogEntry.Timestamp != timestamp)
             {
@@ -69,7 +102,7 @@ namespace Cargohub.Controllers.v2
 
         // DELETE: api/v2/adminlogs/{timestamp}
         [HttpDelete("{timestamp}")]
-        public async Task<IActionResult> DeleteStockLog(string timestamp)
+        public async Task<IActionResult> DeleteAdminLog(string timestamp)
         {
             try
             {

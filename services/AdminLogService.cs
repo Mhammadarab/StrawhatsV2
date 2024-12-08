@@ -4,13 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Cargohub.interfaces;
+using Cargohub.models;
 using Newtonsoft.Json;
 
 namespace Cargohub.services
 {
     public class AdminLogService : ICrudService<LogEntry, string>
     {
-        private readonly string logFilePath = Path.Combine(Directory.GetCurrentDirectory(), "logs", "logs_mock.json");
+        private readonly string logFilePath = Path.Combine(Directory.GetCurrentDirectory(), "logs", "inventory_audit.json");
 
         public List<LogEntry> GetAll(int? pageNumber = null, int? pageSize = null)
         {
@@ -74,13 +75,5 @@ namespace Cargohub.services
             logs.Remove(logEntry);
             await File.WriteAllTextAsync(logFilePath, JsonConvert.SerializeObject(logs, Formatting.Indented));
         }
-    }
-
-    public class LogEntry
-    {
-        public string Timestamp { get; set; }
-        public string PerformedBy { get; set; }
-        public string Operation { get; set; }
-        public Dictionary<string, object> Details { get; set; }
     }
 }
