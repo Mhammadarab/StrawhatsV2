@@ -15,10 +15,12 @@ namespace Cargohub.controllers.v2
     public class AdminLogController : ControllerBase
     {
         private readonly ICrudService<LogEntry, string> _adminLogService;
+        private readonly InventoryService _inventoryService;
 
-        public AdminLogController(ICrudService<LogEntry, string> adminLogService)
+        public AdminLogController(ICrudService<LogEntry, string> adminLogService, InventoryService inventoryService)
         {
             _adminLogService = adminLogService;
+            _inventoryService = inventoryService;
         }
 
         // GET: api/v2/adminlogs
@@ -113,6 +115,45 @@ namespace Cargohub.controllers.v2
             {
                 return NotFound(ex.Message);
             }
+        }
+
+        // PUT: api/v2/adminlogs/{timestamp}/yes
+        [HttpPut("{timestamp}/yes")]
+        public async Task<IActionResult> ApproveAudit(string timestamp)
+        {
+            var logEntry = _adminLogService.GetById(timestamp);
+            if (logEntry == null)
+            {
+                return NotFound("Log entry not found.");
+            }
+
+            // Convert AuditData from Dictionary<string, Dictionary<string, int>> to Dictionary<int, Dictionary<int, int>>
+            var auditData = logEntry.AuditData.ToDictionary(
+                kvp => int.Parse(kvp.Key),
+                kvp => kvp.Value.ToDictionary(innerKvp => int.Parse(innerKvp.Key), innerKvp => innerKvp.Value)
+            );
+
+            // Update the stock based on the audit data
+            _inventoryService.AuditInventory(logEntry.PerformedBy, auditData);
+
+            return Ok("Audit approved and inventory updated.");
+        }
+
+        // PUT: api/v2/adminlogs/{timestamp}/no
+        [HttpPut("{timestamp}/no")]
+        public IActionResult RejectAudit(string timestamp)
+        {
+            var logEntry = _adminLogService.GetById(timestamp);
+            if (logEntry == null)
+            {
+                return NotFound("Log entry not found.");
+            }
+
+            // Log the rejection
+            logEntry.Discrepancies.Add("Audit rejected by admin.");
+            _adminLogService.Update(logEntry);
+
+            return Ok("Audit rejected.");
         }
     }
 }
