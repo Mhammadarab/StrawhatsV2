@@ -1,6 +1,7 @@
 using Cargohub.interfaces;
 using Cargohub.models;
 using Cargohub.services;
+using Cargohub.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,8 +20,8 @@ builder.Services.AddSingleton<ICrudService<Transfer, int>, TransferService>();
 builder.Services.AddSingleton<ICrudService<Order, int>, OrderService>();
 builder.Services.AddSingleton<ICrudService<Shipment, int>, ShipmentService>();
 builder.Services.AddSingleton<ICrudService<Supplier, int>, SupplierService>();
-
-
+builder.Services.AddSingleton<CrossDockingLogService>();
+builder.Services.AddSingleton<ICrudService<LogEntry, string>, StockLogService>();
 builder.Services.AddSingleton<ICrudService<ItemGroup, int>, ItemGroupService>();
 builder.Services.AddSingleton<ICrudService<Client, int>, ClientsService>();
 builder.Services.AddSingleton<ICrudService<Location, int>, LocationsService>();
