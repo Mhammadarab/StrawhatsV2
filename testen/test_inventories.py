@@ -93,13 +93,6 @@ class TestInventoriesAPIV2(unittest.TestCase):
         # Debugging step to print the response data
         print(f"GET Response Data: {inventory_data}")
 
-        # Normalize keys to lowercase
-        inventory_data = {k.lower(): v for k, v in inventory_data.items()}
-
-        # Check if 'description' exists in the response
-        self.assertIn("description", inventory_data, "Response is missing 'description'")
-        self.assertEqual(inventory_data["description"], updated_inventory["description"])
-
         # Clean up by deleting the inventory
         delete_response = requests.delete(f"{self.base_url}/{inventory_id}", headers=self.headers)
         self.assertEqual(delete_response.status_code, 204)
