@@ -42,17 +42,6 @@ namespace Cargohub.services
                         {
                             { "full", new EndpointAccess { Full = true } }
                         }
-                    },
-                    new User
-                    {
-                        ApiKey = "f6g7h8i9j0",
-                        App = "CargoHUB Dashboard 2",
-                        EndpointAccess = new Dictionary<string, EndpointAccess>
-                        {
-                            { "full", new EndpointAccess { Full = false } },
-                            { "warehouses", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } },
-                            { "locations", new EndpointAccess { Full = false, Get = true, Post = false, Put = false, Delete = false } }
-                        }
                     }
                 };
                 SaveUsers();
