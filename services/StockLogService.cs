@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace Cargohub.services
 {
-    public class AdminLogService : ICrudService<LogEntry, string>
+    public class StockLogService : ICrudService<LogEntry, string>
     {
         private readonly string logFilePath = Path.Combine(Directory.GetCurrentDirectory(), "logs", "inventory_audit.json");
 
