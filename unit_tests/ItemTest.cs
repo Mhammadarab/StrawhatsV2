@@ -11,15 +11,6 @@ namespace Cargohub.UnitTests
         public void Item_ShouldInitializeWithCorrectValues()
         {
             // Arrange
-            var inventoryTotals = new InventoryTotals
-            {
-                TotalOnHand = 100,
-                TotalExpected = 50,
-                TotalOrdered = 70,
-                TotalAllocated = 30,
-                TotalAvailable = 40
-            };
-
             var classifications = new List<int> { 1, 2, 3 };
 
             // Act
@@ -43,7 +34,6 @@ namespace Cargohub.UnitTests
                 SupplierPartNumber = "SPN12345",
                 Created_At = DateTime.Now.AddDays(-1),
                 Updated_At = DateTime.Now,
-                InventoryTotals = inventoryTotals,
                 Classifications_Id = classifications
             };
 
@@ -66,12 +56,6 @@ namespace Cargohub.UnitTests
             Assert.Equal("SPN12345", item.SupplierPartNumber);
             Assert.NotEqual(DateTime.MinValue, item.Created_At);
             Assert.NotEqual(DateTime.MinValue, item.Updated_At);
-            Assert.NotNull(item.InventoryTotals);
-            Assert.Equal(inventoryTotals.TotalOnHand, item.InventoryTotals.TotalOnHand);
-            Assert.Equal(inventoryTotals.TotalExpected, item.InventoryTotals.TotalExpected);
-            Assert.Equal(inventoryTotals.TotalOrdered, item.InventoryTotals.TotalOrdered);
-            Assert.Equal(inventoryTotals.TotalAllocated, item.InventoryTotals.TotalAllocated);
-            Assert.Equal(inventoryTotals.TotalAvailable, item.InventoryTotals.TotalAvailable);
             Assert.NotNull(item.Classifications_Id);
             Assert.Equal(classifications.Count, item.Classifications_Id.Count);
 
