@@ -32,6 +32,7 @@ builder.Services.AddSingleton<InventoryService>();
 
 builder.Services.AddSingleton<CrossDockingService>();
 builder.Services.AddSingleton<ShipmentService>();
+builder.Services.AddSingleton<LogService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>

@@ -5,10 +5,10 @@
     "EndpointAccess": {
       "full": {
         "Full": true,
-        "Get": false,
-        "Post": false,
-        "Put": false,
-        "Delete": false
+        "Get": true,
+        "Post": true,
+        "Put": true,
+        "Delete": true
       }
     }
   },
@@ -17,87 +17,87 @@
     "App": "CargoHUB Admin Dashboard",
     "EndpointAccess": {
       "clients": {
-        "Full": true,
-        "Get": true,
-        "Post": true,
-        "Put": true,
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
         "Delete": true
       },
       "orders": {
-        "Full": true,
-        "Get": true,
-        "Post": true,
-        "Put": true,
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
         "Delete": true
       },
       "inventories": {
-        "Full": true,
-        "Get": true,
-        "Post": true,
-        "Put": true,
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
         "Delete": true
       },
       "shipments": {
-        "Full": true,
-        "Get": true,
-        "Post": true,
-        "Put": true,
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
         "Delete": true
       },
       "suppliers": {
-        "Full": true,
-        "Get": true,
-        "Post": true,
-        "Put": true,
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
         "Delete": true
       },
       "items": {
-        "Full": true,
-        "Get": true,
-        "Post": true,
-        "Put": true,
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
         "Delete": true
       },
       "warehouses": {
-        "Full": true,
-        "Get": true,
-        "Post": true,
-        "Put": true,
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
         "Delete": true
       },
       "transfers": {
-        "Full": true,
-        "Get": true,
-        "Post": true,
-        "Put": true,
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
         "Delete": true
       },
       "locations": {
-        "Full": true,
-        "Get": true,
-        "Post": true,
-        "Put": true,
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
         "Delete": true
       },
       "item_types": {
-        "Full": true,
-        "Get": true,
-        "Post": true,
-        "Put": true,
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
         "Delete": true
       },
       "item_lines": {
-        "Full": true,
-        "Get": true,
-        "Post": true,
-        "Put": true,
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
         "Delete": true
       },
       "item_groups": {
-        "Full": true,
-        "Get": true,
-        "Post": true,
-        "Put": true,
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
         "Delete": true
       }
     }
