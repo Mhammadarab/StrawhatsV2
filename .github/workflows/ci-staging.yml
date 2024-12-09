@@ -16,11 +16,10 @@ jobs:
   build:
     uses: ./.github/workflows/ci-cd-build.yml
     with:
-      DEPLOY_WEBHOOK_URL: ${{ vars.DISCORD_WEBHOOK_URL }}
+      DEPLOY_WEBHOOK_URL: ${{ inputs.DEPLOY_WEBHOOK_URL }}
 
   test:
     needs: build
     uses: ./.github/workflows/ci-cd-testing.yml
     with:
-      DEPLOY_WEBHOOK_URL: ${{ vars.DISCORD_WEBHOOK_URL }}
-  
+      DEPLOY_WEBHOOK_URL: ${{ inputs.DEPLOY_WEBHOOK_URL }}
