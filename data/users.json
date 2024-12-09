@@ -3,11 +3,88 @@
     "ApiKey": "a1b2c3d4e5",
     "App": "CargoHUB Dashboard 1",
     "EndpointAccess": {
-      "full": {
-        "Full": true,
-        "Get": true,
-        "Post": true,
-        "Put": true,
+      "clients": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "orders": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "inventories": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "shipments": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "suppliers": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "items": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "warehouses": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "transfers": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "locations": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "item_types": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "item_lines": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "item_groups": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
         "Delete": true
       }
     }
@@ -253,7 +330,7 @@
         "Delete": true
       },
       "locations": {
-        "All": "Own Warehouse",
+        "All": true,
         "Single": true,
         "Create": true,
         "Update": true,
@@ -343,7 +420,7 @@
         "Delete": false
       },
       "locations": {
-        "All": "Own Warehouse",
+        "All": true,
         "Single": true,
         "Create": true,
         "Update": true,
@@ -384,14 +461,14 @@
         "Delete": false
       },
       "orders": {
-        "All": "Own Warehouse",
+        "All": true,
         "Single": true,
         "Create": false,
         "Update": false,
         "Delete": false
       },
       "inventories": {
-        "All": "Own Warehouse",
+        "All": true,
         "Single": true,
         "Create": false,
         "Update": false,
@@ -412,7 +489,7 @@
         "Delete": false
       },
       "items": {
-        "All": "Own Warehouse",
+        "All": true,
         "Single": true,
         "Create": false,
         "Update": false,
@@ -433,7 +510,7 @@
         "Delete": false
       },
       "locations": {
-        "All": "Own Warehouse",
+        "All": true,
         "Single": true,
         "Create": true,
         "Update": true,
@@ -474,14 +551,14 @@
         "Delete": false
       },
       "orders": {
-        "All": "Own Warehouse",
+        "All": true,
         "Single": true,
         "Create": false,
         "Update": false,
         "Delete": false
       },
       "inventories": {
-        "All": "Own Warehouse",
+        "All": true,
         "Single": true,
         "Create": false,
         "Update": false,
@@ -502,7 +579,7 @@
         "Delete": false
       },
       "items": {
-        "All": "Own Warehouse",
+        "All": true,
         "Single": true,
         "Create": false,
         "Update": false,
@@ -523,7 +600,7 @@
         "Delete": false
       },
       "locations": {
-        "All": "Own Warehouse",
+        "All": true,
         "Single": true,
         "Create": true,
         "Update": true,

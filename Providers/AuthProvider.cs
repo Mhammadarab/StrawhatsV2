@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Cargohub.models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Cargohub.services
 {
@@ -11,7 +12,7 @@ namespace Cargohub.services
     {
         private static List<User> _users;
         private static readonly string filePath = Path.Combine("Data", "users.json");
-        private static readonly string logFilePath = Path.Combine("Logs", "user_logs.json");
+        private static readonly string logFilePath = Path.Combine("Logs", "user_changes.json");
 
         static AuthProvider()
         {
@@ -40,7 +41,18 @@ namespace Cargohub.services
                         App = "CargoHUB Dashboard 1",
                         EndpointAccess = new Dictionary<string, EndpointAccess>
                         {
-                            { "full", new EndpointAccess { Full = true } }
+                            { "clients", new EndpointAccess { All = true, Single = true, Create = true, Update = true, Delete = true } },
+                            { "orders", new EndpointAccess { All = true, Single = true, Create = true, Update = true, Delete = true } },
+                            { "inventories", new EndpointAccess { All = true, Single = true, Create = true, Update = true, Delete = true } },
+                            { "shipments", new EndpointAccess { All = true, Single = true, Create = true, Update = true, Delete = true } },
+                            { "suppliers", new EndpointAccess { All = true, Single = true, Create = true, Update = true, Delete = true } },
+                            { "items", new EndpointAccess { All = true, Single = true, Create = true, Update = true, Delete = true } },
+                            { "warehouses", new EndpointAccess { All = true, Single = true, Create = true, Update = true, Delete = true } },
+                            { "transfers", new EndpointAccess { All = true, Single = true, Create = true, Update = true, Delete = true } },
+                            { "locations", new EndpointAccess { All = true, Single = true, Create = true, Update = true, Delete = true } },
+                            { "item_types", new EndpointAccess { All = true, Single = true, Create = true, Update = true, Delete = true } },
+                            { "item_lines", new EndpointAccess { All = true, Single = true, Create = true, Update = true, Delete = true } },
+                            { "item_groups", new EndpointAccess { All = true, Single = true, Create = true, Update = true, Delete = true } }
                         }
                     }
                 };
@@ -61,35 +73,43 @@ namespace Cargohub.services
 
         private static void LogChange(string action, string performedBy, User oldUser = null, User newUser = null)
         {
-            if (oldUser == null || newUser == null)
-                throw new ArgumentNullException("OldUser and NewUser cannot be null.");
+            var changes = new Dictionary<string, object>();
 
-            var changes = GetUpdatedFields(oldUser, newUser);
+            if (oldUser != null && newUser != null)
+            {
+                changes = GetUpdatedFields(oldUser, newUser);
+            }
+            else if (oldUser != null)
+            {
+                changes["DeletedUser"] = oldUser;
+            }
+            else if (newUser != null)
+            {
+                changes["NewUser"] = newUser;
+            }
 
             if (changes.Count == 0)
                 return; // Nothing to log if there are no changes.
 
-            var logEntry = new
+            var logEntry = new JObject
             {
-                Timestamp = DateTime.UtcNow,
-                Action = action,
-                PerformedBy = performedBy,
-                ApiKey = newUser.ApiKey, // Log the key being updated
-                Changes = changes
+                ["Timestamp"] = DateTime.UtcNow,
+                ["Action"] = action,
+                ["PerformedBy"] = performedBy,
+                ["Changes"] = JObject.FromObject(changes)
             };
 
-            var logFilePath = Path.Combine("logs", "user_changes.json");
             Directory.CreateDirectory("logs");
 
-            List<object> logs;
+            List<JObject> logs;
             if (File.Exists(logFilePath))
             {
                 var jsonData = File.ReadAllText(logFilePath);
-                logs = JsonConvert.DeserializeObject<List<object>>(jsonData) ?? new List<object>();
+                logs = JsonConvert.DeserializeObject<List<JObject>>(jsonData) ?? new List<JObject>();
             }
             else
             {
-                logs = new List<object>();
+                logs = new List<JObject>();
             }
 
             logs.Add(logEntry);
@@ -101,10 +121,10 @@ namespace Cargohub.services
             var changes = new Dictionary<string, object>();
 
             if (oldUser.ApiKey != newUser.ApiKey)
-                changes["ApiKey"] = newUser.ApiKey;
+                changes["ApiKey"] = new { OldValue = oldUser.ApiKey, NewValue = newUser.ApiKey };
 
             if (oldUser.App != newUser.App)
-                changes["App"] = newUser.App;
+                changes["App"] = new { OldValue = oldUser.App, NewValue = newUser.App };
 
             var endpointAccessChanges = new Dictionary<string, object>();
 
@@ -114,26 +134,26 @@ namespace Cargohub.services
                 if (!oldUser.EndpointAccess.TryGetValue(key, out var oldAccess))
                 {
                     // If the key doesn't exist in the old user, add the entire access object
-                    endpointAccessChanges[key] = newUser.EndpointAccess[key];
+                    endpointAccessChanges[key] = new { OldValue = (EndpointAccess)null, NewValue = newUser.EndpointAccess[key] };
                 }
                 else
                 {
                     // Check for individual property changes
-                    var accessChanges = new Dictionary<string, bool>();
-                    if (oldAccess.Full != newUser.EndpointAccess[key].Full)
-                        accessChanges["Full"] = newUser.EndpointAccess[key].Full;
+                    var accessChanges = new Dictionary<string, object>();
+                    if (oldAccess.All != newUser.EndpointAccess[key].All)
+                        accessChanges["All"] = new { OldValue = oldAccess.All, NewValue = newUser.EndpointAccess[key].All };
 
-                    if (oldAccess.Get != newUser.EndpointAccess[key].Get)
-                        accessChanges["Get"] = newUser.EndpointAccess[key].Get;
+                    if (oldAccess.Single != newUser.EndpointAccess[key].Single)
+                        accessChanges["Single"] = new { OldValue = oldAccess.Single, NewValue = newUser.EndpointAccess[key].Single };
 
-                    if (oldAccess.Post != newUser.EndpointAccess[key].Post)
-                        accessChanges["Post"] = newUser.EndpointAccess[key].Post;
+                    if (oldAccess.Create != newUser.EndpointAccess[key].Create)
+                        accessChanges["Create"] = new { OldValue = oldAccess.Create, NewValue = newUser.EndpointAccess[key].Create };
 
-                    if (oldAccess.Put != newUser.EndpointAccess[key].Put)
-                        accessChanges["Put"] = newUser.EndpointAccess[key].Put;
+                    if (oldAccess.Update != newUser.EndpointAccess[key].Update)
+                        accessChanges["Update"] = new { OldValue = oldAccess.Update, NewValue = newUser.EndpointAccess[key].Update };
 
                     if (oldAccess.Delete != newUser.EndpointAccess[key].Delete)
-                        accessChanges["Delete"] = newUser.EndpointAccess[key].Delete;
+                        accessChanges["Delete"] = new { OldValue = oldAccess.Delete, NewValue = newUser.EndpointAccess[key].Delete };
 
                     // Only add the key if there are changes
                     if (accessChanges.Count > 0)
@@ -163,7 +183,6 @@ namespace Cargohub.services
 
             return users;
         }
-
 
         public static User GetUser(string apiKey)
         {
@@ -218,23 +237,16 @@ namespace Cargohub.services
             LogChange("Deleted", performedBy, oldUser: user);
         }
 
-
         public static bool HasAccess(User user, string path, string method)
         {
-            // Check for full access
-            if (user.EndpointAccess.TryGetValue("full", out var fullAccess) && fullAccess.Full)
-            {
-                return true;
-            }
-
             // Check for path-specific access
             if (user.EndpointAccess.TryGetValue(path, out var specificAccess))
             {
                 return method switch
                 {
-                    "get" => specificAccess.Get,
-                    "post" => specificAccess.Post,
-                    "put" => specificAccess.Put,
+                    "get" => specificAccess.All,
+                    "post" => specificAccess.Create,
+                    "put" => specificAccess.Update,
                     "delete" => specificAccess.Delete,
                     _ => false
                 };
