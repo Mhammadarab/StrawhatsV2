@@ -37,3 +37,5 @@ jobs:
 
   test:
     uses: ./.github/workflows/ci-cd-testing.yml
+    secrets:
+      DEPLOY_WEBHOOK_URL: ${{ secrets.DEPLOY_WEBHOOK_URL }}

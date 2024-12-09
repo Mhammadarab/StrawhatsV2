@@ -2,6 +2,9 @@ name: CI/CD - test
 
 on:
   workflow_call:
+    secrets:
+      DEPLOY_WEBHOOK_URL:
+        required: true
 
 env:
   DOTNET_INSTALL_DIR: "./.dotnet"
