@@ -61,13 +61,21 @@ namespace Cargohub.services
 
         private static void LogChange(string action, string performedBy, User oldUser = null, User newUser = null)
         {
+            if (oldUser == null || newUser == null)
+                throw new ArgumentNullException("OldUser and NewUser cannot be null.");
+
+            var changes = GetUpdatedFields(oldUser, newUser);
+
+            if (changes.Count == 0)
+                return; // Nothing to log if there are no changes.
+
             var logEntry = new
             {
                 Timestamp = DateTime.UtcNow,
                 Action = action,
                 PerformedBy = performedBy,
-                OldUser = oldUser,
-                NewUser = newUser
+                ApiKey = newUser.ApiKey, // Log the key being updated
+                Changes = changes
             };
 
             var logFilePath = Path.Combine("logs", "user_changes.json");
@@ -86,6 +94,57 @@ namespace Cargohub.services
 
             logs.Add(logEntry);
             File.WriteAllText(logFilePath, JsonConvert.SerializeObject(logs, Formatting.Indented));
+        }
+
+        private static Dictionary<string, object> GetUpdatedFields(User oldUser, User newUser)
+        {
+            var changes = new Dictionary<string, object>();
+
+            if (oldUser.ApiKey != newUser.ApiKey)
+                changes["ApiKey"] = newUser.ApiKey;
+
+            if (oldUser.App != newUser.App)
+                changes["App"] = newUser.App;
+
+            var endpointAccessChanges = new Dictionary<string, object>();
+
+            foreach (var key in newUser.EndpointAccess.Keys)
+            {
+                // Check if the old user has the key and compare the values
+                if (!oldUser.EndpointAccess.TryGetValue(key, out var oldAccess))
+                {
+                    // If the key doesn't exist in the old user, add the entire access object
+                    endpointAccessChanges[key] = newUser.EndpointAccess[key];
+                }
+                else
+                {
+                    // Check for individual property changes
+                    var accessChanges = new Dictionary<string, bool>();
+                    if (oldAccess.Full != newUser.EndpointAccess[key].Full)
+                        accessChanges["Full"] = newUser.EndpointAccess[key].Full;
+
+                    if (oldAccess.Get != newUser.EndpointAccess[key].Get)
+                        accessChanges["Get"] = newUser.EndpointAccess[key].Get;
+
+                    if (oldAccess.Post != newUser.EndpointAccess[key].Post)
+                        accessChanges["Post"] = newUser.EndpointAccess[key].Post;
+
+                    if (oldAccess.Put != newUser.EndpointAccess[key].Put)
+                        accessChanges["Put"] = newUser.EndpointAccess[key].Put;
+
+                    if (oldAccess.Delete != newUser.EndpointAccess[key].Delete)
+                        accessChanges["Delete"] = newUser.EndpointAccess[key].Delete;
+
+                    // Only add the key if there are changes
+                    if (accessChanges.Count > 0)
+                        endpointAccessChanges[key] = accessChanges;
+                }
+            }
+
+            if (endpointAccessChanges.Count > 0)
+                changes["EndpointAccess"] = endpointAccessChanges;
+
+            return changes;
         }
 
         public static List<User> GetUsers(int? pageNumber = null, int? pageSize = null)

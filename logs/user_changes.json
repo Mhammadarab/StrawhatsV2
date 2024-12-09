@@ -1,68 +1,58 @@
 [
   {
-    "Timestamp": "2024-11-25T00:34:41.635499Z",
-    "Action": "Deleted",
+    "Timestamp": "2024-12-09T17:53:51.036738Z",
+    "Action": "Updated",
     "PerformedBy": "a1b2c3d4e5",
-    "OldUser": {
-      "ApiKey": "testtest",
-      "App": "coolio",
+    "ApiKey": "admin12345",
+    "Changes": {
       "EndpointAccess": {
-        "full": {
-          "Full": true,
-          "Get": true,
-          "Post": true,
-          "Put": true,
-          "Delete": false
-        }
-      }
-    },
-    "NewUser": null
-  },
-  {
-    "Timestamp": "2024-11-25T00:35:20.8655145Z",
-    "Action": "Created",
-    "PerformedBy": "a1b2c3d4e5",
-    "OldUser": null,
-    "NewUser": {
-      "ApiKey": "testtest",
-      "App": "coolio",
-      "EndpointAccess": {
-        "full": {
-          "Full": true,
-          "Get": true,
-          "Post": true,
-          "Put": true,
-          "Delete": false
+        "clients": {
+          "Full": false
         }
       }
     }
   },
   {
-    "Timestamp": "2024-11-25T00:38:33.9752884Z",
+    "Timestamp": "2024-12-09T17:54:09.635576Z",
     "Action": "Updated",
     "PerformedBy": "a1b2c3d4e5",
-    "OldUser": {
-      "ApiKey": "testtest",
-      "App": "coolio",
+    "ApiKey": "admin12345",
+    "Changes": {
       "EndpointAccess": {
-        "full": {
-          "Full": true,
-          "Get": true,
-          "Post": true,
-          "Put": true,
-          "Delete": false
+        "item_groups": {
+          "Get": false
         }
       }
-    },
-    "NewUser": {
-      "ApiKey": "testtest",
-      "App": "coolio",
+    }
+  },
+  {
+    "Timestamp": "2024-12-09T17:54:30.311166Z",
+    "Action": "Updated",
+    "PerformedBy": "a1b2c3d4e5",
+    "ApiKey": "admin12345",
+    "Changes": {
       "EndpointAccess": {
-        "full": {
+        "warehouses": {
+          "Post": false,
+          "Delete": false
+        },
+        "transfers": {
           "Full": false,
-          "Get": true,
-          "Post": true,
-          "Put": true,
+          "Get": false,
+          "Delete": false
+        },
+        "locations": {
+          "Put": false
+        },
+        "item_types": {
+          "Put": false
+        },
+        "item_lines": {
+          "Put": false
+        },
+        "item_groups": {
+          "Post": false,
+          "Put": false,
           "Delete": false
         }
       }
