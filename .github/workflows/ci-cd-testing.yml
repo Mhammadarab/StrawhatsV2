@@ -12,7 +12,8 @@ on:
 env:
   DOTNET_INSTALL_DIR: "./.dotnet"
 
-test:
+jobs:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
