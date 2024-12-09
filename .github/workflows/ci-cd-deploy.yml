@@ -15,10 +15,6 @@ env:
   OWNER: "${{ github.repository_owner }}"
 
 jobs:
-  build:
-    uses: ./ .github\workflows\ci-cd-build.yml
-
-
   # Deploy Stage
   deploy:
     runs-on: ubuntu-latest
