@@ -21,7 +21,7 @@ namespace Cargohub.controllers.v2
         [HttpGet]
         public IActionResult GetLogs()
         {
-            var logs = _logService.GetLogs();
+            var logs = _logService.GetAll();
             if (logs == null || logs.Count == 0)
             {
                 return NotFound("No logs found.");
@@ -62,13 +62,40 @@ namespace Cargohub.controllers.v2
             return Ok(logs);
         }
 
-        [HttpGet("affecteduser/{userApiKey}")]
-        public IActionResult GetLogsByAffectedUser(string userApiKey)
+        [HttpGet("date/{date}")]
+        public IActionResult GetLogsByDate(string date)
         {
-            var logs = _logService.FilterLogsByAffectedUser(userApiKey);
+            if (!DateTime.TryParseExact(date, "dd-MM-yyyy", null, System.Globalization.DateTimeStyles.None, out var parsedDate))
+            {
+                return BadRequest("Invalid date format. Use dd-MM-yyyy.");
+            }
+
+            var logs = _logService.FilterLogsByDate(parsedDate);
             if (logs == null || logs.Count == 0)
             {
-                return NotFound($"No logs found for affected user: {userApiKey}.");
+                return NotFound($"No logs found for date: {date}.");
+            }
+            return Ok(logs);
+        }
+
+        [HttpGet("performedby/{performedBy}")]
+        public IActionResult GetLogsByPerformedBy(string performedBy)
+        {
+            var logs = _logService.FilterLogsByPerformedBy(performedBy);
+            if (logs == null || logs.Count == 0)
+            {
+                return NotFound($"No logs found for performedBy: {performedBy}.");
+            }
+            return Ok(logs);
+        }
+
+        [HttpGet("APIkey/{apiKey}")]
+        public IActionResult GetLogsByApiKey(string apiKey)
+        {
+            var logs = _logService.FilterLogsByApiKey(apiKey);
+            if (logs == null || logs.Count == 0)
+            {
+                return NotFound($"No logs found for API key: {apiKey}.");
             }
             return Ok(logs);
         }

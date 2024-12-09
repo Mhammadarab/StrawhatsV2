@@ -1,59 +1,36 @@
 [
   {
-    "Timestamp": "2024-12-09T17:53:51.036738Z",
+    "Timestamp": "2024-12-09T23:26:49.1589948Z",
     "Action": "Updated",
     "PerformedBy": "a1b2c3d4e5",
-    "ApiKey": "admin12345",
+    "APIkey": "admin12345",
     "Changes": {
       "EndpointAccess": {
         "clients": {
-          "Full": false
+          "All": {
+            "OldValue": false,
+            "NewValue": true
+          }
         }
       }
     }
   },
   {
-    "Timestamp": "2024-12-09T17:54:09.635576Z",
+    "Timestamp": "2024-12-09T23:28:46.7688847Z",
     "Action": "Updated",
     "PerformedBy": "a1b2c3d4e5",
-    "ApiKey": "admin12345",
+    "APIkey": "admin12345",
     "Changes": {
+      "App": {
+        "OldValue": "CargoHUB Admin Dashboard",
+        "NewValue": "CargoHUB Admin Dashboard1"
+      },
       "EndpointAccess": {
-        "item_groups": {
-          "Get": false
-        }
-      }
-    }
-  },
-  {
-    "Timestamp": "2024-12-09T17:54:30.311166Z",
-    "Action": "Updated",
-    "PerformedBy": "a1b2c3d4e5",
-    "ApiKey": "admin12345",
-    "Changes": {
-      "EndpointAccess": {
-        "warehouses": {
-          "Post": false,
-          "Delete": false
-        },
-        "transfers": {
-          "Full": false,
-          "Get": false,
-          "Delete": false
-        },
-        "locations": {
-          "Put": false
-        },
-        "item_types": {
-          "Put": false
-        },
-        "item_lines": {
-          "Put": false
-        },
-        "item_groups": {
-          "Post": false,
-          "Put": false,
-          "Delete": false
+        "clients": {
+          "All": {
+            "OldValue": true,
+            "NewValue": false
+          }
         }
       }
     }

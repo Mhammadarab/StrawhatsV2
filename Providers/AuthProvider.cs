@@ -91,11 +91,14 @@ namespace Cargohub.services
             if (changes.Count == 0)
                 return; // Nothing to log if there are no changes.
 
+            var APIkey = oldUser?.ApiKey ?? newUser?.ApiKey;
+
             var logEntry = new JObject
             {
                 ["Timestamp"] = DateTime.UtcNow,
                 ["Action"] = action,
                 ["PerformedBy"] = performedBy,
+                ["APIkey"] = APIkey,
                 ["Changes"] = JObject.FromObject(changes)
             };
 
