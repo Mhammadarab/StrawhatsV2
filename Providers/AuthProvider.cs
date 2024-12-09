@@ -244,7 +244,7 @@ namespace Cargohub.services
             {
                 return method switch
                 {
-                    "get" => specificAccess.All,
+                    "get" => specificAccess.All || specificAccess.Single,
                     "post" => specificAccess.Create,
                     "put" => specificAccess.Update,
                     "delete" => specificAccess.Delete, 
