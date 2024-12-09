@@ -69,7 +69,7 @@ namespace StrawhatsV2.controllers.v2
             try
             {
                 await _locationService.Update(location);
-                return Ok(location);
+                return NoContent();
             }
             catch (KeyNotFoundException ex)
             {
@@ -83,7 +83,7 @@ namespace StrawhatsV2.controllers.v2
             try
             {
                 await _locationService.Delete(id);
-                return Ok();
+                return NoContent();
             }
             catch (KeyNotFoundException ex)
             {

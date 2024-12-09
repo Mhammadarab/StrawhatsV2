@@ -13,7 +13,7 @@ namespace Cargohub.services
         {
             var items = GetAll() ?? new List<Item>();
 
-            entity.Uid = Guid.NewGuid().ToString();
+            // entity.Uid = Guid.NewGuid().ToString();
             entity.Created_At = DateTime.Now;
             entity.Updated_At = DateTime.Now;
 
@@ -58,19 +58,19 @@ namespace Cargohub.services
         }
 
 
-        public Item GetById(string uid)
+        public Item? GetById(string uid)
         {
             var items = GetAll();
             var item = items.FirstOrDefault(it => it.Uid == uid);
 
             if (item == null)
             {
-                throw new KeyNotFoundException($"Item with UID {uid} not found.");
+                return item;
             }
 
             // Get inventory totals from inventories.json
             var inventoryTotals = GetInventoryTotalsByItemId(uid);
-            item.InventoryTotals = inventoryTotals;
+            // item.InventoryTotals = inventoryTotals;
 
             return item;
         }
