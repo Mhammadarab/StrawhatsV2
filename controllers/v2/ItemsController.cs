@@ -94,13 +94,13 @@ namespace Cargohub.Controllers.v2
             try
             {
                 await _itemService.Delete(uid);
-                return NoContent();
             }
-            catch (KeyNotFoundException ex)
+            catch (KeyNotFoundException)
             {
-                return NotFound(ex.Message);
+                return NotFound();
             }
 
+            return NoContent();
         }
     }
 }

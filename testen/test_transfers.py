@@ -91,6 +91,13 @@ class TestTransfersAPI(unittest.TestCase):
         # Debugging step to print the response data
         print(f"GET Response Data: {transfer_data}")
 
+        # Normalize keys to lowercase
+        transfer_data = {k.lower(): v for k, v in transfer_data.items()}
+
+        # Check if 'transfer_status' exists in the response
+        self.assertIn("transfer_status", transfer_data, "Response is missing 'transfer_status'")
+        self.assertEqual(transfer_data["transfer_status"], updated_transfer["transfer_status"])
+
         # Clean up by deleting the transfer
         delete_response = requests.delete(f"{self.base_url}/{transfer_id}", headers=self.headers)
         self.assertEqual(delete_response.status_code, 204)

@@ -83,4 +83,3 @@ StarterKit.GeneratedMSBuildEditorConfig.editorconfig
 # Ignore NuGet dependency graph specification file
 StarterKit.csproj.nuget.dgspec.json
 *.sln
-*/__pycache__/*

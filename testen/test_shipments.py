@@ -105,6 +105,13 @@ class TestShipmentsAPI(unittest.TestCase):
         # Debugging step to print the response data
         print(f"GET Response Data: {shipment_data}")
 
+        # Normalize keys to lowercase
+        shipment_data = {k.lower(): v for k, v in shipment_data.items()}
+
+        # Check if 'shipment_status' exists in the response
+        self.assertIn("shipment_status", shipment_data, "Response is missing 'shipment_status'")
+        self.assertEqual(shipment_data["shipment_status"], updated_shipment["shipment_status"])
+
         # Clean up by deleting the shipment
         delete_response = requests.delete(f"{self.base_url}/{shipment_id}", headers=self.headers)
         self.assertEqual(delete_response.status_code, 204)

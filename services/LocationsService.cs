@@ -13,7 +13,7 @@ namespace Cargohub.services
     {
         private readonly string jsonFilePath = "data/locations.json";
 
-        public async Task Create(Location entity)
+        public Task Create(Location entity)
         {
             var locations = GetAll() ?? new List<Location>();
 
@@ -22,11 +22,11 @@ namespace Cargohub.services
             entity.Id = nextId;
             
             locations.Add(entity);
-            await SaveToFile(locations);
-
+            SaveToFile(locations);
+            return Task.CompletedTask;
         }
 
-        public async Task Delete(int id)
+        public Task Delete(int id)
         {
             var locations = GetAll() ?? new List<Location>();
             var location = locations.FirstOrDefault(l => l.Id == id);
@@ -37,8 +37,8 @@ namespace Cargohub.services
             }
 
             locations.Remove(location);
-            await SaveToFile(locations);
-
+            SaveToFile(locations);
+            return Task.CompletedTask;
         }
 
         public List<Location> GetAll(int? pageNumber = null, int? pageSize = null)
@@ -72,7 +72,7 @@ namespace Cargohub.services
             return location;
         }
 
-        public async Task Update(Location entity)
+        public Task Update(Location entity)
         {
             var locations = GetAll() ?? new List<Location>();
             var location = locations.FirstOrDefault(l => l.Id == entity.Id);
@@ -90,7 +90,8 @@ namespace Cargohub.services
             location.Updated_At = entity.Updated_At;
 
 
-            await SaveToFile(locations);
+            SaveToFile(locations);
+            return Task.CompletedTask;
         }
 
         private async Task SaveToFile(List<Location> locations)
