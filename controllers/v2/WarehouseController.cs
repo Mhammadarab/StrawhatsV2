@@ -22,6 +22,19 @@ namespace Cargohub.controllers.v2
          [HttpGet("{warehouse_id}/locations")]
         public IActionResult GetWarehouseLocations(int warehouse_id)
         {
+
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "clients", "delete"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+
             try
             {
                 var locations = ((WarehouseService)_warehouseService).GetWarehouseLocations(warehouse_id);
@@ -40,6 +53,19 @@ namespace Cargohub.controllers.v2
         [HttpGet]
         public IActionResult GetWarehouses()
         {
+
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "clients", "delete"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+
             var warehouses = _warehouseService.GetAll();
             if (warehouses == null || !warehouses.Any())
             {
@@ -51,6 +77,19 @@ namespace Cargohub.controllers.v2
         [HttpGet("{id}")]
         public IActionResult GetWarehouseById(int id)
         {
+
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "clients", "delete"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+
             try
             {
                 var warehouse = _warehouseService.GetById(id);
@@ -65,6 +104,19 @@ namespace Cargohub.controllers.v2
         [HttpPost]
         public async Task<IActionResult> CreateWarehouse([FromBody] Warehouse warehouse)
         {
+
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "clients", "delete"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+
             if (warehouse == null)
             {
                 return BadRequest("Warehouse data is null.");
@@ -77,6 +129,19 @@ namespace Cargohub.controllers.v2
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateWarehouse(int id, [FromBody] Warehouse warehouse)
         {
+
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "clients", "delete"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+
             if (warehouse == null || warehouse.Id != id)
             {
                 return BadRequest("Invalid warehouse data.");
@@ -96,6 +161,19 @@ namespace Cargohub.controllers.v2
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteWarehouse(int id)
         {
+
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "clients", "delete"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+
             try
             {
                 await _warehouseService.Delete(id);
@@ -110,6 +188,19 @@ namespace Cargohub.controllers.v2
         [HttpGet("capacities")]
         public IActionResult GetAllWarehouseCapacities(int pageNumber = 1, int pageSize = 10)
         {
+
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "clients", "delete"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+
             try
             {
                 var capacities = ((WarehouseService)_warehouseService).CalculateAllWarehouseCapacities(pageNumber, pageSize);
@@ -131,6 +222,19 @@ namespace Cargohub.controllers.v2
         [HttpGet("{id}/capacities")]
         public IActionResult GetWarehouseCapacities(int id)
         {
+
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "clients", "delete"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+            
             try
             {
                 var (totalCapacity, currentCapacity) = ((WarehouseService)_warehouseService).CalculateWarehouseCapacities(id);

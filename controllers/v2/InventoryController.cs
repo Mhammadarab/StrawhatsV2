@@ -30,6 +30,19 @@ namespace Cargohub.controllers.v2
         [HttpGet]
         public IActionResult GetInventories([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
         {
+
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "clients", "delete"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+
             // Validate pagination parameters if provided
             if ((pageNumber.HasValue && pageNumber <= 0) || (pageSize.HasValue && pageSize <= 0))
             {
@@ -64,6 +77,19 @@ namespace Cargohub.controllers.v2
         [HttpGet("{id}")]
         public IActionResult GetInventoryById(int id)
         {
+
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "clients", "delete"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+
             try
             {
                 var inventory = _inventoryService.GetById(id);
@@ -78,6 +104,19 @@ namespace Cargohub.controllers.v2
         [HttpPost]
         public async Task<IActionResult> CreateInventory([FromBody] Inventory inventory)
         {
+
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "clients", "delete"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+
             if (inventory == null)
             {
                 return BadRequest("Inventory data is null.");
@@ -123,6 +162,19 @@ namespace Cargohub.controllers.v2
         [HttpPut("{id}")]
         public IActionResult UpdateInventory(int id, [FromBody] Inventory inventory)
         {
+
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "clients", "delete"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+
             if (inventory == null)
             {
                 return BadRequest("Inventory data is null.");

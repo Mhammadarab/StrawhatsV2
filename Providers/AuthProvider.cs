@@ -247,7 +247,7 @@ namespace Cargohub.services
                     "get" => specificAccess.All,
                     "post" => specificAccess.Create,
                     "put" => specificAccess.Update,
-                    "delete" => specificAccess.Delete,
+                    "delete" => specificAccess.Delete, 
                     _ => false
                 };
             }
