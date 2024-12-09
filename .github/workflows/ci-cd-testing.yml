@@ -2,8 +2,9 @@ name: CI/CD - test
 
 on:
   workflow_call:
-    secrets:
+    inputs:
       DEPLOY_WEBHOOK_URL:
+        type: string
         required: true
 
 env:
@@ -32,9 +33,7 @@ jobs:
         continue-on-error: true
 
       - name: Notify Discord about Test Completion
-        env:
-          WEBHOOK_URL: ${{secrets.DEPLOY_WEBHOOK_URL}}
         run: |
           curl -X POST -H "Content-Type: application/json" \
           -d '{"content": "✅ **Testing stage completed successfully** for staging branch, despite potential errors."}' \
-          ${{secrets.DEPLOY_WEBHOOK_URL}}
+          ${{inputs.DEPLOY_WEBHOOK_URL}}
