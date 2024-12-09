@@ -14,26 +14,9 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@main
-        with:
-          dotnet-version: "8.x"
-
-      - name: Restore dependencies
-        run: dotnet restore
-
-      - name: Build the solution
-        run: dotnet build --configuration Release --no-restore
-
-      - name: Notify Discord about Build Completion
-        run: |
-          curl -X POST -H "Content-Type: application/json" \
-          -d '{"content": "🚀 **Build stage completed successfully** for staging branch. Proceeding to testing stage."}' \
-          https://discord.com/api/webhooks/1308371538604593252/uvcFk3Jkv4qu8RafmSzttiMdFyqX1VRY_i7M1rN85Ne9TdQhBMIQVRYGllOBFJRPrE60
+    uses: ./.github/workflows/ci-cd-build.yml
+    with:
+      DEPLOY_WEBHOOK_URL: ${{ vars.DISCORD_WEBHOOK_URL }}
 
   test:
     needs: build

@@ -1,13 +1,11 @@
 name: CI/CD - build
 
 on:
-  push:
-    branches:
-      - staging
-  pull_request:
-    branches:
-      - main
-      - staging
+  workflow_call:
+    inputs:
+      DEPLOY_WEBHOOK_URL:
+        type: string
+        required: true
 
 env:
   DOTNET_INSTALL_DIR: "./.dotnet"
