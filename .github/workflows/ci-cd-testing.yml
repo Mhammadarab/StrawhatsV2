@@ -1,13 +1,7 @@
 name: CI/CD - test
 
 on:
-  push:
-    branches:
-      staging
-  pull_request:
-    branches:
-      - main
-      - staging
+  workflow_call:
 
 env:
   DOTNET_INSTALL_DIR: "./.dotnet"
