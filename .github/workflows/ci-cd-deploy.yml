@@ -38,7 +38,5 @@ jobs:
 
       - name: Send HTTP request with curl (only on push)
         if: github.event_name == 'push'
-        env:
-            WEBHOOK_URL: ${{secrets.DEPLOY_WEBHOOK_URL}}
         run: |
-          curl -X POST -k "$WEBHOOK_URL"
+          curl -X POST -k ${{inputs.DEPLOY_WEBHOOK_URL}}
