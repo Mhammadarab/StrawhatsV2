@@ -31,7 +31,7 @@ namespace StrawhatsV2.controllers.v2
             }
 
             var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "clients", "delete"))
+            if (user == null || !AuthProvider.HasAccess(user, "locations", "get"))
             {
                 return Forbid("You do not have permission to delete clients.");
             }
@@ -54,7 +54,7 @@ namespace StrawhatsV2.controllers.v2
             }
 
             var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "clients", "delete"))
+            if (user == null || !AuthProvider.HasAccess(user, "locations", "get"))
             {
                 return Forbid("You do not have permission to delete clients.");
             }
@@ -80,7 +80,7 @@ namespace StrawhatsV2.controllers.v2
             }
 
             var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "clients", "delete"))
+            if (user == null || !AuthProvider.HasAccess(user, "locations", "post"))
             {
                 return Forbid("You do not have permission to delete clients.");
             }
@@ -104,7 +104,7 @@ namespace StrawhatsV2.controllers.v2
             }
 
             var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "clients", "delete"))
+            if (user == null || !AuthProvider.HasAccess(user, "locations", "put"))
             {
                 return Forbid("You do not have permission to delete clients.");
             }
@@ -135,7 +135,7 @@ namespace StrawhatsV2.controllers.v2
             }
 
             var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "clients", "delete"))
+            if (user == null || !AuthProvider.HasAccess(user, "locations", "delete"))
             {
                 return Forbid("You do not have permission to delete clients.");
             }

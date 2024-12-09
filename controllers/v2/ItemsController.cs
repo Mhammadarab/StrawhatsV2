@@ -29,7 +29,7 @@ namespace Cargohub.Controllers.v2
             }
 
             var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "clients", "delete"))
+            if (user == null || !AuthProvider.HasAccess(user, "items", "get"))
             {
                 return Forbid("You do not have permission to delete clients.");
             }
@@ -48,7 +48,7 @@ namespace Cargohub.Controllers.v2
             }
 
             var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "clients", "delete"))
+            if (user == null || !AuthProvider.HasAccess(user, "items", "get"))
             {
                 return Forbid("You do not have permission to delete clients.");
             }
@@ -71,7 +71,7 @@ namespace Cargohub.Controllers.v2
             }
 
             var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "clients", "delete"))
+            if (user == null || !AuthProvider.HasAccess(user, "items", "get"))
             {
                 return Forbid("You do not have permission to delete clients.");
             }
@@ -89,7 +89,7 @@ namespace Cargohub.Controllers.v2
             }
 
             var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "clients", "delete"))
+            if (user == null || !AuthProvider.HasAccess(user, "items", "get"))
             {
                 return Forbid("You do not have permission to delete clients.");
             }
@@ -115,7 +115,7 @@ namespace Cargohub.Controllers.v2
             }
 
             var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "clients", "delete"))
+            if (user == null || !AuthProvider.HasAccess(user, "items", "post"))
             {
                 return Forbid("You do not have permission to delete clients.");
             }
@@ -139,7 +139,7 @@ namespace Cargohub.Controllers.v2
             }
 
             var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "clients", "delete"))
+            if (user == null || !AuthProvider.HasAccess(user, "items", "put"))
             {
                 return Forbid("You do not have permission to delete clients.");
             }
@@ -171,7 +171,7 @@ namespace Cargohub.Controllers.v2
             }
 
             var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "clients", "delete"))
+            if (user == null || !AuthProvider.HasAccess(user, "items", "delete"))
             {
                 return Forbid("You do not have permission to delete clients.");
             }
