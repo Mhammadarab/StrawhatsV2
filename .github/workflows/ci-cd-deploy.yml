@@ -1,14 +1,11 @@
 name: CI/CD - deploy 
 
 on:
-    push:
-        branches:
-            - main
-            - 93
-    pull_request:
-        branches:
-            - main
-            - 93
+    workflow_call:
+        inputs:
+          DEPLOY_WEBHOOK_URL:
+            type: string
+            required: true
 
 env:
   IMAGE_NAME: cargohub
