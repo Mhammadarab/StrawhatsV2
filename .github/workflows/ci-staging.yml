@@ -39,5 +39,5 @@ jobs:
     needs: build
     uses: ./.github/workflows/ci-cd-testing.yml
     with:
-      DEPLOY_WEBHOOK_URL: https://discord.com/api/webhooks/1308371538604593252/uvcFk3Jkv4qu8RafmSzttiMdFyqX1VRY_i7M1rN85Ne9TdQhBMIQVRYGllOBFJRPrE60
+      DEPLOY_WEBHOOK_URL: ${{ vars.DISCORD_WEBHOOK_URL }}
   
