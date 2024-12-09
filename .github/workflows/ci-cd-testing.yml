@@ -37,4 +37,4 @@ jobs:
         run: |
           curl -X POST -H "Content-Type: application/json" \
           -d '{"content": "✅ **Testing stage completed successfully** for staging branch, despite potential errors."}' \
-          "$WEBHOOK_URL"
+          ${{secrets.DEPLOY_WEBHOOK_URL}}
