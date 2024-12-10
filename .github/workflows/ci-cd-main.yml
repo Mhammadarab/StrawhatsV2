@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - 93
   pull_request:
     branches:
       - main
@@ -16,11 +17,17 @@ env:
 jobs:
   build:
     uses: ./.github/workflows/ci-cd-build.yml
+    with:
+      DISCORD_WEBHOOK_URL: ${{ vars.DISCORD_WEBHOOK_URL }}
 
   # Test Stage
   test:
     uses: ./.github/workflows/ci-cd-testing.yml
+    with:
+      DEPLOY_WEBHOOK_URL: ${{ vars.DISCORD_WEBHOOK_URL }}
 
   # Deploy Stage
   deploy:
     uses: ./.github/workflows/ci-cd-deploy.yml
+    with:
+      DEPLOY_WEBHOOK_URL: ${{ vars.DEPLOY_WEBHOOK_URL}}
