@@ -24,40 +24,66 @@ namespace Cargohub.controllers.v2
     [HttpGet]
     public IActionResult GetTransfers([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
     {
-        // Validate pagination parameters if provided
-        if ((pageNumber.HasValue && pageNumber <= 0) || (pageSize.HasValue && pageSize <= 0))
+
+      var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+      if (string.IsNullOrEmpty(apiKey))
+      {
+        return Unauthorized("API_KEY header is missing.");
+      }
+
+      var user = AuthProvider.GetUser(apiKey);
+      if (user == null || !AuthProvider.HasAccess(user, "transfers", "get"))
+      {
+        return Forbid("You do not have permission to delete clients.");
+      }
+
+      // Validate pagination parameters if provided
+      if ((pageNumber.HasValue && pageNumber <= 0) || (pageSize.HasValue && pageSize <= 0))
+      {
+        return BadRequest("Page number and page size must be greater than zero if provided.");
+      }
+
+      var transfers = _transferService.GetAll(pageNumber, pageSize);
+
+      if (transfers == null || !transfers.Any())
+      {
+        return NotFound("No transfers found.");
+      }
+
+      // Include pagination metadata if pagination is applied
+      if (pageNumber.HasValue && pageSize.HasValue)
+      {
+        var totalRecords = _transferService.GetAll(null, null).Count;
+        return Ok(new
         {
-            return BadRequest("Page number and page size must be greater than zero if provided.");
-        }
+          PageNumber = pageNumber,
+          PageSize = pageSize,
+          TotalRecords = totalRecords,
+          Transfers = transfers
+        });
+      }
 
-        var transfers = _transferService.GetAll(pageNumber, pageSize);
-
-        if (transfers == null || !transfers.Any())
-        {
-            return NotFound("No transfers found.");
-        }
-
-        // Include pagination metadata if pagination is applied
-        if (pageNumber.HasValue && pageSize.HasValue)
-        {
-            var totalRecords = _transferService.GetAll(null, null).Count;
-            return Ok(new
-            {
-                PageNumber = pageNumber,
-                PageSize = pageSize,
-                TotalRecords = totalRecords,
-                Transfers = transfers
-            });
-        }
-
-        // Return plain list if pagination is not applied
-        return Ok(transfers);
+      // Return plain list if pagination is not applied
+      return Ok(transfers);
     }
 
 
     [HttpGet("{id}")]
     public IActionResult GetTransferById(int id)
     {
+
+      var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+      if (string.IsNullOrEmpty(apiKey))
+      {
+        return Unauthorized("API_KEY header is missing.");
+      }
+
+      var user = AuthProvider.GetUser(apiKey);
+      if (user == null || !AuthProvider.HasAccess(user, "transfers", "get"))
+      {
+        return Forbid("You do not have permission to delete clients.");
+      }
+
       try
       {
         var transfer = _transferService.GetById(id);
@@ -71,26 +97,52 @@ namespace Cargohub.controllers.v2
 
     [HttpGet("transfers/{transfer_id}/items")]
     public IActionResult GetTransferItems(int transfer_id)
-      {
-        try
-        {
-            var items = ((TransferService)_transferService).GetTransferItems(transfer_id);
-            if (items == null || !items.Any())
-            {
-                return NotFound($"No items found for Transfer ID {transfer_id}");
-            }
-            return Ok(items);
-        }
-        catch (KeyNotFoundException ex)
+    {
 
-        {
-          return NotFound(ex.Message);
-        }
+      var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+      if (string.IsNullOrEmpty(apiKey))
+      {
+        return Unauthorized("API_KEY header is missing.");
       }
+
+      var user = AuthProvider.GetUser(apiKey);
+      if (user == null || !AuthProvider.HasAccess(user, "transfers", "get"))
+      {
+        return Forbid("You do not have permission to delete clients.");
+      }
+
+      try
+      {
+        var items = ((TransferService)_transferService).GetTransferItems(transfer_id);
+        if (items == null || !items.Any())
+        {
+          return NotFound($"No items found for Transfer ID {transfer_id}");
+        }
+        return Ok(items);
+      }
+      catch (KeyNotFoundException ex)
+
+      {
+        return NotFound(ex.Message);
+      }
+    }
 
     [HttpPost]
     public async Task<IActionResult> CreateTransfer([FromBody] Transfer transfer)
     {
+
+      var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+      if (string.IsNullOrEmpty(apiKey))
+      {
+        return Unauthorized("API_KEY header is missing.");
+      }
+
+      var user = AuthProvider.GetUser(apiKey);
+      if (user == null || !AuthProvider.HasAccess(user, "transfers", "post"))
+      {
+        return Forbid("You do not have permission to delete clients.");
+      }
+
       if (transfer == null)
       {
         return BadRequest("Transfer data is null.");
@@ -103,6 +155,19 @@ namespace Cargohub.controllers.v2
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateTransfer(int id, [FromBody] Transfer transfer)
     {
+
+      var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+      if (string.IsNullOrEmpty(apiKey))
+      {
+        return Unauthorized("API_KEY header is missing.");
+      }
+
+      var user = AuthProvider.GetUser(apiKey);
+      if (user == null || !AuthProvider.HasAccess(user, "transfers", "put"))
+      {
+        return Forbid("You do not have permission to delete clients.");
+      }
+
       if (transfer == null || transfer.Id != id)
       {
         return BadRequest("Invalid transfer data.");
@@ -122,6 +187,19 @@ namespace Cargohub.controllers.v2
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteTransfer(int id)
     {
+
+      var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+      if (string.IsNullOrEmpty(apiKey))
+      {
+        return Unauthorized("API_KEY header is missing.");
+      }
+
+      var user = AuthProvider.GetUser(apiKey);
+      if (user == null || !AuthProvider.HasAccess(user, "transfers", "delete"))
+      {
+        return Forbid("You do not have permission to delete clients.");
+      }
+
       try
       {
         await _transferService.Delete(id);

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Cargohub.interfaces;
 using Cargohub.models;
+using Cargohub.services;
 
 namespace Cargohub.Controllers.v2
 {
@@ -21,6 +22,18 @@ namespace Cargohub.Controllers.v2
         [HttpGet]
         public IActionResult GetItems()
         {
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "items", "get"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+            
             var items = _itemService.GetAll();
             return Ok(items);
         }
@@ -28,6 +41,18 @@ namespace Cargohub.Controllers.v2
         [HttpGet("{uid}")]
         public IActionResult GetItemById(string uid)
         {
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "items", "get"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+
             var item = _itemService.GetById(uid);
             if (item == null)
             {
@@ -39,12 +64,36 @@ namespace Cargohub.Controllers.v2
         [HttpGet("{itemId}/inventory")]
         public IActionResult GetItemInventory(string itemId)
         {
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "items", "get"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+
             return Ok(new List<object>());
         }
 
         [HttpGet("{itemId}/inventory/totals")]
         public IActionResult GetItemInventoryTotals(string itemId)
         {
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "items", "get"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+
             try
             {
                 var inventoryTotals = _itemService.GetItemInventoryTotals(itemId);
@@ -59,6 +108,18 @@ namespace Cargohub.Controllers.v2
         [HttpPost]
         public async Task<IActionResult> CreateItem([FromBody] Item item)
         {
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "items", "post"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+            
             if (item == null)
             {
                 return BadRequest();
@@ -71,6 +132,18 @@ namespace Cargohub.Controllers.v2
         [HttpPut("{uid}")]
         public async Task<IActionResult> UpdateItem(string uid, [FromBody] Item item)
         {
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "items", "put"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+
             if (item == null || uid != item.Uid)
             {
                 return BadRequest();
@@ -91,6 +164,18 @@ namespace Cargohub.Controllers.v2
         [HttpDelete("{uid}")]
         public async Task<IActionResult> DeleteItem(string uid)
         {
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "items", "delete"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+            
             try
             {
                 await _itemService.Delete(uid);

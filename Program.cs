@@ -8,7 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<AdminOnly>();
+    options.Filters.Add<CustomForbidResultFilter>();
 });
+
 
 builder.Services.AddControllers();
 builder.Services.AddSingleton<ICrudService<Warehouse, int>, WarehouseService>();
@@ -32,6 +34,7 @@ builder.Services.AddSingleton<InventoryService>();
 
 builder.Services.AddSingleton<CrossDockingService>();
 builder.Services.AddSingleton<ShipmentService>();
+builder.Services.AddSingleton<LogService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
