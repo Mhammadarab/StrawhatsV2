@@ -9,8 +9,9 @@ namespace Cargohub.models
     {
         public string Timestamp { get; set; }
         public string PerformedBy { get; set; }
-        public string Operation { get; set; }
+        public string Status  { get; set; }
         public Dictionary<string, Dictionary<string, int>> AuditData { get; set; }
         public List<string> Discrepancies { get; set; }
+
     }
 }

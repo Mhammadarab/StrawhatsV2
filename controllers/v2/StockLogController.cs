@@ -136,6 +136,10 @@ namespace Cargohub.controllers.v2
             // Update the stock based on the audit data
             _inventoryService.AuditInventory(logEntry.PerformedBy, auditData);
 
+            // Update the status to "Completed"
+            logEntry.Status = "Completed";
+            await _stockLogService.Update(logEntry);
+
             return Ok("Audit approved and inventory updated.");
         }
 
