@@ -92,7 +92,6 @@ namespace Cargohub.services
                 return; // Nothing to log if there are no changes.
 
             var APIkey = oldUser?.ApiKey ?? newUser?.ApiKey;
-
             var logEntry = new JObject
             {
                 ["Timestamp"] = DateTime.UtcNow,
@@ -130,7 +129,6 @@ namespace Cargohub.services
                 changes["App"] = new { OldValue = oldUser.App, NewValue = newUser.App };
 
             var endpointAccessChanges = new Dictionary<string, object>();
-
             foreach (var key in newUser.EndpointAccess.Keys)
             {
                 // Check if the old user has the key and compare the values
@@ -145,16 +143,12 @@ namespace Cargohub.services
                     var accessChanges = new Dictionary<string, object>();
                     if (oldAccess.All != newUser.EndpointAccess[key].All)
                         accessChanges["All"] = new { OldValue = oldAccess.All, NewValue = newUser.EndpointAccess[key].All };
-
                     if (oldAccess.Single != newUser.EndpointAccess[key].Single)
                         accessChanges["Single"] = new { OldValue = oldAccess.Single, NewValue = newUser.EndpointAccess[key].Single };
-
                     if (oldAccess.Create != newUser.EndpointAccess[key].Create)
                         accessChanges["Create"] = new { OldValue = oldAccess.Create, NewValue = newUser.EndpointAccess[key].Create };
-
                     if (oldAccess.Update != newUser.EndpointAccess[key].Update)
                         accessChanges["Update"] = new { OldValue = oldAccess.Update, NewValue = newUser.EndpointAccess[key].Update };
-
                     if (oldAccess.Delete != newUser.EndpointAccess[key].Delete)
                         accessChanges["Delete"] = new { OldValue = oldAccess.Delete, NewValue = newUser.EndpointAccess[key].Delete };
 

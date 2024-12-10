@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Cargohub.models;
 
 namespace Cargohub.services
 {
@@ -11,15 +11,15 @@ namespace Cargohub.services
     {
         private readonly string logFilePath = "Logs/user_changes.json";
 
-        public List<JObject> GetAll(int? pageNumber = null, int? pageSize = null)
+        public List<LogEntry> GetAll(int? pageNumber = null, int? pageSize = null)
         {
             if (!File.Exists(logFilePath))
             {
-                return new List<JObject>();
+                return new List<LogEntry>();
             }
 
             var jsonData = File.ReadAllText(logFilePath);
-            var logs = JsonConvert.DeserializeObject<List<JObject>>(jsonData) ?? new List<JObject>();
+            var logs = JsonConvert.DeserializeObject<List<LogEntry>>(jsonData) ?? new List<LogEntry>();
 
             // Apply pagination only if pageNumber and pageSize are provided and valid
             if (pageNumber.HasValue && pageSize.HasValue && pageNumber > 0 && pageSize > 0)
@@ -33,28 +33,28 @@ namespace Cargohub.services
             return logs;
         }
 
-        public List<JObject> FilterLogsByAction(string action)
+        public List<LogEntry> FilterLogsByAction(string action)
         {
             var logs = GetAll();
-            return logs.Where(log => log["Action"]?.ToString().Equals(action, StringComparison.OrdinalIgnoreCase) == true).ToList();
+            return logs.Where(log => log.Action?.Equals(action, StringComparison.OrdinalIgnoreCase) == true).ToList();
         }
 
-        public List<JObject> FilterLogsByDate(DateTime date)
+        public List<LogEntry> FilterLogsByDate(DateTime date)
         {
             var logs = GetAll();
-            return logs.Where(log => DateTime.Parse(log["Timestamp"].ToString()).Date == date.Date).ToList();
+            return logs.Where(log => log.Timestamp.Date == date.Date).ToList();
         }
 
-        public List<JObject> FilterLogsByPerformedBy(string performedBy)
+        public List<LogEntry> FilterLogsByPerformedBy(string performedBy)
         {
             var logs = GetAll();
-            return logs.Where(log => log["PerformedBy"]?.ToString().Equals(performedBy, StringComparison.OrdinalIgnoreCase) == true).ToList();
+            return logs.Where(log => log.PerformedBy?.Equals(performedBy, StringComparison.OrdinalIgnoreCase) == true).ToList();
         }
 
-        public List<JObject> FilterLogsByApiKey(string apiKey)
+        public List<LogEntry> FilterLogsByApiKey(string apiKey)
         {
             var logs = GetAll();
-            return logs.Where(log => log["APIkey"]?.ToString().Equals(apiKey, StringComparison.OrdinalIgnoreCase) == true).ToList();
+            return logs.Where(log => log.ApiKey?.Equals(apiKey, StringComparison.OrdinalIgnoreCase) == true).ToList();
         }
     }
 }

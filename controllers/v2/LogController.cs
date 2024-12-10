@@ -89,7 +89,7 @@ namespace Cargohub.controllers.v2
             return Ok(logs);
         }
 
-        [HttpGet("APIkey/{apiKey}")]
+        [HttpGet("apikey/{apiKey}")]
         public IActionResult GetLogsByApiKey(string apiKey)
         {
             var logs = _logService.FilterLogsByApiKey(apiKey);
