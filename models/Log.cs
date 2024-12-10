@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Cargohub.models
 {
-    public class LogEntry
+    public class LoggingEntry
     {
         [JsonProperty("timestamp")]
         public DateTime Timestamp { get; set; }
