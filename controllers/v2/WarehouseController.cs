@@ -251,8 +251,8 @@ namespace Cargohub.controllers.v2
             }
         }
 
-        [HttpPut("{id}/classifications")]
-        public async Task<IActionResult> AddClassificationToWarehouse(int id, [FromBody] List<int> classificationIds)
+        [HttpPut("{id}/add-classifications")]
+        public IActionResult AddClassificationsToWarehouse(int id, [FromBody] List<int> classificationIds)
         {
             var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
             if (string.IsNullOrEmpty(apiKey))
@@ -260,27 +260,26 @@ namespace Cargohub.controllers.v2
                 return Unauthorized("API_KEY header is missing.");
             }
 
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "warehouses", "put"))
+            {
+                return Forbid("You do not have permission to update warehouse classifications.");
+            }
+
             try
             {
-                var warehouse = _warehouseService.GetById(id);
-                if (warehouse == null)
-                {
-                    return NotFound($"Warehouse with ID {id} not found.");
-                }
-
-                if (warehouse.Classifications_Id == null)
-                {
-                    warehouse.Classifications_Id = new List<int>();
-                }
-                
-                await _warehouseService.UpdateClassifications(warehouse);
-
-                return Ok(warehouse);
+                var updatedWarehouse = _warehouseService.AddClassifications(id, classificationIds);
+                return Ok(updatedWarehouse); // Return the updated warehouse
             }
             catch (KeyNotFoundException ex)
             {
                 return NotFound(ex.Message);
             }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
+
     }
 }
