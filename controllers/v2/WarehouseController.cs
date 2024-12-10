@@ -14,12 +14,12 @@ namespace Cargohub.controllers.v2
     [ApiController]
     public class WarehouseController : Controller
     {
-        private readonly ICrudService<Warehouse, int> _warehouseService;
-        public WarehouseController(ICrudService<Warehouse, int> warehouseService)
+        private readonly WarehouseService _warehouseService;
+        public WarehouseController(WarehouseService warehouseService)
         {
             _warehouseService = warehouseService;
         }
-         [HttpGet("{warehouse_id}/locations")]
+        [HttpGet("{warehouse_id}/locations")]
         public IActionResult GetWarehouseLocations(int warehouse_id)
         {
 
@@ -244,6 +244,38 @@ namespace Cargohub.controllers.v2
                     TotalCapacity = totalCapacity,
                     CurrentCapacity = currentCapacity
                 });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpPut("{id}/classifications")]
+        public async Task<IActionResult> AddClassificationToWarehouse(int id, [FromBody] List<int> classificationIds)
+        {
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            try
+            {
+                var warehouse = _warehouseService.GetById(id);
+                if (warehouse == null)
+                {
+                    return NotFound($"Warehouse with ID {id} not found.");
+                }
+
+                if (warehouse.Classifications_Id == null)
+                {
+                    warehouse.Classifications_Id = new List<int>();
+                }
+                
+                await _warehouseService.UpdateClassifications(warehouse);
+
+                return Ok(warehouse);
             }
             catch (KeyNotFoundException ex)
             {

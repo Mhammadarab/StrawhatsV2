@@ -167,6 +167,21 @@ namespace Cargohub.services
 
             return capacities;
         }
+        public Task UpdateClassifications(Warehouse entity)
+        {
+            var warehouses = GetAll() ?? new List<Warehouse>();
+            var existingWarehouse = warehouses.FirstOrDefault(w => w.Id == entity.Id);
+
+            if (existingWarehouse == null)
+            {
+                throw new KeyNotFoundException($"Warehouse with ID {entity.Id} not found.");
+            }
+
+            // Update the properties
+            existingWarehouse.Classifications_Id = entity.Classifications_Id;
+            SaveToFile(warehouses);
+            return Task.CompletedTask;
+        }
 
 
         private void SaveToFile(List<Warehouse> warehouses)
