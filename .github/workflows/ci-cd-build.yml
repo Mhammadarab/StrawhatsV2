@@ -1,13 +1,11 @@
 name: CI/CD - build
 
 on:
-  push:
-    branches:
-      - staging
-  pull_request:
-    branches:
-      - main
-      - staging
+  workflow_call:
+    inputs:
+      DISCORD_WEBHOOK_URL:
+        type: string
+        required: true
 
 env:
   DOTNET_INSTALL_DIR: "./.dotnet"
@@ -30,9 +28,7 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: Notify Discord about Build Completion
-        env:
-          WEBHOOK_URL: ${{secrets.DISCORD_WEBHOOK_URL}}
         run: |
           curl -X POST -H "Content-Type: application/json" \
           -d '{"content": "🚀 **Build stage completed successfully** for staging branch. Proceeding to testing stage."}' \
-          "$WEBHOOK_URL"
+          ${{inputs.DISCORD_WEBHOOK_URL}}

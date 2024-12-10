@@ -1,13 +1,17 @@
-name: CI - Staging Branch
+name: CI/CD - Main Branch
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
-      - staging    
+      - main
   workflow_dispatch:
 
 env:
-  DOTNET_INSTALL_DIR: "./.dotnet"
+  IMAGE_NAME: cargohub
+  OWNER: "${{ github.repository_owner }}"
 
 jobs:
   build:
@@ -15,9 +19,14 @@ jobs:
     with:
       DISCORD_WEBHOOK_URL: ${{ vars.DISCORD_WEBHOOK_URL }}
 
+  # Test Stage
   test:
-    needs: build
     uses: ./.github/workflows/ci-cd-testing.yml
     with:
       DEPLOY_WEBHOOK_URL: ${{ vars.DISCORD_WEBHOOK_URL }}
-  
+
+  # Deploy Stage
+  deploy:
+    uses: ./.github/workflows/ci-cd-deploy.yml
+    with:
+      DEPLOY_WEBHOOK_URL: ${{ vars.DEPLOY_WEBHOOK_URL}}

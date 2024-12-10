@@ -1,18 +1,17 @@
 name: CI/CD - test
 
 on:
-  push:
-    branches:
-      staging
-  pull_request:
-    branches:
-      - main
-      - staging
+  workflow_call:
+    inputs:
+      DEPLOY_WEBHOOK_URL:
+        type: string
+        required: true
 
 env:
   DOTNET_INSTALL_DIR: "./.dotnet"
 
-test:
+jobs:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -34,9 +33,7 @@ test:
         continue-on-error: true
 
       - name: Notify Discord about Test Completion
-        env:
-          WEBHOOK_URL: ${{secrets.DEPLOY_WEBHOOK_URL}}
         run: |
           curl -X POST -H "Content-Type: application/json" \
           -d '{"content": "✅ **Testing stage completed successfully** for staging branch, despite potential errors."}' \
-          "$WEBHOOK_URL"
+          ${{inputs.DEPLOY_WEBHOOK_URL}}
