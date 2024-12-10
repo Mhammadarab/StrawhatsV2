@@ -1,0 +1,32 @@
+name: CI/CD - Main Branch
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: cargohub
+  OWNER: "${{ github.repository_owner }}"
+
+jobs:
+  build:
+    uses: ./.github/workflows/ci-cd-build.yml
+    with:
+      DISCORD_WEBHOOK_URL: ${{ vars.DISCORD_WEBHOOK_URL }}
+
+  # Test Stage
+  test:
+    uses: ./.github/workflows/ci-cd-testing.yml
+    with:
+      DEPLOY_WEBHOOK_URL: ${{ vars.DISCORD_WEBHOOK_URL }}
+
+  # Deploy Stage
+  deploy:
+    uses: ./.github/workflows/ci-cd-deploy.yml
+    with:
+      DEPLOY_WEBHOOK_URL: ${{ vars.DEPLOY_WEBHOOK_URL}}

@@ -15,10 +15,10 @@ namespace Cargohub.models
 
     public class EndpointAccess
     {
-        public bool Full { get; set; }
-        public bool Get { get; set; }
-        public bool Post { get; set; }
-        public bool Put { get; set; }
-        public bool Delete { get; set; }
+        public bool All { get; set; } // GET all
+        public bool Single { get; set; } // GET single
+        public bool Create { get; set; } // POST
+        public bool Update { get; set; } // PUT
+        public bool Delete { get; set; } // DELETE
     }
 }

@@ -1,5 +1,7 @@
 using Cargohub.interfaces;
 using Cargohub.models;
+using Newtonsoft.Json;
+using StrawhatsV2.models;
 
 public class CrossDockingService
 {
@@ -14,128 +16,158 @@ public class CrossDockingService
         _orderService = orderService;
     }
 
-    public string ReceiveShipment(int shipmentId)
-  {
-    var shipment = _shipmentService.GetById(shipmentId);
-    if (shipment == null)
+    private void LogCrossDockingOperation(string operation, string performedBy, Dictionary<string, object> details)
     {
-        throw new KeyNotFoundException($"Shipment with ID {shipmentId} not found.");
+        var logEntry = new CrossDockingLogEntry
+        {
+            Timestamp = DateTime.UtcNow,
+            PerformedBy = performedBy,
+            Operation = operation,
+            Details = details
+        };
+
+        var logFilePath = Path.Combine("logs", "cross_docking_logs.json");
+        Directory.CreateDirectory("logs");
+
+        List<CrossDockingLogEntry> logs;
+        if (File.Exists(logFilePath))
+        {
+            var jsonData = File.ReadAllText(logFilePath);
+            logs = JsonConvert.DeserializeObject<List<CrossDockingLogEntry>>(jsonData) ?? new List<CrossDockingLogEntry>();
+        }
+        else
+        {
+            logs = new List<CrossDockingLogEntry>();
+        }
+
+        logs.Add(logEntry);
+        File.WriteAllText(logFilePath, JsonConvert.SerializeObject(logs, Formatting.Indented));
     }
 
-    if (shipment.Shipment_Status == "Delivered")
+    public string ReceiveShipment(int shipmentId, string apiKey)
     {
-        throw new InvalidOperationException($"Shipment with ID {shipmentId} has already been delivered and cannot be updated.");
-    }
+        var shipment = _shipmentService.GetById(shipmentId);
+        if (shipment == null)
+        {
+            throw new KeyNotFoundException($"Shipment with ID {shipmentId} not found.");
+        }
 
-    if (shipment.Shipment_Status == "Transit")
-    {
-        // Items might still need to be marked as "Transit" if not already set
+        if (shipment.Shipment_Status == "Delivered")
+        {
+            throw new InvalidOperationException($"Shipment with ID {shipmentId} has already been delivered and cannot be updated.");
+        }
+
         foreach (var item in shipment.Items)
         {
-            if (item.CrossDockingStatus != "Transit")
+            item.CrossDockingStatus = "Transit";
+        }
+
+        shipment.Shipment_Status = "Transit";
+        _shipmentService.Update(shipment);
+
+        var details = new Dictionary<string, object>
+    {
+        { "ShipmentId", shipmentId },
+        { "Status", shipment.Shipment_Status }
+    };
+
+        LogCrossDockingOperation("ReceiveShipment", apiKey, details);
+
+        return $"Shipment with ID {shipmentId} has been received and marked as 'Transit'.";
+    }
+
+    public string ShipItems(int shipmentId, string apiKey)
+    {
+        var shipment = _shipmentService.GetById(shipmentId);
+        if (shipment == null)
+        {
+            throw new KeyNotFoundException($"Shipment with ID {shipmentId} not found.");
+        }
+
+        if (shipment.Shipment_Status == "Pending")
+        {
+            throw new InvalidOperationException($"Shipment with ID {shipmentId} must be in transit before it can be shipped.");
+        }
+
+        var orders = _orderService.GetAll();
+        var matchingOrder = orders.FirstOrDefault(o => o.Shipment_Id == shipmentId);
+        if (matchingOrder == null)
+        {
+            throw new KeyNotFoundException($"No order found linked to shipment ID {shipmentId}.");
+        }
+
+        foreach (var shipmentItem in shipment.Items)
+        {
+            var orderItem = matchingOrder.Items.FirstOrDefault(o => o.Item_Id == shipmentItem.Item_Id);
+            if (orderItem != null)
             {
-                item.CrossDockingStatus = "Transit";
+                int fulfilledAmount = Math.Min(shipmentItem.Amount, orderItem.Amount);
+                orderItem.Amount -= fulfilledAmount;
+                shipmentItem.Amount -= fulfilledAmount;
             }
         }
+
+        shipment.Shipment_Status = "Delivered";
         _shipmentService.Update(shipment);
-        return $"Shipment with ID {shipmentId} is already in transit. Items were updated if needed.";
+        _orderService.Update(matchingOrder);
+
+        var details = new Dictionary<string, object>
+    {
+        { "ShipmentId", shipmentId },
+        { "OrderStatus", matchingOrder.Order_Status }
+    };
+
+        LogCrossDockingOperation("ShipItems", apiKey, details);
+
+        return $"Shipment with ID {shipmentId} has been shipped and marked as 'Delivered'.";
     }
 
-    // Set shipment and item statuses to "Transit" for "Pending" shipments
-    foreach (var item in shipment.Items)
+    public List<object> MatchItems(int? shipmentId = null, int? pageNumber = null, int? pageSize = null)
     {
-        item.CrossDockingStatus = "Transit";
-    }
-    shipment.Shipment_Status = "Transit";
-    _shipmentService.Update(shipment);
+        var shipments = _shipmentService.GetAll();
+        var orders = _orderService.GetAll();
 
-    return $"Shipment with ID {shipmentId} has been received and marked as 'Transit'.";
-  }
+        var matches = new List<object>();
+        var pendingItems = new List<object>();
 
-
-    public List<object> MatchItems(int? shipmentId, int pageNumber, int pageSize)
-    {
-    var shipments = _shipmentService.GetAll();
-
-    // Filter shipments by ID and ensure they are in 'Transit'
-    if (shipmentId.HasValue)
-    {
-        shipments = shipments.Where(s => s.Id == shipmentId.Value && s.Shipment_Status == "Transit").ToList();
-    }
-    else
-    {
-        shipments = shipments.Where(s => s.Shipment_Status == "Transit").ToList();
-    }
-
-    // Apply pagination
-    shipments = shipments.Skip((pageNumber - 1) * pageSize)
-                         .Take(pageSize)
-                         .ToList();
-
-    var orders = _orderService.GetAll();
-    var matches = new List<object>();
-
-    foreach (var shipment in shipments)
-    {
-        // Find the order with the same shipment ID
-        var matchingOrder = orders.FirstOrDefault(o => o.Shipment_Id == shipment.Id);
-
-        if (matchingOrder != null)
+        foreach (var shipment in shipments.Where(s => shipmentId == null || s.Id == shipmentId))
         {
-            foreach (var shipmentItem in shipment.Items)
+            var matchingOrder = orders.FirstOrDefault(o => o.Shipment_Id == shipment.Id);
+            if (matchingOrder != null)
             {
-                // Check if the item exists in the order and match quantities
-                var orderItem = matchingOrder.Items.FirstOrDefault(o => o.Item_Id == shipmentItem.Item_Id);
-
-                if (orderItem != null)
+                foreach (var shipmentItem in shipment.Items)
                 {
-                    matches.Add(new
+                    var orderItem = matchingOrder.Items.FirstOrDefault(o => o.Item_Id == shipmentItem.Item_Id);
+                    if (orderItem != null)
                     {
-                        ItemId = shipmentItem.Item_Id,
-                        ShipmentId = shipment.Id,
-                        OrderId = matchingOrder.Id,
-                        Amount = Math.Min(shipmentItem.Amount, orderItem.Amount),
-                        Status = "Matched"
-                    });
+                        int matchedAmount = Math.Min(shipmentItem.Amount, orderItem.Amount);
 
-                    shipmentItem.CrossDockingStatus = "Matched";
+                        matches.Add(new
+                        {
+                            ShipmentId = shipment.Id,
+                            OrderId = matchingOrder.Id,
+                            ItemId = shipmentItem.Item_Id,
+                            MatchedAmount = matchedAmount,
+                            RemainingOrderAmount = orderItem.Amount - matchedAmount
+                        });
+
+                        shipmentItem.CrossDockingStatus = "Matched";
+                        orderItem.Amount -= matchedAmount;
+                    }
+                    else
+                    {
+                        pendingItems.Add(new
+                        {
+                            ShipmentId = shipment.Id,
+                            ItemId = shipmentItem.Item_Id,
+                            Amount = shipmentItem.Amount,
+                            Status = "Pending"
+                        });
+                    }
                 }
             }
         }
+
+        return matches.Concat(pendingItems).ToList();
     }
-
-    return matches;
-    } 
-
-
-
-    public string ShipItems(int shipmentId)
-{
-    var shipment = _shipmentService.GetById(shipmentId);
-    if (shipment == null)
-    {
-        throw new KeyNotFoundException($"Shipment with ID {shipmentId} not found.");
-    }
-
-    if (shipment.Shipment_Status == "Pending")
-    {
-        throw new InvalidOperationException($"Shipment with ID {shipmentId} must be in transit before it can be shipped.");
-    }
-
-    if (shipment.Shipment_Status == "Delivered")
-    {
-        throw new InvalidOperationException($"Shipment with ID {shipmentId} has already been delivered and cannot be updated.");
-    }
-
-    foreach (var item in shipment.Items)
-    {
-        item.CrossDockingStatus = "Shipped";
-    }
-
-    shipment.Shipment_Status = "Delivered";
-    _shipmentService.Update(shipment);
-
-    return $"Shipment with ID {shipmentId} has been shipped and marked as 'Delivered'.";
-}
-
 }

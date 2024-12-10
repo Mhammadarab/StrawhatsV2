@@ -13,7 +13,7 @@ namespace Cargohub.services
     {
         private readonly string jsonFilePath = "data/locations.json";
 
-        public Task Create(Location entity)
+        public async Task Create(Location entity)
         {
             var locations = GetAll() ?? new List<Location>();
 
@@ -22,11 +22,11 @@ namespace Cargohub.services
             entity.Id = nextId;
             
             locations.Add(entity);
-            SaveToFile(locations);
-            return Task.CompletedTask;
+            await SaveToFile(locations);
+
         }
 
-        public Task Delete(int id)
+        public async Task Delete(int id)
         {
             var locations = GetAll() ?? new List<Location>();
             var location = locations.FirstOrDefault(l => l.Id == id);
@@ -37,15 +37,27 @@ namespace Cargohub.services
             }
 
             locations.Remove(location);
-            SaveToFile(locations);
-            return Task.CompletedTask;
+            await SaveToFile(locations);
+
         }
 
-        public List<Location> GetAll()
+        public List<Location> GetAll(int? pageNumber = null, int? pageSize = null)
         {
             var jsonData = File.ReadAllText(jsonFilePath);
-            return JsonConvert.DeserializeObject<List<Location>>(jsonData) ?? new List<Location>();
+            var locations = JsonConvert.DeserializeObject<List<Location>>(jsonData) ?? new List<Location>();
+
+            // Apply pagination only if pageNumber and pageSize are provided and valid
+            if (pageNumber.HasValue && pageSize.HasValue && pageNumber > 0 && pageSize > 0)
+            {
+                locations = locations
+                    .Skip((pageNumber.Value - 1) * pageSize.Value)
+                    .Take(pageSize.Value)
+                    .ToList();
+            }
+
+            return locations;
         }
+
 
         public Location GetById(int id)
         {
@@ -60,7 +72,7 @@ namespace Cargohub.services
             return location;
         }
 
-        public Task Update(Location entity)
+        public async Task Update(Location entity)
         {
             var locations = GetAll() ?? new List<Location>();
             var location = locations.FirstOrDefault(l => l.Id == entity.Id);
@@ -78,8 +90,7 @@ namespace Cargohub.services
             location.Updated_At = entity.Updated_At;
 
 
-            SaveToFile(locations);
-            return Task.CompletedTask;
+            await SaveToFile(locations);
         }
 
         private async Task SaveToFile(List<Location> locations)

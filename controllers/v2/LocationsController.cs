@@ -24,6 +24,18 @@ namespace StrawhatsV2.controllers.v2
         [HttpGet]
         public IActionResult GetLocations()
         {
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "locations", "get"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+
             var locations = _locationService.GetAll();
             if (locations == null || !locations.Any())
             {
@@ -35,6 +47,18 @@ namespace StrawhatsV2.controllers.v2
         [HttpGet("{id}")]
         public IActionResult GetLocationById(int id)
         {
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "locations", "get"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+
             try
             {
                 var location = _locationService.GetById(id);
@@ -49,6 +73,18 @@ namespace StrawhatsV2.controllers.v2
         [HttpPost]
         public async Task<IActionResult> CreateLocation([FromBody] Location location)
         {
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "locations", "post"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+
             if (location == null)
             {
                 return BadRequest("Location data is null.");
@@ -61,6 +97,18 @@ namespace StrawhatsV2.controllers.v2
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateLocation(int id, [FromBody] Location location)
         {
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "locations", "put"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+
             if (location == null || location.Id != id)
             {
                 return BadRequest("Location data is null.");
@@ -69,7 +117,7 @@ namespace StrawhatsV2.controllers.v2
             try
             {
                 await _locationService.Update(location);
-                return Ok(location);
+                return NoContent();
             }
             catch (KeyNotFoundException ex)
             {
@@ -80,10 +128,22 @@ namespace StrawhatsV2.controllers.v2
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLocation(int id)
         {
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "locations", "delete"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+            
             try
             {
                 await _locationService.Delete(id);
-                return Ok();
+                return NoContent();
             }
             catch (KeyNotFoundException ex)
             {

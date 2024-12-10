@@ -1,69 +1,36 @@
 [
   {
-    "Timestamp": "2024-11-25T00:34:41.635499Z",
-    "Action": "Deleted",
+    "Timestamp": "2024-12-09T23:26:49.1589948Z",
+    "Action": "Updated",
     "PerformedBy": "a1b2c3d4e5",
-    "OldUser": {
-      "ApiKey": "testtest",
-      "App": "coolio",
+    "APIkey": "admin12345",
+    "Changes": {
       "EndpointAccess": {
-        "full": {
-          "Full": true,
-          "Get": true,
-          "Post": true,
-          "Put": true,
-          "Delete": false
-        }
-      }
-    },
-    "NewUser": null
-  },
-  {
-    "Timestamp": "2024-11-25T00:35:20.8655145Z",
-    "Action": "Created",
-    "PerformedBy": "a1b2c3d4e5",
-    "OldUser": null,
-    "NewUser": {
-      "ApiKey": "testtest",
-      "App": "coolio",
-      "EndpointAccess": {
-        "full": {
-          "Full": true,
-          "Get": true,
-          "Post": true,
-          "Put": true,
-          "Delete": false
+        "clients": {
+          "All": {
+            "OldValue": false,
+            "NewValue": true
+          }
         }
       }
     }
   },
   {
-    "Timestamp": "2024-11-25T00:38:33.9752884Z",
+    "Timestamp": "2024-12-09T23:28:46.7688847Z",
     "Action": "Updated",
     "PerformedBy": "a1b2c3d4e5",
-    "OldUser": {
-      "ApiKey": "testtest",
-      "App": "coolio",
+    "APIkey": "admin12345",
+    "Changes": {
+      "App": {
+        "OldValue": "CargoHUB Admin Dashboard",
+        "NewValue": "CargoHUB Admin Dashboard1"
+      },
       "EndpointAccess": {
-        "full": {
-          "Full": true,
-          "Get": true,
-          "Post": true,
-          "Put": true,
-          "Delete": false
-        }
-      }
-    },
-    "NewUser": {
-      "ApiKey": "testtest",
-      "App": "coolio",
-      "EndpointAccess": {
-        "full": {
-          "Full": false,
-          "Get": true,
-          "Post": true,
-          "Put": true,
-          "Delete": false
+        "clients": {
+          "All": {
+            "OldValue": true,
+            "NewValue": false
+          }
         }
       }
     }

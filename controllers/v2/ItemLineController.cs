@@ -5,18 +5,198 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Cargohub.interfaces;
 using Cargohub.models;
+using Cargohub.services;
 
 namespace Cargohub.Controllers.v2
 {
     [ApiExplorerSettings(GroupName = "ItemLines")]
-    [Route("api/v2/item_lines")]
+    [Route("api/v2/item_lines/")]
     [ApiController]
     public class ItemLineController : Controller
     {
-        [HttpGet]
-        public IActionResult GetItemLines()
+        private readonly ICrudService<ItemLine, int> _itemLineService;
+        private readonly ItemLineService _itemLineServiceWithItems;
+
+        public ItemLineController(ICrudService<ItemLine, int> itemLineService, ItemLineService itemLineServiceWithItems)
         {
-            return Ok("List of all Item Lines in v2");
+            _itemLineService = itemLineService;
+            _itemLineServiceWithItems = itemLineServiceWithItems;
+        }
+
+        [HttpGet]
+        public IActionResult GetItemLines([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
+        {
+            
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "item_lines", "get"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+
+            // Validate pagination parameters if provided
+            if ((pageNumber.HasValue && pageNumber <= 0) || (pageSize.HasValue && pageSize <= 0))
+            {
+                return BadRequest("Page number and page size must be greater than zero if provided.");
+            }
+            var itemLines = _itemLineService.GetAll(pageNumber, pageSize);
+            if (itemLines == null || !itemLines.Any())
+            {
+                return NotFound("No inventories found.");
+            }
+
+            var totalRecords = _itemLineService.GetAll(null, null).Count; // Total count without pagination
+
+            // Return metadata only if pagination is applied
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                return Ok(new
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalRecords = totalRecords,
+                    ItemLines = itemLines
+                });
+            }
+
+            // Return plain list if pagination is not applied
+            return Ok(itemLines);
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetItemLineById(int id)
+        {
+
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "item_lines", "get"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+
+            try
+            {
+                var itemLine = _itemLineService.GetById(id);
+                return Ok(itemLine);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpGet("{id}/items")]
+        public IActionResult GetItemsByItemLineId(int id)
+        {
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "item_lines", "get"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+
+            var items = _itemLineServiceWithItems.GetItemsByItemLineId(id);
+            if (items == null || items.Count == 0)
+            {
+                return NotFound();
+            }
+            return Ok(items);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateItemLine([FromBody] ItemLine itemLine)
+        {
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "item_lines", "post"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+
+            if (itemLine == null)
+            {
+                return BadRequest("ItemLine data is null.");
+            }
+
+            await _itemLineService.Create(itemLine);
+            return CreatedAtAction(nameof(GetItemLineById), new { id = itemLine.Id }, itemLine);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateItemLine(int id, [FromBody] ItemLine itemLine)
+        {
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "item_lines", "put"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+
+            if (itemLine == null || itemLine.Id != id)
+            {
+                return BadRequest("Invalid ItemLine data.");
+            }
+
+            try
+            {
+                await _itemLineService.Update(itemLine);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteItemLine(int id)
+        {
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "item_lines", "delete"))
+            {
+                return Forbid("You do not have permission to delete clients.");
+            }
+            
+            try
+            {
+                await _itemLineService.Delete(id);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
     }
 }

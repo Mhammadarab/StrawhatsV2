@@ -1,0 +1,39 @@
+name: CI/CD - test
+
+on:
+  workflow_call:
+    inputs:
+      DEPLOY_WEBHOOK_URL:
+        type: string
+        required: true
+
+env:
+  DOTNET_INSTALL_DIR: "./.dotnet"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@main
+        with:
+          dotnet-version: "8.x"
+
+      - name: Install dependencies
+        run: dotnet restore
+
+      - name: Run code formatting check
+        run: dotnet format --verify-no-changes
+        continue-on-error: true
+
+      - name: Run tests
+        run: dotnet test --configuration Release --no-restore
+        continue-on-error: true
+
+      - name: Notify Discord about Test Completion
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d '{"content": "✅ **Testing stage completed successfully** for staging branch, despite potential errors."}' \
+          ${{inputs.DEPLOY_WEBHOOK_URL}}

@@ -13,7 +13,7 @@ namespace Cargohub.services
         {
             var items = GetAll() ?? new List<Item>();
 
-            entity.Uid = Guid.NewGuid().ToString();
+            // entity.Uid = Guid.NewGuid().ToString();
             entity.Created_At = DateTime.Now;
             entity.Updated_At = DateTime.Now;
 
@@ -35,7 +35,7 @@ namespace Cargohub.services
             await SaveToFile(jsonFilePath, items);
         }
 
-        public List<Item> GetAll()
+        public List<Item> GetAll(int? pageNumber = null, int? pageSize = null)
         {
             if (!File.Exists(jsonFilePath))
             {
@@ -43,22 +43,34 @@ namespace Cargohub.services
             }
 
             var jsonData = File.ReadAllText(jsonFilePath);
-            return JsonConvert.DeserializeObject<List<Item>>(jsonData) ?? new List<Item>();
+            var items = JsonConvert.DeserializeObject<List<Item>>(jsonData) ?? new List<Item>();
+
+            // Apply pagination only if pageNumber and pageSize are provided and valid
+            if (pageNumber.HasValue && pageSize.HasValue && pageNumber > 0 && pageSize > 0)
+            {
+                items = items
+                    .Skip((pageNumber.Value - 1) * pageSize.Value)
+                    .Take(pageSize.Value)
+                    .ToList();
+            }
+
+            return items;
         }
 
-        public Item GetById(string uid)
+
+        public Item? GetById(string uid)
         {
             var items = GetAll();
             var item = items.FirstOrDefault(it => it.Uid == uid);
 
             if (item == null)
             {
-                throw new KeyNotFoundException($"Item with UID {uid} not found.");
+                return item;
             }
 
             // Get inventory totals from inventories.json
             var inventoryTotals = GetInventoryTotalsByItemId(uid);
-            item.InventoryTotals = inventoryTotals;
+            // item.InventoryTotals = inventoryTotals;
 
             return item;
         }

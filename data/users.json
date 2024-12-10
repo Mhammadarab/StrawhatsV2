@@ -3,115 +3,899 @@
     "ApiKey": "a1b2c3d4e5",
     "App": "CargoHUB Dashboard 1",
     "EndpointAccess": {
-      "full": {
-        "Full": true,
-        "Get": false,
-        "Post": false,
-        "Put": false,
-        "Delete": false
+      "clients": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "orders": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "inventories": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "shipments": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "suppliers": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "items": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "warehouses": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "transfers": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "locations": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "item_types": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "item_lines": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "item_groups": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
       }
     }
   },
   {
-    "ApiKey": "f6g7h8i9j0",
-    "App": "CargoHUB Dashboard 2",
+    "ApiKey": "admin12345",
+    "App": "CargoHUB Admin Dashboard",
     "EndpointAccess": {
-      "full": {
-        "Full": false,
-        "Get": false,
-        "Post": false,
-        "Put": false,
-        "Delete": false
+      "clients": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
       },
-      "warehouses": {
-        "Full": false,
-        "Get": true,
-        "Post": false,
-        "Put": false,
-        "Delete": false
+      "orders": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
       },
-      "locations": {
-        "Full": false,
-        "Get": true,
-        "Post": false,
-        "Put": false,
-        "Delete": false
+      "inventories": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
       },
-      "transfers": {
-        "Full": false,
-        "Get": true,
-        "Post": false,
-        "Put": false,
-        "Delete": false
-      },
-      "items": {
-        "Full": false,
-        "Get": true,
-        "Post": false,
-        "Put": false,
-        "Delete": false
-      },
-      "item_lines": {
-        "Full": false,
-        "Get": true,
-        "Post": false,
-        "Put": false,
-        "Delete": false
-      },
-      "item_groups": {
-        "Full": false,
-        "Get": true,
-        "Post": false,
-        "Put": false,
-        "Delete": false
-      },
-      "item_types": {
-        "Full": false,
-        "Get": true,
-        "Post": false,
-        "Put": false,
-        "Delete": false
+      "shipments": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
       },
       "suppliers": {
-        "Full": false,
-        "Get": true,
-        "Post": false,
-        "Put": false,
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "items": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "warehouses": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "transfers": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "locations": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "item_types": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "item_lines": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "item_groups": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      }
+    }
+  },
+  {
+    "ApiKey": "warehouseManager12345",
+    "App": "CargoHUB WarehouseManager Dashboard",
+    "EndpointAccess": {
+      "clients": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
         "Delete": false
       },
       "orders": {
-        "Full": false,
-        "Get": true,
-        "Post": false,
-        "Put": false,
-        "Delete": false
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
       },
-      "clients": {
-        "Full": false,
-        "Get": true,
-        "Post": false,
-        "Put": false,
-        "Delete": false
+      "inventories": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
       },
       "shipments": {
-        "Full": false,
-        "Get": true,
-        "Post": false,
-        "Put": false,
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "suppliers": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "items": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": false
+      },
+      "warehouses": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": false,
+        "Delete": false
+      },
+      "transfers": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "locations": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "item_types": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": false
+      },
+      "item_lines": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": false
+      },
+      "item_groups": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
         "Delete": false
       }
     }
   },
   {
-    "ApiKey": "1234",
-    "App": "test",
+    "ApiKey": "inventoryManager12345",
+    "App": "CargoHUB InventoryManager Dashboard",
     "EndpointAccess": {
-      "full": {
-        "Full": false,
-        "Get": false,
-        "Post": true,
-        "Put": true,
+      "clients": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "orders": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "inventories": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
         "Delete": true
+      },
+      "shipments": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "suppliers": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "items": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "warehouses": {
+        "All": false,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "transfers": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "locations": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "item_types": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": false
+      },
+      "item_lines": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": false
+      },
+      "item_groups": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": false
+      }
+    }
+  },
+  {
+    "ApiKey": "FloorManager12345",
+    "App": "CargoHUB FloorManager Dashboard",
+    "EndpointAccess": {
+      "clients": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "orders": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "inventories": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "shipments": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "suppliers": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "items": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "warehouses": {
+        "All": false,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "transfers": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": false
+      },
+      "locations": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": false
+      },
+      "item_types": {
+        "All": false,
+        "Single": false,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "item_lines": {
+        "All": false,
+        "Single": false,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "item_groups": {
+        "All": false,
+        "Single": false,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      }
+    }
+  },
+  {
+    "ApiKey": "operative12345",
+    "App": "CargoHUB Operative Dashboard",
+    "EndpointAccess": {
+      "clients": {
+        "All": false,
+        "Single": false,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "orders": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "inventories": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "shipments": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "suppliers": {
+        "All": false,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "items": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "warehouses": {
+        "All": false,
+        "Single": false,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "transfers": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": false
+      },
+      "locations": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "item_types": {
+        "All": false,
+        "Single": false,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "item_lines": {
+        "All": false,
+        "Single": false,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "item_groups": {
+        "All": false,
+        "Single": false,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      }
+    }
+  },
+  {
+    "ApiKey": "supervisor12345",
+    "App": "CargoHUB Operative Dashboard",
+    "EndpointAccess": {
+      "clients": {
+        "All": false,
+        "Single": false,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "orders": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "inventories": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "shipments": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "suppliers": {
+        "All": false,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "items": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "warehouses": {
+        "All": false,
+        "Single": false,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "transfers": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": false
+      },
+      "locations": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "item_types": {
+        "All": false,
+        "Single": false,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "item_lines": {
+        "All": false,
+        "Single": false,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "item_groups": {
+        "All": false,
+        "Single": false,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      }
+    }
+  },
+  {
+    "ApiKey": "analyst12345",
+    "App": "CargoHUB Analystic Dashboard",
+    "EndpointAccess": {
+      "clients": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "orders": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "inventories": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "shipments": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "suppliers": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "items": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "warehouses": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "transfers": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "locations": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "item_types": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "item_lines": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "item_groups": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      }
+    }
+  },
+  {
+    "ApiKey": "logistics12345",
+    "App": "CargoHUB Logistics Dashboard",
+    "EndpointAccess": {
+      "clients": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": false
+      },
+      "orders": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": false
+      },
+      "inventories": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": false
+      },
+      "shipments": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": false
+      },
+      "suppliers": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": false
+      },
+      "items": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": false,
+        "Delete": false
+      },
+      "warehouses": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "transfers": {
+        "All": false,
+        "Single": false,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "locations": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "item_types": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "item_lines": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "item_groups": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      }
+    }
+  },
+  {
+    "ApiKey": "sales12345",
+    "App": "CargoHUB Sales Dashboard",
+    "EndpointAccess": {
+      "clients": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": false
+      },
+      "orders": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": false
+      },
+      "inventories": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "shipments": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "suppliers": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": false
+      },
+      "items": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": false
+      },
+      "warehouses": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "transfers": {
+        "All": false,
+        "Single": false,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "locations": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "item_types": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "item_lines": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
+      },
+      "item_groups": {
+        "All": true,
+        "Single": true,
+        "Create": false,
+        "Update": false,
+        "Delete": false
       }
     }
   }

@@ -1,0 +1,11 @@
+[
+    {  
+        "id": 1,
+        "name": "hazardous"
+    },
+    {  
+        "id": 2,
+        "name": "non-hazardous"
+    }
+    
+]
