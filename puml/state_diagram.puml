@@ -1,0 +1,13 @@
+@startuml
+[*] --> OrderCreated
+
+OrderCreated : Entry / Create Order
+OrderCreated --> OrderProcessed : Process Order
+OrderProcessed : Entry / Validate Order
+OrderProcessed --> OrderShipped : Ship Order
+OrderShipped : Entry / Prepare Shipment
+OrderShipped --> OrderDelivered : Deliver Order
+OrderDelivered : Entry / Confirm Delivery
+OrderDelivered --> [*]
+
+@enduml

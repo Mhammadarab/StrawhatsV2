@@ -1,5 +1,13 @@
 @startuml
 
+' Legend
+legend left
+|= Modifier |= Description |
+| +         | Public       |
+| -         | Private      |
+| #         | Protected    |
+endlegend
+
 package Cargohub.models {
     class Item {
         +string Uid
