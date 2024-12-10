@@ -1,9 +1,9 @@
 name: CI - Staging Branch
 
 on:
-  pull_request:
+  push:
     branches:
-      - staging 
+      - 130-as-a-system-i-want-to-incorporate-integration-tests-into-the-cicd-pipeline-so-that-i-can-ensure-the-compatibility-and-proper-functioning-of-interconnected-components-and-services-before-deploying-changes
   workflow_dispatch:
 
 env:

@@ -45,8 +45,8 @@ jobs:
       - name: Run application
         run: dotnet run --no-build --configuration Release --urls=${{ secrets.LOCALHOST }} & sleep 5
 
-      - name: Run Python integration tests
-        run: pytest integration_tests
+      - name: Run Python integration tests with coverage
+        run: pytest --cov=integration_tests --cov-fail-under=90
 
       - name: Notify Discord about Test Completion
         run: |
