@@ -1,0 +1,23 @@
+@startuml
+actor User
+
+node "Web Server" as webServer {
+    [Nginx]
+}
+
+node "Application Server" as appServer {
+    [Cargohub API]
+}
+
+node "File System" as fileSystem {
+    [JSON Files]
+}
+
+User --> webServer: HTTP Request
+webServer --> appServer: Forward Request
+appServer --> fileSystem: Read/Write Data
+fileSystem --> appServer: Return Data
+appServer --> webServer: Return Response
+webServer --> User: HTTP Response
+
+@enduml

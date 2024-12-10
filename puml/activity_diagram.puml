@@ -1,0 +1,22 @@
+@startuml
+start
+
+:Receive Inventory Data;
+if (Is Inventory Data Valid?) then (yes)
+    :Check if Item is Hazardous;
+    if (Is Item Hazardous?) then (yes)
+        :Validate Locations for Hazardous Items;
+        if (Are Locations Valid?) then (yes)
+            :Save Inventory;
+        else (no)
+            :Return Error - Invalid Locations;
+        endif
+    else (no)
+        :Save Inventory;
+    endif
+else (no)
+    :Return Error - Invalid Inventory Data;
+endif
+
+stop
+@enduml
