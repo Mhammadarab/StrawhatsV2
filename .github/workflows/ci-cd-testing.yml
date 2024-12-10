@@ -21,16 +21,29 @@ jobs:
         with:
           dotnet-version: "8.x"
 
-      - name: Install dependencies
+      - name: Install .NET dependencies
         run: dotnet restore
 
       - name: Run code formatting check
         run: dotnet format --verify-no-changes
         continue-on-error: true
 
-      - name: Run tests
+      - name: Run .NET tests
         run: dotnet test --configuration Release --no-restore
         continue-on-error: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r integration_tests/requirements.txt
+
+      - name: Run Python integration tests
+        run: pytest integration_tests
 
       - name: Notify Discord about Test Completion
         run: |
