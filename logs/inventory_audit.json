@@ -2,7 +2,7 @@
   {
     "Timestamp": "2024-11-30T17:24:06.687449Z",
     "PerformedBy": "a1b2c3d4e5",
-    "Operation": null,
+    "Status": "Completed",
     "AuditData": {
       "11720": {
         "30113": 90,
@@ -14,13 +14,12 @@
       "Discrepancy for Inventory ID 11720 at Location 30113: System = 18, Physical = 20",
       "Discrepancy for Inventory ID 11720 at Location 30437: System = 18, Physical = 30",
       "Discrepancy for Inventory ID 11720 at Location 9010: System = 18, Physical = 40"
-    ],
-    "Status": null
+    ]
   },
   {
     "Timestamp": "2024-11-30T17:24:54.19268Z",
     "PerformedBy": "a1b2c3d4e5",
-    "Operation": null,
+    "Status": "Completed",
     "AuditData": {
       "11720": {
         "30113": 20
@@ -28,13 +27,12 @@
     },
     "Discrepancies": [
       "Discrepancy for Inventory ID 11720 at Location 30113: System = 18, Physical = 20"
-    ],
-    "Status": null
+    ]
   },
   {
     "Timestamp": "2024-12-03T13:07:05.500266Z",
     "PerformedBy": "a1b2c3d4e5",
-    "Operation": null,
+    "Status": "Live",
     "AuditData": {
       "1": {
         "3211": 25,
@@ -47,13 +45,12 @@
     "Discrepancies": [
       "Discrepancy for Inventory ID 1 at Location 3211: System = 33, Physical = 25",
       "Location 14123 not found for Inventory ID 2."
-    ],
-    "Status": null
+    ]
   },
   {
     "Timestamp": "2024-12-03T13:07:41.411694Z",
     "PerformedBy": "a1b2c3d4e5",
-    "Operation": null,
+    "Status": "Live",
     "AuditData": {
       "1": {
         "3211": 999,
@@ -67,13 +64,12 @@
       "Discrepancy for Inventory ID 1 at Location 3211: System = 33, Physical = 999",
       "Discrepancy for Inventory ID 1 at Location 24700: System = 33, Physical = 999",
       "Location 14123 not found for Inventory ID 2."
-    ],
-    "Status": null
+    ]
   },
   {
     "Timestamp": "2024-12-03T13:07:57.28274Z",
     "PerformedBy": "a1b2c3d4e5",
-    "Operation": null,
+    "Status": "Live",
     "AuditData": {
       "1": {
         "3211": 999,
@@ -87,13 +83,12 @@
       "Discrepancy for Inventory ID 1 at Location 3211: System = 33, Physical = 999",
       "Discrepancy for Inventory ID 1 at Location 24700: System = 33, Physical = 999",
       "Location 14123 not found for Inventory ID 2."
-    ],
-    "Status": "Completed"
+    ]
   },
   {
     "Timestamp": "2024-12-03T13:09:06.788917Z",
     "PerformedBy": "a1b2c3d4e5",
-    "Operation": null,
+    "Status": "Live",
     "AuditData": {
       "1": {
         "3211": 999,
@@ -107,13 +102,12 @@
       "Discrepancy for Inventory ID 1 at Location 3211: System = 33, Physical = 999",
       "Discrepancy for Inventory ID 1 at Location 24700: System = 33, Physical = 999",
       "Location 14123 not found for Inventory ID 2."
-    ],
-    "Status": null
+    ]
   },
   {
     "Timestamp": "2024-12-03T13:28:36.998861Z",
     "PerformedBy": "a1b2c3d4e5",
-    "Operation": null,
+    "Status": "Live",
     "AuditData": {
       "1": {
         "3211": 25,
@@ -127,13 +121,12 @@
       "Discrepancy for Inventory ID 1 at Location 3211: System = 33, Physical = 25",
       "Discrepancy for Inventory ID 1 at Location 24700: System = 33, Physical = 20",
       "Location 14123 not found for Inventory ID 2."
-    ],
-    "Status": null
+    ]
   },
   {
     "Timestamp": "2024-12-03T13:37:08.78441Z",
     "PerformedBy": "a1b2c3d4e5",
-    "Operation": null,
+    "Status": "Live",
     "AuditData": {
       "1": {
         "3211": 25,
@@ -146,13 +139,12 @@
     "Discrepancies": [
       "Inventory ID 1 not found.",
       "Location 14123 not found for Inventory ID 2."
-    ],
-    "Status": null
+    ]
   },
   {
     "Timestamp": "2024-12-03T13:38:33.612246Z",
     "PerformedBy": "a1b2c3d4e5",
-    "Operation": null,
+    "Status": "Live",
     "AuditData": {
       "1": {
         "3211": 25,
@@ -165,13 +157,12 @@
     "Discrepancies": [
       "Inventory ID 1 not found.",
       "Location 14123 not found for Inventory ID 2."
-    ],
-    "Status": null
+    ]
   },
   {
     "Timestamp": "2024-12-08T20:15:02.962415Z",
     "PerformedBy": "a1b2c3d4e5",
-    "Operation": null,
+    "Status": "Live",
     "AuditData": {
       "11720": {
         "30113": 20,
@@ -183,13 +174,12 @@
       "Discrepancy for Inventory ID 11720 at Location 30113: System = 18, Physical = 20",
       "Discrepancy for Inventory ID 11720 at Location 30437: System = 18, Physical = 30",
       "Discrepancy for Inventory ID 11720 at Location 9010: System = 18, Physical = 40"
-    ],
-    "Status": null
+    ]
   },
   {
     "Timestamp": "2024-12-08T20:23:15.709808Z",
     "PerformedBy": "a1b2c3d4e5",
-    "Operation": null,
+    "Status": "Live",
     "AuditData": {
       "11720": {
         "30113": 20,
@@ -201,13 +191,12 @@
       "Discrepancy for Inventory ID 11720 at Location 30113: System = 18, Physical = 20",
       "Discrepancy for Inventory ID 11720 at Location 30437: System = 18, Physical = 30",
       "Discrepancy for Inventory ID 11720 at Location 9010: System = 18, Physical = 40"
-    ],
-    "Status": null
+    ]
   },
   {
     "Timestamp": "2024-12-08T20:29:01.808781Z",
     "PerformedBy": "a1b2c3d4e5",
-    "Operation": null,
+    "Status": "Live",
     "AuditData": {
       "11720": {
         "30113": 90,
@@ -217,13 +206,12 @@
     },
     "Discrepancies": [
       "Discrepancy for Inventory ID 11720 at Location 30113: System = 20, Physical = 90"
-    ],
-    "Status": null
+    ]
   },
   {
     "Timestamp": "2024-12-10T14:54:40.678846Z",
     "PerformedBy": "a1b2c3d4e5",
-    "Operation": null,
+    "Status": "Live",
     "AuditData": {
       "1": {
         "3211": 999,
@@ -235,7 +223,6 @@
     },
     "Discrepancies": [
       "Location 14123 not found for Inventory ID 2."
-    ],
-    "Status": "Completed"
+    ]
   }
 ]

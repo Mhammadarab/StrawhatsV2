@@ -6,6 +6,7 @@ using Cargohub.interfaces;
 using Cargohub.services;
 using Cargohub.models;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Cargohub.controllers.v2
 {
@@ -121,24 +122,29 @@ namespace Cargohub.controllers.v2
         [HttpPut("{timestamp}/yes")]
         public async Task<IActionResult> ApproveAudit(string timestamp)
         {
-            var logEntry = _stockLogService.GetById(timestamp);
+            var logFilePath = Path.Combine("logs", "inventory_audit.json");
+            if (!System.IO.File.Exists(logFilePath))
+            {
+                return NotFound("Log file not found.");
+            }
+
+            var jsonData = await System.IO.File.ReadAllTextAsync(logFilePath);
+            var logs = JsonConvert.DeserializeObject<List<LogEntry>>(jsonData) ?? new List<LogEntry>();
+
+            var logEntry = logs.FirstOrDefault(log => log.Timestamp == timestamp);
             if (logEntry == null)
             {
                 return NotFound("Log entry not found.");
             }
 
-            // Convert AuditData from Dictionary<string, Dictionary<string, int>> to Dictionary<int, Dictionary<int, int>>
-            var auditData = logEntry.AuditData.ToDictionary(
-                kvp => int.Parse(kvp.Key),
-                kvp => kvp.Value.ToDictionary(innerKvp => int.Parse(innerKvp.Key), innerKvp => innerKvp.Value)
-            );
-
             // Update the stock based on the audit data
-            _inventoryService.AuditInventory(logEntry.PerformedBy, auditData);
+            _inventoryService.AuditInventory(logEntry.PerformedBy, logEntry.AuditData);
 
             // Update the status to "Completed"
             logEntry.Status = "Completed";
-            await _stockLogService.Update(logEntry);
+
+            // Write the updated logs back to the file
+            await System.IO.File.WriteAllTextAsync(logFilePath, JsonConvert.SerializeObject(logs, Formatting.Indented));
 
             return Ok("Audit approved and inventory updated.");
         }
