@@ -176,17 +176,18 @@ namespace Cargohub.services
             // Save the updated inventories
             SaveToFile(inventories);
 
-            // Log the discrepancies
-            LogAuditChange(performedBy, physicalCountsByLocation, discrepancies);
+            // Log the discrepancies with status "Completed"
+            LogAuditChange(performedBy, physicalCountsByLocation, discrepancies, "Completed");
             return discrepancies;
         }
 
-        private void LogAuditChange(string performedBy, Dictionary<int, Dictionary<int, int>> auditData, List<string> discrepancies)
+        private void LogAuditChange(string performedBy, Dictionary<int, Dictionary<int, int>> auditData, List<string> discrepancies, string status)
         {
             var logEntry = new
             {
                 Timestamp = DateTime.UtcNow,
                 PerformedBy = performedBy,
+                Status = status,
                 AuditData = auditData,
                 Discrepancies = discrepancies
             };
