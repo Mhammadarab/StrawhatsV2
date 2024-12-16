@@ -14,7 +14,7 @@ builder.Services.AddControllers(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddSingleton<WarehouseService>();
-builder.Services.AddSingleton<IItemService, ItemService>();
+builder.Services.AddSingleton<ItemService, ItemService>();
 builder.Services.AddSingleton<ICrudService<ItemLine, int>, ItemLineService>();
 builder.Services.AddSingleton<ItemLineService>();
 builder.Services.AddSingleton<ICrudService<ItemType, int>, ItemTypeService>();

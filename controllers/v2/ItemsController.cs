@@ -12,9 +12,9 @@ namespace Cargohub.Controllers.v2
     [ApiController]
     public class ItemController : Controller
     {
-        private readonly IItemService _itemService;
+        private readonly ItemService _itemService;
 
-        public ItemController(IItemService itemService)
+        public ItemController(ItemService itemService)
         {
             _itemService = itemService;
         }
@@ -185,7 +185,35 @@ namespace Cargohub.Controllers.v2
             {
                 return NotFound(ex.Message);
             }
+        }
+        [HttpPut("{uid}/add-classifications")]
+        public IActionResult AddClassificationsToItem(string uid, [FromBody] List<int> classificationIds)
+        {
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
 
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "items", "put"))
+            {
+                return Forbid("You do not have permission to update item classifications.");
+            }
+
+            try
+            {
+                var updatedItem = _itemService.AddClassifications(uid, classificationIds);
+                return Ok(updatedItem); // Return the updated item
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
     }
 }
