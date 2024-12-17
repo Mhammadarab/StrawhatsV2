@@ -32,13 +32,13 @@ jobs:
         run: |
           dotnet tool install --global coverlet.console
           dotnet test --configuration Release --no-restore --collect:"XPlat Code Coverage" --results-directory ./TestResults --logger "trx;LogFileName=unit_tests.trx"
-          coverlet ./bin/Release/net8.0/Cargohub.dll --target "dotnet" --targetargs "test --no-build --configuration Release" --format opencover --output ./TestResults/coverage.xml
+          coverlet ./bin/Release/net8.0/Cargohub.dll --target "dotnet" --targetargs "test --no-build --configuration Release" --format opencover --output ./TestResults/coverage.opencover.xml
         continue-on-error: true
 
       - name: Generate and Display Unit Test Coverage Report
         run: |
           dotnet tool install --global dotnet-reportgenerator-globaltool
-          reportgenerator -reports:./TestResults/coverage.xml -targetdir:./TestResults/CoverageReport -reporttypes:MarkdownSummary
+          reportgenerator -reports:./TestResults/coverage.opencover.xml -targetdir:./TestResults/CoverageReport -reporttypes:MarkdownSummary
           cat ./TestResults/CoverageReport/Summary.md >> $GITHUB_STEP_SUMMARY
 
       - name: Setup Python
