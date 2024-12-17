@@ -28,8 +28,15 @@ jobs:
         run: dotnet format --verify-no-changes
         continue-on-error: true
 
-      - name: Run .NET unit tests
-        run: dotnet test --configuration Release --no-restore --logger "trx;LogFileName=unit_tests.trx"
+      - name: Run .NET unit tests with coverage
+        run: |
+          dotnet test --configuration Release --no-restore --collect:"XPlat Code Coverage" --results-directory ./TestResults --logger "trx;LogFileName=unit_tests.trx"
+        continue-on-error: true
+
+      - name: Generate unit test coverage report
+        run: |
+          dotnet tool install --global dotnet-reportgenerator-globaltool
+          reportgenerator -reports:./TestResults/**/*.xml -targetdir:./TestResults/CoverageReport -reporttypes:HtmlInline_AzurePipelines;Cobertura
         continue-on-error: true
 
       - name: Publish unit test results
@@ -38,6 +45,19 @@ jobs:
         with:
           name: unit-test-results
           path: '**/*.trx'
+
+      - name: Publish unit test coverage results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: unit-test-coverage
+          path: '**/coverage.cobertura.xml'
+
+      - name: Display unit test coverage summary
+        if: always()
+        run: |
+          echo "## Unit Test Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "![Coverage](./TestResults/CoverageReport/index.html)" >> $GITHUB_STEP_SUMMARY
 
       - name: Setup Python
         uses: actions/setup-python@v4
