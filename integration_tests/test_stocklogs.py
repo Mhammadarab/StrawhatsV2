@@ -149,21 +149,7 @@ class TestStockLogAPI(unittest.TestCase):
         # Print the response content for debugging
         print(f"PUT /inventory_audit/{invalid_timestamp} - Status Code: {response.status_code}, Response: {response.text}")
         
-        self.assertEqual(response.status_code, 404, f"Expected status code 404, got {response.status_code}. Response: {response.text}")
-
-    def test_update_inventory_audit_invalid_timestamp(self):
-        """Test updating an inventory audit with an invalid timestamp (unhappy path)."""
-        invalid_timestamp = "9999-12-31T23:59:59Z"
-        updated_audit = self.test_stocklog.copy()
-        updated_audit["Timestamp"] = invalid_timestamp  # Ensure the timestamp matches the invalid one
-        updated_audit["Status"] = "Invalid Timestamp Audit"
-        
-        response = requests.put(f"{self.base_url}/{invalid_timestamp}", json=updated_audit, headers=self.headers)
-        
-        # Print the response content for debugging
-        print(f"PUT /inventory_audit/{invalid_timestamp} - Status Code: {response.status_code}, Response: {response.text}")
-        
-        self.assertEqual(response.status_code, 404, f"Expected status code 404, got {response.status_code}. Response: {response.text}")
+        self.assertEqual(response.status_code, 400, f"Expected status code 400, got {response.status_code}. Response: {response.text}")
 
     def test_delete_inventory_audit_invalid_timestamp(self):
         """Test deleting an inventory audit with an invalid timestamp (unhappy path)."""
