@@ -136,6 +136,26 @@ namespace Cargohub.services
                 TotalAvailable = inventory.Total_Available
             };
         }
+        public Item AddClassifications(string itemUid, List<int> newClassifications)
+        {
+            var items = GetAll() ?? new List<Item>();
+            var item = items.FirstOrDefault(it => it.Uid == itemUid);
+
+            if (item == null)
+            {
+                throw new KeyNotFoundException($"Item with UID {itemUid} not found.");
+            }
+
+            if (item.Classifications_Id == null)
+            {
+                item.Classifications_Id = new List<int>();
+            }
+
+            item.Classifications_Id.AddRange(newClassifications.Except(item.Classifications_Id));
+            SaveToFile(jsonFilePath, items);
+
+            return item;
+        }
 
         private async Task SaveToFile<T>(string filePath, List<T> data)
         {
