@@ -55,7 +55,7 @@ jobs:
       # - name: Create test summary
       #   uses: mikepenz/action-junit-report@v3
       #   with:
-      #     report_paths: integration_tests/results.xml
+      #     report_paths: integration_tests/results.xm
 
       - name: Notify Discord about Test Completion
         run: |
