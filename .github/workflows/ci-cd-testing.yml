@@ -28,9 +28,8 @@ jobs:
         run: dotnet format --verify-no-changes
         continue-on-error: true
 
-      - name: Run Unit Tests
-        run: |
-          dotnet test ./unit_tests/unit_tests.csproj --configuration Release --no-restore
+      - name: Run .NET tests
+        run: dotnet test --configuration Release --no-restore
         continue-on-error: true
 
       - name: Setup Python
@@ -52,6 +51,11 @@ jobs:
           coverage xml -o coverage.xml
           coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
           coverage report --fail-under=90
+
+      # - name: Create test summary
+      #   uses: mikepenz/action-junit-report@v3
+      #   with:
+      #     report_paths: integration_tests/results.xm
 
       - name: Notify Discord about Test Completion
         run: |
