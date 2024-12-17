@@ -10,10 +10,7 @@ namespace Cargohub.models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        [JsonProperty("created_at")]
         public DateTime Created_At { get; set; }
-
-        [JsonProperty("updated_at")]
         public DateTime Updated_At { get; set; }
     }
 }
