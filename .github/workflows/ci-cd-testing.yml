@@ -35,10 +35,11 @@ jobs:
           coverlet ./bin/Release/net8.0/Cargohub.dll --target "dotnet" --targetargs "test --no-build --configuration Release" --format opencover --output ./TestResults/coverage.xml
         continue-on-error: true
 
-      - name: Display Unit Test Coverage Report
+      - name: Generate and Display Unit Test Coverage Report
         run: |
-          coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
-          coverage report --fail-under=90
+          dotnet tool install --global dotnet-reportgenerator-globaltool
+          reportgenerator -reports:./TestResults/coverage.xml -targetdir:./TestResults/CoverageReport -reporttypes:MarkdownSummary
+          cat ./TestResults/CoverageReport/Summary.md >> $GITHUB_STEP_SUMMARY
 
       - name: Setup Python
         uses: actions/setup-python@v4
