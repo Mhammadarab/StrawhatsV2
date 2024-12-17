@@ -24,6 +24,62 @@ namespace Cargohub.controllers.v2
             _orderService = orderService;
         }
 
+        [HttpGet("{id}/picklist")]
+        public IActionResult GeneratePicklist(int id)
+        {
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "shipments", "get"))
+            {
+                return Forbid("You do not have permission to generate picklists.");
+            }
+
+            try
+            {
+                var picklist = ((ShipmentService)_shipmentService).GeneratePicklist(id);
+                return Ok(picklist);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpPost("{id}/pickinglist")]
+        public async Task<IActionResult> SavePickingList(int id, [FromBody] PickingListRequest request)
+        {
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "shipments", "post"))
+            {
+                return Forbid("You do not have permission to save picking lists.");
+            }
+
+            try
+            {
+                await ((ShipmentService)_shipmentService).SavePickingList(id, request.PickedItems, apiKey, request.Description);
+                return Ok("Picking list saved successfully.");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
         [HttpGet]
         public IActionResult GetShipments([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
         {

@@ -1,10 +1,12 @@
 using Cargohub.interfaces;
 using Cargohub.models;
 using Newtonsoft.Json;
+using StrawhatsV2.models;
 
 public class ShipmentService : ICrudService<Shipment, int>
 {
     private readonly string jsonFilePath = "data/shipments.json";
+    private readonly string logFilePath = "logs/picking_logs.json";
 
     public Task Create(Shipment entity)
     {
@@ -19,6 +21,88 @@ public class ShipmentService : ICrudService<Shipment, int>
 
         return Task.CompletedTask;
     }
+
+    public async Task SavePickingList(int shipmentId, Dictionary<string, int> pickedItems, string performedBy, string description = null)
+        {
+            var shipments = GetAll() ?? new List<Shipment>();
+            var shipment = shipments.FirstOrDefault(s => s.Id == shipmentId);
+
+            if (shipment == null)
+            {
+                throw new KeyNotFoundException($"Shipment with ID {shipmentId} not found.");
+            }
+
+            var invalidItems = new List<string>();
+
+            foreach (var pickedItem in pickedItems)
+            {
+                var shipmentItem = shipment.Items.FirstOrDefault(i => i.Item_Id == pickedItem.Key);
+                if (shipmentItem != null)
+                {
+                    if (shipmentItem.Amount < pickedItem.Value)
+                    {
+                        invalidItems.Add(pickedItem.Key);
+                    }
+                }
+            }
+
+            if (invalidItems.Any())
+            {
+                throw new InvalidOperationException($"Cannot pick the following items due to insufficient quantity: {string.Join(", ", invalidItems)}");
+            }
+
+            foreach (var pickedItem in pickedItems)
+            {
+                var shipmentItem = shipment.Items.FirstOrDefault(i => i.Item_Id == pickedItem.Key);
+                if (shipmentItem != null)
+                {
+                    shipmentItem.Amount -= pickedItem.Value;
+                    shipmentItem.CrossDockingStatus = shipmentItem.Amount == 0 ? "Picked" : "Partially Picked";
+                }
+            }
+
+            shipment.Shipment_Status = shipment.Items.All(i => i.Amount == 0) ? "Picked" : "Partially Picked";
+            shipment.Updated_At = DateTime.Now;
+
+            SaveToFile(shipments);
+
+            // Log the picking action
+            var logEntry = new PickingLogEntry
+            {
+                Timestamp = DateTime.Now,
+                PerformedBy = performedBy,
+                ShipmentId = shipmentId,
+                PickedItems = pickedItems,
+                Description = description
+            };
+
+            await LogPickingAction(logEntry);
+        }
+
+        private async Task LogPickingAction(PickingLogEntry logEntry)
+        {
+            var logs = new List<PickingLogEntry>();
+
+            if (File.Exists(logFilePath))
+            {
+                var jsonData = await File.ReadAllTextAsync(logFilePath);
+                logs = JsonConvert.DeserializeObject<List<PickingLogEntry>>(jsonData) ?? new List<PickingLogEntry>();
+            }
+
+            logs.Add(logEntry);
+            await File.WriteAllTextAsync(logFilePath, JsonConvert.SerializeObject(logs, Formatting.Indented));
+        }
+        
+        public List<ItemDetail> GeneratePicklist(int shipmentId)
+        {
+            var shipment = GetById(shipmentId);
+            if (shipment == null)
+            {
+                throw new KeyNotFoundException($"Shipment with ID {shipmentId} not found.");
+            }
+
+            return shipment.Items.Where(i => i.Amount > 0).ToList();
+        }
 
     public Task Delete(int id)
     {
