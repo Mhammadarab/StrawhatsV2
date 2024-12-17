@@ -28,6 +28,20 @@ jobs:
         run: dotnet format --verify-no-changes
         continue-on-error: true
 
+      # ---- Unit Tests Section ----
+      - name: Run .NET Unit Tests with Coverage
+        run: |
+          dotnet test --configuration Release --no-restore --collect:"XPlat Code Coverage" --results-directory unit_test_results
+        continue-on-error: true
+
+      - name: Process Unit Test Coverage
+        run: |
+          dotnet tool install --global dotnet-reportgenerator-globaltool
+          reportgenerator -reports:unit_test_results/**/coverage.cobertura.xml -targetdir:unit_test_coverage -reporttypes:HtmlInline_AzurePipelines;MarkdownSummary
+          cat unit_test_coverage/Summary.md >> $GITHUB_STEP_SUMMARY
+        continue-on-error: true
+
+      # ---- Integration Tests Section ----
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -48,12 +62,10 @@ jobs:
           coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
           coverage report --fail-under=90
 
-      - name: Publish integration test results
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: integration-test-results
-          path: '**/coverage.xml'
+      # - name: Create test summary
+      #   uses: mikepenz/action-junit-report@v3
+      #   with:
+      #     report_paths: integration_tests/results.xm
 
       - name: Notify Discord about Test Completion
         run: |
