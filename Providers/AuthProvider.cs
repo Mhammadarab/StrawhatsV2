@@ -70,6 +70,31 @@ namespace Cargohub.services
             var jsonData = JsonConvert.SerializeObject(_users, Formatting.Indented);
             File.WriteAllText(filePath, jsonData);
         }
+        public static void DeactivateUser(string performedBy, string apiKey)
+        {
+            var user = GetUser(apiKey);
+            if (user == null)
+            {
+                throw new KeyNotFoundException("User not found.");
+            }
+
+            user.IsActive = false;
+            SaveUsers();
+            LogChange("Deactivated", performedBy, oldUser: user);
+        }
+
+        public static void ReactivateUser(string performedBy, string apiKey)
+        {
+            var user = GetUser(apiKey);
+            if (user == null)
+            {
+                throw new KeyNotFoundException("User not found.");
+            }
+
+            user.IsActive = true;
+            SaveUsers();
+            LogChange("Reactivated", performedBy, oldUser: user);
+        }
 
         private static void LogChange(string action, string performedBy, User oldUser = null, User newUser = null)
         {
@@ -183,7 +208,8 @@ namespace Cargohub.services
 
         public static User GetUser(string apiKey)
         {
-            return _users.FirstOrDefault(x => x.ApiKey == apiKey);
+            var user = _users.FirstOrDefault(x => x.ApiKey == apiKey);
+            return user;
         }
 
         public static void AddUser(string performedBy, User user)

@@ -109,5 +109,44 @@ namespace Cargohub.Controllers.v2
                 return NotFound(ex.Message);
             }
         }
+        [HttpPost("{apiKey}/deactivate")]
+        public IActionResult DeactivateUser(string apiKey)
+        {
+            var adminApiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(adminApiKey))
+            {
+                return Unauthorized("API_KEY header is required for authorization.");
+            }
+
+            try
+            {
+                AuthProvider.DeactivateUser(adminApiKey, apiKey);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpPost("{apiKey}/reactivate")]
+        public IActionResult ReactivateUser(string apiKey)
+        {
+            var adminApiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(adminApiKey))
+            {
+                return Unauthorized("API_KEY header is required for authorization.");
+            }
+
+            try
+            {
+                AuthProvider.ReactivateUser(adminApiKey, apiKey);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
     }
 }
