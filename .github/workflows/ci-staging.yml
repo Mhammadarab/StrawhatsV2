@@ -1,9 +1,9 @@
 name: CI - Staging Branch
 
 on:
-  push : 
+  pull_request:
     branches:
-      - 151-as-a-system-i-want-to-integrate-unit-tests-into-the-cicd-pipeline
+      - staging
   workflow_dispatch:
 
 env:
