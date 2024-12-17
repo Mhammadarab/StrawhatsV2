@@ -96,7 +96,7 @@ namespace Cargohub.Controllers.v2
 
             try
             {
-                var inventoryTotals = _itemService.GetItemInventoryTotals(itemId);
+                var inventoryTotals = _itemService.GetTotalInventory(itemId);
                 return Ok(inventoryTotals);
             }
             catch (KeyNotFoundException)

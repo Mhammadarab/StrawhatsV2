@@ -61,26 +61,8 @@ namespace Cargohub.models
 
         [JsonProperty("updated_at")]
         public DateTime Updated_At { get; set; }
-        // public InventoryTotals InventoryTotals { get; set; }
         public List<int> Classifications_Id {get; set;}
 
     }
 
-    public class InventoryTotals
-    {
-        [JsonProperty("total_on_hand")]
-        public int TotalOnHand { get; set; }
-
-        [JsonProperty("total_expected")]
-        public int TotalExpected { get; set; }
-
-        [JsonProperty("total_ordered")]
-        public int TotalOrdered { get; set; }
-
-        [JsonProperty("total_allocated")]
-        public int TotalAllocated { get; set; }
-
-        [JsonProperty("total_available")]
-        public int TotalAvailable { get; set; }
-    }
 }

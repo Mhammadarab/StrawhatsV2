@@ -68,10 +68,6 @@ namespace Cargohub.services
                 return item;
             }
 
-            // Get inventory totals from inventories.json
-            var inventoryTotals = GetInventoryTotalsByItemId(uid);
-            // item.InventoryTotals = inventoryTotals;
-
             return item;
         }
 
@@ -105,16 +101,11 @@ namespace Cargohub.services
             await SaveToFile(jsonFilePath, items);
         }
 
-        public InventoryTotals GetItemInventoryTotals(string itemId)
-        {
-            return GetInventoryTotalsByItemId(itemId);
-        }
-
-        private InventoryTotals GetInventoryTotalsByItemId(string itemId)
+        public int GetTotalInventory(string itemId)
         {
             if (!File.Exists(inventoriesFilePath))
             {
-                return new InventoryTotals();
+                return 0;
             }
 
             var jsonData = File.ReadAllText(inventoriesFilePath);
@@ -124,17 +115,10 @@ namespace Cargohub.services
 
             if (inventory == null)
             {
-                return new InventoryTotals();
+                return 0;
             }
 
-            return new InventoryTotals
-            {
-                TotalOnHand = inventory.Total_On_Hand,
-                TotalExpected = inventory.Total_Expected,
-                TotalOrdered = inventory.Total_Ordered,
-                TotalAllocated = inventory.Total_Allocated,
-                TotalAvailable = inventory.Total_Available
-            };
+            return inventory.Total_On_Hand + inventory.Total_Expected + inventory.Total_Ordered + inventory.Total_Allocated + inventory.Total_Available;
         }
         public Item AddClassifications(string itemUid, List<int> newClassifications)
         {
