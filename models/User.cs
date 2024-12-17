@@ -11,6 +11,7 @@ namespace Cargohub.models
         public string ApiKey { get; set; }
         public string App { get; set; }
         public Dictionary<string, EndpointAccess> EndpointAccess { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 
     public class EndpointAccess

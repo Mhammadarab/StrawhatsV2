@@ -207,22 +207,5 @@
     "Discrepancies": [
       "Discrepancy for Inventory ID 11720 at Location 30113: System = 20, Physical = 90"
     ]
-  },
-  {
-    "Timestamp": "2024-12-10T14:54:40.678846Z",
-    "PerformedBy": "a1b2c3d4e5",
-    "Status": "Live",
-    "AuditData": {
-      "1": {
-        "3211": 999,
-        "24700": 999
-      },
-      "2": {
-        "14123": 999
-      }
-    },
-    "Discrepancies": [
-      "Location 14123 not found for Inventory ID 2."
-    ]
   }
 ]

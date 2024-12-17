@@ -87,7 +87,8 @@
         "Update": true,
         "Delete": true
       }
-    }
+    },
+    "IsActive": true
   },
   {
     "ApiKey": "admin12345",
@@ -177,7 +178,8 @@
         "Update": true,
         "Delete": true
       }
-    }
+    },
+    "IsActive": true
   },
   {
     "ApiKey": "warehouseManager12345",
@@ -267,7 +269,8 @@
         "Update": true,
         "Delete": false
       }
-    }
+    },
+    "IsActive": true
   },
   {
     "ApiKey": "inventoryManager12345",
@@ -357,7 +360,8 @@
         "Update": true,
         "Delete": false
       }
-    }
+    },
+    "IsActive": true
   },
   {
     "ApiKey": "FloorManager12345",
@@ -447,7 +451,8 @@
         "Update": false,
         "Delete": false
       }
-    }
+    },
+    "IsActive": true
   },
   {
     "ApiKey": "operative12345",
@@ -537,7 +542,8 @@
         "Update": false,
         "Delete": false
       }
-    }
+    },
+    "IsActive": true
   },
   {
     "ApiKey": "supervisor12345",
@@ -627,7 +633,8 @@
         "Update": false,
         "Delete": false
       }
-    }
+    },
+    "IsActive": true
   },
   {
     "ApiKey": "analyst12345",
@@ -717,7 +724,8 @@
         "Update": false,
         "Delete": false
       }
-    }
+    },
+    "IsActive": true
   },
   {
     "ApiKey": "logistics12345",
@@ -807,7 +815,8 @@
         "Update": false,
         "Delete": false
       }
-    }
+    },
+    "IsActive": true
   },
   {
     "ApiKey": "sales12345",
@@ -897,6 +906,7 @@
         "Update": false,
         "Delete": false
       }
-    }
+    },
+    "IsActive": true
   }
 ]

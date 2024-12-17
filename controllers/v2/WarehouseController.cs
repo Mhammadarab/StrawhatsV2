@@ -19,7 +19,7 @@ namespace Cargohub.controllers.v2
         {
             _warehouseService = warehouseService;
         }
-        [HttpGet("{warehouse_id}/locations")]
+         [HttpGet("{warehouse_id}/locations")]
         public IActionResult GetWarehouseLocations(int warehouse_id)
         {
 
@@ -250,7 +250,6 @@ namespace Cargohub.controllers.v2
                 return NotFound(ex.Message);
             }
         }
-
         [HttpPut("{id}/add-classifications")]
         public IActionResult AddClassificationsToWarehouse(int id, [FromBody] List<int> classificationIds)
         {
@@ -280,6 +279,5 @@ namespace Cargohub.controllers.v2
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-
     }
 }
