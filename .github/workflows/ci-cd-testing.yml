@@ -29,7 +29,7 @@ jobs:
         continue-on-error: true
 
       - name: Run .NET unit tests
-        run: dotnet test unit_tests --configuration Release --no-restore --logger "trx;LogFileName=unit_tests.trx"
+        run: dotnet test --configuration Release --no-restore --logger "trx;LogFileName=unit_tests.trx"
         continue-on-error: true
 
       - name: Publish test results
