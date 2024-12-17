@@ -14,8 +14,8 @@ namespace Cargohub.controllers.v2
     [ApiController]
     public class WarehouseController : Controller
     {
-        private readonly ICrudService<Warehouse, int> _warehouseService;
-        public WarehouseController(ICrudService<Warehouse, int> warehouseService)
+        private readonly WarehouseService _warehouseService;
+        public WarehouseController(WarehouseService warehouseService)
         {
             _warehouseService = warehouseService;
         }
@@ -248,6 +248,35 @@ namespace Cargohub.controllers.v2
             catch (KeyNotFoundException ex)
             {
                 return NotFound(ex.Message);
+            }
+        }
+        [HttpPut("{id}/add-classifications")]
+        public IActionResult AddClassificationsToWarehouse(int id, [FromBody] List<int> classificationIds)
+        {
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "warehouses", "put"))
+            {
+                return Forbid("You do not have permission to update warehouse classifications.");
+            }
+
+            try
+            {
+                var updatedWarehouse = _warehouseService.AddClassifications(id, classificationIds);
+                return Ok(updatedWarehouse); // Return the updated warehouse
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
     }
