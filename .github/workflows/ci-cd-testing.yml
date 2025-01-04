@@ -28,13 +28,8 @@ jobs:
         run: dotnet format --verify-no-changes
         continue-on-error: true
 
-      - name: Run .NET unit tests with coverage
-        run: |
-          dotnet tool install --global coverlet.console
-          dotnet test unit_tests --configuration Release --no-restore --collect:"XPlat Code Coverage" --results-directory ./TestResults --logger "trx;LogFileName=unit_tests.trx"
-          coverlet ./unit_tests/bin/Release/net8.0/unit_tests.dll --target "dotnet" --targetargs "test --no-build --configuration Release" --format opencover --output ./TestResults/coverage.opencover.xml
-          reportgenerator -reports:./TestResults/coverage.opencover.xml -targetdir:./TestResults/CoverageReport -reporttypes:MarkdownSummary
-          cat ./TestResults/CoverageReport/Summary.md >> $GITHUB_STEP_SUMMARY
+      - name: Run .NET tests
+        run: dotnet test --configuration Release --no-restore
         continue-on-error: true
 
       - name: Setup Python
@@ -56,6 +51,14 @@ jobs:
           coverage xml -o coverage.xml
           coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
           coverage report --fail-under=90
+
+      - name: Run Unit Tests
+        run: dotnet test ./RunTrackr.sln --configuration Release --no-restore --no-build
+
+      # - name: Create test summary
+      #   uses: mikepenz/action-junit-report@v3
+      #   with:
+      #     report_paths: integration_tests/results.xm
 
       - name: Notify Discord about Test Completion
         run: |
