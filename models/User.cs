@@ -12,6 +12,7 @@ namespace Cargohub.models
         public string App { get; set; }
         public Dictionary<string, EndpointAccess> EndpointAccess { get; set; }
         public bool IsActive { get; set; } = true;
+        public List<int> Warehouses { get; set; }
     }
 
     public class EndpointAccess
