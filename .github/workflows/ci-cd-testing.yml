@@ -28,6 +28,9 @@ jobs:
         run: dotnet format --verify-no-changes
         continue-on-error: true
 
+      - name: Build the unit test project
+        run: dotnet build "unit_tests/unit_tests.csproj" --configuration Release --no-restore
+
       - name: Run .NET tests
         run: dotnet test "unit_tests/unit_tests.csproj" --no-build --configuration Release --no-restore
         continue-on-error: true
