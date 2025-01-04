@@ -28,9 +28,23 @@ jobs:
         run: dotnet format --verify-no-changes
         continue-on-error: true
 
-      - name: Run .NET tests
-        run: dotnet test --configuration Release --no-restore
+      - name: Run .NET unit tests with coverage
+        run: |
+          dotnet test --configuration Release --no-restore --collect:"XPlat Code Coverage" --logger "trx;LogFileName=unit_tests.trx"
         continue-on-error: true
+
+      - name: Install ReportGenerator
+        run: dotnet tool install --global dotnet-reportgenerator-globaltool
+
+      - name: Generate Coverage Report
+        run: |
+          reportgenerator -reports:./TestResults/**/*.xml -targetdir:./TestResults/CoverageReport -reporttypes:HtmlInline_AzurePipelines
+        continue-on-error: true
+
+      - name: Generate and Display Coverage Report
+        run: |
+          python3 generate_coverage_report.py
+          cat coverage_report.md >> $GITHUB_STEP_SUMMARY
 
       - name: Setup Python
         uses: actions/setup-python@v4
