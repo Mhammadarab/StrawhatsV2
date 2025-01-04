@@ -30,21 +30,16 @@ jobs:
 
       - name: Run .NET unit tests with coverage
         run: |
-          dotnet test --configuration Release --no-restore --collect:"XPlat Code Coverage" --logger "trx;LogFileName=unit_tests.trx"
+          dotnet tool install --global coverlet.console
+          dotnet test unit_tests --configuration Release --no-restore --collect:"XPlat Code Coverage" --results-directory ./TestResults --logger "trx;LogFileName=unit_tests.trx"
+          coverlet ./unit_tests/bin/Release/net8.0/unit_tests.dll --target "dotnet" --targetargs "test --no-build --configuration Release" --format opencover --output ./TestResults/coverage.opencover.xml
         continue-on-error: true
 
-      - name: Install ReportGenerator
-        run: dotnet tool install --global dotnet-reportgenerator-globaltool
-
-      - name: Generate Coverage Report
+      - name: Generate and Display Unit Test Coverage Report
         run: |
-          reportgenerator -reports:./TestResults/**/*.xml -targetdir:./TestResults/CoverageReport -reporttypes:HtmlInline_AzurePipelines
-        continue-on-error: true
-
-      - name: Generate and Display Coverage Report
-        run: |
-          python3 generate_coverage_report.py
-          cat coverage_report.md >> $GITHUB_STEP_SUMMARY
+          dotnet tool install --global dotnet-reportgenerator-globaltool
+          reportgenerator -reports:./TestResults/coverage.opencover.xml -targetdir:./TestResults/CoverageReport -reporttypes:MarkdownSummary
+          cat ./TestResults/CoverageReport/Summary.md >> $GITHUB_STEP_SUMMARY
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -70,6 +65,12 @@ jobs:
       #   uses: mikepenz/action-junit-report@v3
       #   with:
       #     report_paths: integration_tests/results.xm
+      - name: Publish integration test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: integration-test-results
+          path: '**/coverage.xml'
 
       - name: Notify Discord about Test Completion
         run: |
