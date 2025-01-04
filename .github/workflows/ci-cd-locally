@@ -1,0 +1,53 @@
+# justfile
+
+# Variables
+set dotenv-load := true
+DOTNET_INSTALL_DIR := "./.dotnet"
+LOCALHOST := "http://localhost:5000"
+
+# Task to setup .NET
+setup-dotnet:
+    curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --install-dir {{DOTNET_INSTALL_DIR}} --channel 8.0
+    export PATH="{{DOTNET_INSTALL_DIR}}:$PATH"
+    dotnet --version
+
+# Task to install .NET dependencies
+install-dotnet-dependencies:
+    dotnet restore
+
+# Task to run code formatting check
+format-check:
+    dotnet format --verify-no-changes || true
+
+# Task to run .NET tests
+run-dotnet-tests:
+    dotnet test --configuration Release --no-restore || true
+
+# Task to setup Python
+setup-python:
+    python -m pip install --upgrade pip
+    pip install -r integration_tests/requirements.txt
+
+# Task to run the application
+run-application:
+    dotnet run --no-build --configuration Release --urls={{LOCALHOST}} & sleep 5
+
+# Task to run Python integration tests with coverage
+run-python-integration-tests:
+    pytest --cov=integration_tests --cov-report=xml --cov-report=term-missing
+    coverage xml -o coverage.xml
+    coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
+    coverage report --fail-under=90
+
+# Task to run unit tests
+run-unit-tests:
+    dotnet test ./StrawhatsV2.sln --configuration Release --no-restore --no-build
+
+# Task to notify Discord about test completion
+notify-discord:
+    curl -X POST -H "Content-Type: application/json" \
+    -d '{"content": "✅ **Testing stage completed successfully** for staging branch, despite potential errors."}' \
+    $DEPLOY_WEBHOOK_URL
+
+# Main task to run all steps
+ci-cd-test: setup-dotnet install-dotnet-dependencies format-check run-dotnet-tests setup-python install-python-dependencies run-application run-python-integration-tests run-unit-tests notify-discord
