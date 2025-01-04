@@ -28,10 +28,6 @@ jobs:
         run: dotnet format --verify-no-changes
         continue-on-error: true
 
-      - name: Run .NET tests
-        run: dotnet test --configuration Release --no-restore
-        continue-on-error: true
-
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -53,10 +49,10 @@ jobs:
           coverage report --fail-under=90
 
       - name: Build the test project
-        run: dotnet build "StrawhatsV2/unit_tests/unit_tests.csproj" --no-restore --configuration Release
+        run: dotnet build "unit_tests/unit_tests.csproj" --no-restore --configuration Release
     
       - name: Run Unit Tests
-        run: dotnet test "StrawhatsV2/unit_tests/unit_tests.csproj" --no-build --configuration Release
+        run: dotnet test "unit_tests/unit_tests.csproj" --no-build --configuration Release
       # - name: Create test summary
       #   uses: mikepenz/action-junit-report@v3
       #   with:
