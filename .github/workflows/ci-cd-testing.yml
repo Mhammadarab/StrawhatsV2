@@ -52,6 +52,9 @@ jobs:
           coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
           coverage report --fail-under=90
 
+      - name: Restore dependencies
+        run: dotnet restore
+
       - name: Build the test project
         run: dotnet build "unit_tests/unit_tests.csproj" --no-restore --configuration Release
     
