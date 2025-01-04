@@ -53,7 +53,7 @@ jobs:
           coverage report --fail-under=90
 
       - name: Run Unit Tests
-        run: dotnet test ./RunTrackr.sln --configuration Release --no-restore --no-build
+        run: dotnet test ./StrawhatsV2.sln --configuration Release --no-restore --no-build
 
       # - name: Create test summary
       #   uses: mikepenz/action-junit-report@v3
