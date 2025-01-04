@@ -148,5 +148,65 @@ namespace Cargohub.Controllers.v2
                 return NotFound(ex.Message);
             }
         }
+
+        [HttpGet("{apiKey}/warehouses")]
+        public IActionResult GetWarehouses(string apiKey)
+        {
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            return Ok(user.Warehouses);
+        }
+
+        [HttpPut("{apiKey}/warehouses/add")]
+        public IActionResult AddWarehouse(string apiKey, [FromBody] int warehouseId)
+        {
+            var adminApiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(adminApiKey))
+            {
+                return Unauthorized("API_KEY header is required for authorization.");
+            }
+
+            try
+            {
+                AuthProvider.AddWarehouse(adminApiKey, apiKey, warehouseId);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("{apiKey}/warehouses/remove")]
+        public IActionResult RemoveWarehouse(string apiKey, [FromBody] int warehouseId)
+        {
+            var adminApiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(adminApiKey))
+            {
+                return Unauthorized("API_KEY header is required for authorization.");
+            }
+
+            try
+            {
+                AuthProvider.RemoveWarehouse(adminApiKey, apiKey, warehouseId);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
