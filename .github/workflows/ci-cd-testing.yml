@@ -28,6 +28,10 @@ jobs:
         run: dotnet format --verify-no-changes
         continue-on-error: true
 
+      - name: Run .NET tests
+        run: dotnet test --configuration Release --no-restore
+        continue-on-error: true
+
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
