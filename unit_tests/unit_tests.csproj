@@ -22,3 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Cargohub.csproj" />
+  </ItemGroup>
+
+</Project>
