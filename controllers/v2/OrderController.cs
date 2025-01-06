@@ -20,8 +20,7 @@ namespace Cargohub.controllers.v2
             _orderService = orderService;
         }
 
-        [HttpGet]
-        public IActionResult GetOrders([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
+        private IActionResult ValidateApiKeyAndUser(string permission)
         {
             var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
             if (string.IsNullOrEmpty(apiKey))
@@ -30,9 +29,21 @@ namespace Cargohub.controllers.v2
             }
 
             var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "orders", "get"))
+            if (user == null || !AuthProvider.HasAccess(user, "orders", permission))
             {
-                return Forbid("You do not have permission to delete clients.");
+                return Forbid("You do not have permission to access this resource.");
+            }
+
+            return null;
+        }
+
+        [HttpGet]
+        public IActionResult GetOrders([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
+        {
+            var validationResult = ValidateApiKeyAndUser("get");
+            if (validationResult != null)
+            {
+                return validationResult;
             }
 
             if ((pageNumber.HasValue && pageNumber <= 0) || (pageSize.HasValue && pageSize <= 0))
@@ -66,16 +77,10 @@ namespace Cargohub.controllers.v2
         [HttpGet("{id}")]
         public IActionResult GetOrderById(int id)
         {
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
+            var validationResult = ValidateApiKeyAndUser("get");
+            if (validationResult != null)
             {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "orders", "get"))
-            {
-                return Forbid("You do not have permission to delete clients.");
+                return validationResult;
             }
 
             try
@@ -92,16 +97,10 @@ namespace Cargohub.controllers.v2
         [HttpPost]
         public async Task<IActionResult> CreateOrder([FromBody] Order order)
         {
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
+            var validationResult = ValidateApiKeyAndUser("post");
+            if (validationResult != null)
             {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "orders", "post"))
-            {
-                return Forbid("You do not have permission to delete clients.");
+                return validationResult;
             }
 
             if (order == null)
@@ -116,16 +115,10 @@ namespace Cargohub.controllers.v2
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOrder(int id, [FromBody] Order order)
         {
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
+            var validationResult = ValidateApiKeyAndUser("put");
+            if (validationResult != null)
             {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "orders", "put"))
-            {
-                return Forbid("You do not have permission to delete clients.");
+                return validationResult;
             }
 
             if (order == null || order.Id != id)
@@ -147,16 +140,10 @@ namespace Cargohub.controllers.v2
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
+            var validationResult = ValidateApiKeyAndUser("delete");
+            if (validationResult != null)
             {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "orders", "delete"))
-            {
-                return Forbid("You do not have permission to delete clients.");
+                return validationResult;
             }
 
             try
@@ -173,16 +160,10 @@ namespace Cargohub.controllers.v2
         [HttpGet("{id}/items")]
         public async Task<IActionResult> GetOrderItems(int id)
         {
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
+            var validationResult = ValidateApiKeyAndUser("get");
+            if (validationResult != null)
             {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "orders", "get"))
-            {
-                return Forbid("You do not have permission to delete clients.");
+                return validationResult;
             }
 
             try
@@ -200,16 +181,10 @@ namespace Cargohub.controllers.v2
         [HttpPut("{id}/items")]
         public async Task<IActionResult> UpdateOrderItems(int id, [FromBody] Order orderBody)
         {
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
+            var validationResult = ValidateApiKeyAndUser("put");
+            if (validationResult != null)
             {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "orders", "put"))
-            {
-                return Forbid("You do not have permission to delete clients.");
+                return validationResult;
             }
             
             try

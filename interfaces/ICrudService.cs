@@ -13,8 +13,4 @@ namespace Cargohub.interfaces
         Task Delete(TKey id);
     }
 
-    public interface IItemService : ICrudService<Item, string>
-    {
-        InventoryTotals GetItemInventoryTotals(string itemId);
-    }
 }

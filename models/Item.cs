@@ -26,17 +26,8 @@ namespace Cargohub.models
         public string SupplierPartNumber { get; set; }
         public DateTime Created_At { get; set; }
         public DateTime Updated_At { get; set; }
-        // public InventoryTotals InventoryTotals { get; set; }
         public List<int> Classifications_Id {get; set;}
 
     }
 
-    public class InventoryTotals
-    {
-        public int TotalOnHand { get; set; }
-        public int TotalExpected { get; set; }
-        public int TotalOrdered { get; set; }
-        public int TotalAllocated { get; set; }
-        public int TotalAvailable { get; set; }
-    }
 }
