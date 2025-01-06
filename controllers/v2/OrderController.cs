@@ -61,7 +61,6 @@ namespace Cargohub.controllers.v2
             }
             return Ok(orders);
         }
-        
 
         [HttpGet("{id}")]
         public IActionResult GetOrderById(int id)
@@ -101,7 +100,7 @@ namespace Cargohub.controllers.v2
             var user = AuthProvider.GetUser(apiKey);
             if (user == null || !AuthProvider.HasAccess(user, "orders", "post"))
             {
-                return Forbid("You do not have permission to delete clients.");
+                return Forbid("You do not have permission to create orders.");
             }
 
             if (order == null)
@@ -125,7 +124,7 @@ namespace Cargohub.controllers.v2
             var user = AuthProvider.GetUser(apiKey);
             if (user == null || !AuthProvider.HasAccess(user, "orders", "put"))
             {
-                return Forbid("You do not have permission to delete clients.");
+                return Forbid("You do not have permission to update orders.");
             }
 
             if (order == null || order.Id != id)
@@ -192,7 +191,6 @@ namespace Cargohub.controllers.v2
             }
             catch (KeyNotFoundException ex)
             {
-
                 return NotFound(ex.Message);
             }
         }
@@ -211,7 +209,7 @@ namespace Cargohub.controllers.v2
             {
                 return Forbid("You do not have permission to delete clients.");
             }
-            
+
             try
             {
                 var targetOrder = _orderService.GetById(id);
@@ -221,7 +219,6 @@ namespace Cargohub.controllers.v2
             }
             catch (KeyNotFoundException e)
             {
-
                 return NotFound(e.Message);
             }
         }
