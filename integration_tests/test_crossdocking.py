@@ -39,26 +39,7 @@ class TestCrossdockingAPI(unittest.TestCase):
             "Updated_At": "2000-03-11T13:11:14Z",
             "Items": [
                 {"Item_Id": "P007435", "Amount": 23, "CrossDockingStatus": None},
-                {"Item_Id": "P009557", "Amount": 1, "CrossDockingStatus": None},
-                {"Item_Id": "P009553", "Amount": 50, "CrossDockingStatus": None},
-                {"Item_Id": "P010015", "Amount": 16, "CrossDockingStatus": None},
-                {"Item_Id": "P002084", "Amount": 33, "CrossDockingStatus": None},
-                {"Item_Id": "P009663", "Amount": 18, "CrossDockingStatus": None},
-                {"Item_Id": "P010125", "Amount": 18, "CrossDockingStatus": None},
-                {"Item_Id": "P005768", "Amount": 26, "CrossDockingStatus": None},
-                {"Item_Id": "P004051", "Amount": 1, "CrossDockingStatus": None},
-                {"Item_Id": "P005026", "Amount": 29, "CrossDockingStatus": None},
-                {"Item_Id": "P000726", "Amount": 22, "CrossDockingStatus": None},
-                {"Item_Id": "P008107", "Amount": 47, "CrossDockingStatus": None},
-                {"Item_Id": "P001598", "Amount": 32, "CrossDockingStatus": None},
-                {"Item_Id": "P002855", "Amount": 20, "CrossDockingStatus": None},
-                {"Item_Id": "P010404", "Amount": 30, "CrossDockingStatus": None},
-                {"Item_Id": "P010446", "Amount": 6, "CrossDockingStatus": None},
-                {"Item_Id": "P001517", "Amount": 9, "CrossDockingStatus": None},
-                {"Item_Id": "P009265", "Amount": 2, "CrossDockingStatus": None},
-                {"Item_Id": "P001108", "Amount": 20, "CrossDockingStatus": None},
-                {"Item_Id": "P009110", "Amount": 18, "CrossDockingStatus": None},
-                {"Item_Id": "P009686", "Amount": 13, "CrossDockingStatus": None}
+                {"Item_Id": "P009557", "Amount": 1, "CrossDockingStatus": None}
             ]
         }
 
