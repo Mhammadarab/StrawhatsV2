@@ -26,11 +26,8 @@ namespace Cargohub.controllers.v2
             _warehouseService = warehouseService;
             _classificationsService = classificationsService;
         }
-
-        [HttpGet]
-        public IActionResult GetInventories([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
+        private IActionResult ValidateApiKeyAndUser(string permission)
         {
-
             var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
             if (string.IsNullOrEmpty(apiKey))
             {
@@ -38,9 +35,22 @@ namespace Cargohub.controllers.v2
             }
 
             var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "inventories", "get"))
+            if (user == null || !AuthProvider.HasAccess(user, "inventories", permission))
             {
-                return Forbid("You do not have permission to delete clients.");
+                return Forbid("You do not have permission to access this resource.");
+            }
+
+            return null;
+        }
+
+        [HttpGet]
+        public IActionResult GetInventories([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
+        {
+
+            var validationResult = ValidateApiKeyAndUser("get");
+            if (validationResult != null)
+            {
+                return validationResult;
             }
 
             // Validate pagination parameters if provided
@@ -105,16 +115,10 @@ namespace Cargohub.controllers.v2
         public async Task<IActionResult> CreateInventory([FromBody] Inventory inventory)
         {
 
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
+            var validationResult = ValidateApiKeyAndUser("post");
+            if (validationResult != null)
             {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "inventories", "post"))
-            {
-                return Forbid("You do not have permission to delete clients.");
+                return validationResult;
             }
 
             if (inventory == null)

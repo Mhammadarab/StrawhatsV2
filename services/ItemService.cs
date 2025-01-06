@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Cargohub.services
 {
-    public class ItemService : IItemService
+    public class ItemService : ICrudService<Item, string>
     {
         private readonly string jsonFilePath = "data/items.json";
         private readonly string inventoriesFilePath = "data/inventories.json";
