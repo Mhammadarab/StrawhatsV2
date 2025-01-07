@@ -33,10 +33,10 @@ jobs:
           cd ./unit_tests
           dotnet restore
 
-      - name: Run .NET tests
+      - name: Run .NET tests with coverage
         run: |
           cd ./unit_tests
-          dotnet test --configuration Release --no-restore
+          dotnet test --configuration Release --no-restore /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
         continue-on-error: true
 
       - name: Setup Python
