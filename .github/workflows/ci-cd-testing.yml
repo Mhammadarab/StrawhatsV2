@@ -28,6 +28,11 @@ jobs:
         run: dotnet format --verify-no-changes
         continue-on-error: true
 
+      - name: Restore unit test dependencies
+        run: |
+          cd ./unit_tests
+          dotnet restore
+
       - name: Run .NET tests
         run: |
           cd ./unit_tests
