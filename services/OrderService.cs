@@ -57,7 +57,6 @@ namespace Cargohub.services
             return orders;
         }
 
-
         public Order GetById(int id)
         {
             var orders = GetAll();
@@ -89,7 +88,7 @@ namespace Cargohub.services
             existingOrder.Order_Status = entity.Order_Status;
             existingOrder.Notes = entity.Notes;
             existingOrder.Shipping_Notes = entity.Shipping_Notes;
-            existingOrder.Picking_Notes= entity.Picking_Notes;
+            existingOrder.Picking_Notes = entity.Picking_Notes;
             existingOrder.Warehouse_Id = entity.Warehouse_Id;
             existingOrder.Ship_To = entity.Ship_To;
             existingOrder.Bill_To = entity.Bill_To;
@@ -100,9 +99,9 @@ namespace Cargohub.services
             existingOrder.Total_Surcharge = entity.Total_Surcharge;
             existingOrder.Created_At = entity.Created_At;
             existingOrder.Updated_At = DateTime.Now;
-
             existingOrder.Items = entity.Items;
-            // Update other fields as necessary
+            existingOrder.IsBackordered = entity.IsBackordered; // Update backorder status
+            existingOrder.ShipmentDetails = entity.ShipmentDetails; // Update shipment details
 
             SaveToFile(orders);
             return Task.CompletedTask;

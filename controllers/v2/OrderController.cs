@@ -72,7 +72,6 @@ namespace Cargohub.controllers.v2
             }
             return Ok(orders);
         }
-        
 
         [HttpGet("{id}")]
         public IActionResult GetOrderById(int id)
@@ -173,7 +172,6 @@ namespace Cargohub.controllers.v2
             }
             catch (KeyNotFoundException ex)
             {
-
                 return NotFound(ex.Message);
             }
         }
@@ -186,7 +184,7 @@ namespace Cargohub.controllers.v2
             {
                 return validationResult;
             }
-            
+
             try
             {
                 var targetOrder = _orderService.GetById(id);
@@ -196,7 +194,6 @@ namespace Cargohub.controllers.v2
             }
             catch (KeyNotFoundException e)
             {
-
                 return NotFound(e.Message);
             }
         }

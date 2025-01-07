@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace Cargohub.models
 {
     public class Order
     {
-      public int Id { get; set; }
+        public int Id { get; set; }
         public int Source_Id { get; set; }
         public DateTime Order_Date { get; set; }
         public DateTime Request_Date { get; set; }
@@ -27,6 +22,8 @@ namespace Cargohub.models
         public decimal Total_Surcharge { get; set; }
         public DateTime Created_At { get; set; }
         public DateTime Updated_At { get; set; }
-        public List<ItemDetail> Items { get; set; }  
+        public List<ItemDetail> Items { get; set; }
+        public bool IsBackordered { get; set; } // New property for backorder status
+        public string ShipmentDetails { get; set; } // New property for shipment details
     }
 }
