@@ -2,7 +2,7 @@
 actor User
 
 node "Web Server" as webServer {
-    [Nginx]
+    [Portainer]
 }
 
 node "Application Server" as appServer {

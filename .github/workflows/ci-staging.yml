@@ -1,9 +1,9 @@
 name: CI - Staging Branch
 
 on:
-  pull_request:
+  push:
     branches:
-      - staging
+      - 151-as-a-system-i-want-to-integrate-unit-tests-into-the-cicd-pipeline
   workflow_dispatch:
 
 env:
@@ -20,4 +20,3 @@ jobs:
     uses: ./.github/workflows/ci-cd-testing.yml
     with:
       DEPLOY_WEBHOOK_URL: ${{ vars.DISCORD_WEBHOOK_URL }}
-  

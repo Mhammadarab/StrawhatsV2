@@ -28,8 +28,15 @@ jobs:
         run: dotnet format --verify-no-changes
         continue-on-error: true
 
+      - name: Restore unit test dependencies
+        run: |
+          cd ./unit_tests
+          dotnet restore
+
       - name: Run .NET tests
-        run: dotnet test --configuration Release --no-restore
+        run: |
+          cd ./unit_tests
+          dotnet test --configuration Release --no-restore
         continue-on-error: true
 
       - name: Setup Python
@@ -51,6 +58,11 @@ jobs:
           coverage xml -o coverage.xml
           coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
           coverage report --fail-under=90
+
+      # - name: Run Unit Tests
+      #   run: |
+      #     cd ./unit_tests
+      #     dotnet test ./StrawhatsV2.sln --configuration Release --no-restore --no-build
 
       # - name: Create test summary
       #   uses: mikepenz/action-junit-report@v3
