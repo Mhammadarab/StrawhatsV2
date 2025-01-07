@@ -29,7 +29,9 @@ jobs:
         continue-on-error: true
 
       - name: Run .NET tests
-        run: dotnet test --configuration Release --no-restore
+        run: |
+          cd ./unit_tests
+          dotnet test --configuration Release --no-restore
         continue-on-error: true
 
       - name: Setup Python
@@ -53,7 +55,9 @@ jobs:
           coverage report --fail-under=90
 
       # - name: Run Unit Tests
-      #   run: dotnet test ./StrawhatsV2.sln --configuration Release --no-restore --no-build
+      #   run: |
+      #     cd ./unit_tests
+      #     dotnet test ./StrawhatsV2.sln --configuration Release --no-restore --no-build
 
       # - name: Create test summary
       #   uses: mikepenz/action-junit-report@v3
