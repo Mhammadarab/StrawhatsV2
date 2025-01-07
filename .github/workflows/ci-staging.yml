@@ -1,9 +1,9 @@
 name: CI - Staging Branch
 
 on:
-  pull_request:
+  push:
     branches:
-      - staging
+      - 154-as-a-developer-i-want-to-add-integration-tests-for-compatibility-with-v2-endpoints-in-the-following-files-cross-docking
   workflow_dispatch:
 
 env:
