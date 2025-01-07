@@ -53,7 +53,8 @@ namespace Cargohub.services
                             { "item_types", new EndpointAccess { All = true, Single = true, Create = true, Update = true, Delete = true } },
                             { "item_lines", new EndpointAccess { All = true, Single = true, Create = true, Update = true, Delete = true } },
                             { "item_groups", new EndpointAccess { All = true, Single = true, Create = true, Update = true, Delete = true } }
-                        }
+                        },
+                        Warehouses = new List<int> { 1, 2, 3, 4, 5 }
                     }
                 };
                 SaveUsers();
@@ -69,6 +70,31 @@ namespace Cargohub.services
         {
             var jsonData = JsonConvert.SerializeObject(_users, Formatting.Indented);
             File.WriteAllText(filePath, jsonData);
+        }
+        public static void DeactivateUser(string performedBy, string apiKey)
+        {
+            var user = GetUser(apiKey);
+            if (user == null)
+            {
+                throw new KeyNotFoundException("User not found.");
+            }
+
+            user.IsActive = false;
+            SaveUsers();
+            LogChange("Deactivated", performedBy, oldUser: user);
+        }
+
+        public static void ReactivateUser(string performedBy, string apiKey)
+        {
+            var user = GetUser(apiKey);
+            if (user == null)
+            {
+                throw new KeyNotFoundException("User not found.");
+            }
+
+            user.IsActive = true;
+            SaveUsers();
+            LogChange("Reactivated", performedBy, oldUser: user);
         }
 
         private static void LogChange(string action, string performedBy, User oldUser = null, User newUser = null)
@@ -155,6 +181,9 @@ namespace Cargohub.services
                     // Only add the key if there are changes
                     if (accessChanges.Count > 0)
                         endpointAccessChanges[key] = accessChanges;
+                    
+                    if (!oldUser.Warehouses.SequenceEqual(newUser.Warehouses))
+                        changes["Warehouses"] = new { OldValue = oldUser.Warehouses, NewValue = newUser.Warehouses };
                 }
             }
 
@@ -183,7 +212,8 @@ namespace Cargohub.services
 
         public static User GetUser(string apiKey)
         {
-            return _users.FirstOrDefault(x => x.ApiKey == apiKey);
+            var user = _users.FirstOrDefault(x => x.ApiKey == apiKey);
+            return user;
         }
 
         public static void AddUser(string performedBy, User user)
@@ -214,6 +244,7 @@ namespace Cargohub.services
             var oldUser = JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(user)); // Deep clone
             user.App = updatedUser.App;
             user.EndpointAccess = updatedUser.EndpointAccess;
+            user.Warehouses = updatedUser.Warehouses;
 
             SaveUsers();
             LogChange("Updated", performedBy, oldUser, updatedUser);
@@ -251,6 +282,54 @@ namespace Cargohub.services
 
             // Deny access by default
             return false;
+        }
+
+        public static bool HasWarehouseAccess(string apiKey, int warehouseId)
+        {
+            var user = GetUser(apiKey);
+            if (user == null)
+            {
+                throw new KeyNotFoundException("User not found.");
+            }
+
+            return user.Warehouses.Contains(warehouseId);
+        }
+        public static void AddWarehouse(string performedBy, string apiKey, int warehouseId)
+        {
+            var user = GetUser(apiKey);
+            if (user == null)
+            {
+                throw new KeyNotFoundException("User not found.");
+            }
+
+            if (!user.Warehouses.Contains(warehouseId))
+            {
+                var oldUser = JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(user)); // Deep clone
+                user.Warehouses.Add(warehouseId);
+                UpdateUser(performedBy, apiKey, user);
+                LogChange("AddedWarehouse", performedBy, oldUser, user);
+            }
+        }
+
+        public static void RemoveWarehouse(string performedBy, string apiKey, int warehouseId)
+        {
+            var user = GetUser(apiKey);
+            if (user == null)
+            {
+                throw new KeyNotFoundException("User not found.");
+            }
+
+            if (user.Warehouses.Contains(warehouseId))
+            {
+                var oldUser = JsonConvert.DeserializeObject<User>(JsonConvert.SerializeObject(user)); // Deep clone
+                user.Warehouses.Remove(warehouseId);
+                UpdateUser(performedBy, apiKey, user);
+                LogChange("RemovedWarehouse", performedBy, oldUser, user);
+            }
+            else
+            {
+                throw new InvalidOperationException("Warehouse ID not found in the user's list.");
+            }
         }
     }
 }

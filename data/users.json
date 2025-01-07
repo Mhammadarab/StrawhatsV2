@@ -87,7 +87,15 @@
         "Update": true,
         "Delete": true
       }
-    }
+    },
+    "IsActive": true,
+    "Warehouses": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
   },
   {
     "ApiKey": "admin12345",
@@ -177,7 +185,15 @@
         "Update": true,
         "Delete": true
       }
-    }
+    },
+    "IsActive": true,
+    "Warehouses": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
   },
   {
     "ApiKey": "warehouseManager12345",
@@ -267,7 +283,15 @@
         "Update": true,
         "Delete": false
       }
-    }
+    },
+    "IsActive": true,
+    "Warehouses": [
+      2,
+      3,
+      4,
+      5,
+      6
+    ]
   },
   {
     "ApiKey": "inventoryManager12345",
@@ -357,7 +381,15 @@
         "Update": true,
         "Delete": false
       }
-    }
+    },
+    "IsActive": true,
+    "Warehouses": [
+      3,
+      4,
+      5,
+      6,
+      7
+    ]
   },
   {
     "ApiKey": "FloorManager12345",
@@ -447,7 +479,15 @@
         "Update": false,
         "Delete": false
       }
-    }
+    },
+    "IsActive": true,
+    "Warehouses": [
+      4,
+      5,
+      6,
+      7,
+      8
+    ]
   },
   {
     "ApiKey": "operative12345",
@@ -537,7 +577,15 @@
         "Update": false,
         "Delete": false
       }
-    }
+    },
+    "IsActive": true,
+    "Warehouses": [
+      5,
+      6,
+      7,
+      8,
+      9
+    ]
   },
   {
     "ApiKey": "supervisor12345",
@@ -627,7 +675,15 @@
         "Update": false,
         "Delete": false
       }
-    }
+    },
+    "IsActive": true,
+    "Warehouses": [
+      6,
+      7,
+      8,
+      9,
+      10
+    ]
   },
   {
     "ApiKey": "analyst12345",
@@ -717,7 +773,15 @@
         "Update": false,
         "Delete": false
       }
-    }
+    },
+    "IsActive": true,
+    "Warehouses": [
+      7,
+      8,
+      9,
+      10,
+      11
+    ]
   },
   {
     "ApiKey": "logistics12345",
@@ -807,7 +871,15 @@
         "Update": false,
         "Delete": false
       }
-    }
+    },
+    "IsActive": true,
+    "Warehouses": [
+      8,
+      9,
+      10,
+      11,
+      12
+    ]
   },
   {
     "ApiKey": "sales12345",
@@ -897,6 +969,14 @@
         "Update": false,
         "Delete": false
       }
-    }
+    },
+    "IsActive": true,
+    "Warehouses": [
+      9,
+      10,
+      11,
+      12,
+      13
+    ]
   }
 ]

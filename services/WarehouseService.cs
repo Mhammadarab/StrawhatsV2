@@ -167,7 +167,27 @@ namespace Cargohub.services
 
             return capacities;
         }
+        public Warehouse AddClassifications(int warehouseId, List<int> newClassifications)
+        {
+            var warehouses = GetAll() ?? new List<Warehouse>();
+            var warehouse = warehouses.FirstOrDefault(w => w.Id == warehouseId);
 
+            if (warehouse == null)
+            {
+                throw new KeyNotFoundException($"Warehouse with ID {warehouseId} not found.");
+            }
+
+            if (warehouse.Classifications_Id == null)
+            {
+                warehouse.Classifications_Id = new List<int>();
+            }
+
+            // Add only unique classifications
+            warehouse.Classifications_Id.AddRange(newClassifications.Except(warehouse.Classifications_Id));
+            SaveToFile(warehouses);
+
+            return warehouse; // Return the updated warehouse
+        }
 
         private void SaveToFile(List<Warehouse> warehouses)
         {

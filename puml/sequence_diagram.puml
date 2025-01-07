@@ -1,0 +1,16 @@
+@startuml
+actor User
+
+User -> ShipmentController: CreateShipment(shipment)
+ShipmentController -> AuthProvider: GetUser(apiKey)
+AuthProvider --> ShipmentController: user
+
+alt User is authorized
+    ShipmentController -> ShipmentService: Create(shipment)
+    ShipmentService --> ShipmentController: shipment created
+    ShipmentController -> User: Return Created Shipment
+else User is not authorized
+    ShipmentController -> User: Return Unauthorized
+end
+
+@enduml

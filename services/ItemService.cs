@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Cargohub.services
 {
-    public class ItemService : IItemService
+    public class ItemService : ICrudService<Item, string>
     {
         private readonly string jsonFilePath = "data/items.json";
         private readonly string inventoriesFilePath = "data/inventories.json";
@@ -68,10 +68,6 @@ namespace Cargohub.services
                 return item;
             }
 
-            // Get inventory totals from inventories.json
-            var inventoryTotals = GetInventoryTotalsByItemId(uid);
-            // item.InventoryTotals = inventoryTotals;
-
             return item;
         }
 
@@ -105,16 +101,11 @@ namespace Cargohub.services
             await SaveToFile(jsonFilePath, items);
         }
 
-        public InventoryTotals GetItemInventoryTotals(string itemId)
-        {
-            return GetInventoryTotalsByItemId(itemId);
-        }
-
-        private InventoryTotals GetInventoryTotalsByItemId(string itemId)
+        public int GetTotalInventory(string itemId)
         {
             if (!File.Exists(inventoriesFilePath))
             {
-                return new InventoryTotals();
+                return 0;
             }
 
             var jsonData = File.ReadAllText(inventoriesFilePath);
@@ -124,17 +115,30 @@ namespace Cargohub.services
 
             if (inventory == null)
             {
-                return new InventoryTotals();
+                return 0;
             }
 
-            return new InventoryTotals
+            return inventory.Total_On_Hand + inventory.Total_Expected + inventory.Total_Ordered + inventory.Total_Allocated + inventory.Total_Available;
+        }
+        public Item AddClassifications(string itemUid, List<int> newClassifications)
+        {
+            var items = GetAll() ?? new List<Item>();
+            var item = items.FirstOrDefault(it => it.Uid == itemUid);
+
+            if (item == null)
             {
-                TotalOnHand = inventory.Total_On_Hand,
-                TotalExpected = inventory.Total_Expected,
-                TotalOrdered = inventory.Total_Ordered,
-                TotalAllocated = inventory.Total_Allocated,
-                TotalAvailable = inventory.Total_Available
-            };
+                throw new KeyNotFoundException($"Item with UID {itemUid} not found.");
+            }
+
+            if (item.Classifications_Id == null)
+            {
+                item.Classifications_Id = new List<int>();
+            }
+
+            item.Classifications_Id.AddRange(newClassifications.Except(item.Classifications_Id));
+            SaveToFile(jsonFilePath, items);
+
+            return item;
         }
 
         private async Task SaveToFile<T>(string filePath, List<T> data)

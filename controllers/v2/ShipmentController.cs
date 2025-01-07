@@ -24,8 +24,7 @@ namespace Cargohub.controllers.v2
             _orderService = orderService;
         }
 
-        [HttpGet]
-        public IActionResult GetShipments([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
+        private IActionResult ValidateApiKeyAndUser(string permission)
         {
             var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
             if (string.IsNullOrEmpty(apiKey))
@@ -34,11 +33,58 @@ namespace Cargohub.controllers.v2
             }
 
             var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "shipments", "get"))
+            if (user == null || !AuthProvider.HasAccess(user, "inventories", permission))
             {
-                return Forbid("You do not have permission to delete clients.");
+                return Forbid("You do not have permission to access this resource.");
             }
-            
+
+            return null;
+        }
+
+        [HttpGet("{id}/picklist")]
+        public IActionResult GeneratePicklist(int id)
+        {
+            var validationResult = ValidateApiKeyAndUser("get");
+            if (validationResult != null) return validationResult;
+
+            try
+            {
+                var picklist = ((ShipmentService)_shipmentService).GeneratePicklist(id);
+                return Ok(picklist);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpPost("{id}/pickinglist")]
+        public async Task<IActionResult> SavePickingList(int id, [FromBody] PickingListRequest request)
+        {
+            var validationResult = ValidateApiKeyAndUser("post");
+            if (validationResult != null) return validationResult;
+
+            try
+            {
+                await ((ShipmentService)_shipmentService).SavePickingList(id, request.PickedItems, Request.Headers["API_KEY"].FirstOrDefault(), request.Description);
+                return Ok("Picking list saved successfully.");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetShipments([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
+        {
+            var validationResult = ValidateApiKeyAndUser("get");
+            if (validationResult != null) return validationResult;
+
             // Validate pagination parameters if provided
             if ((pageNumber.HasValue && pageNumber <= 0) || (pageSize.HasValue && pageSize <= 0))
             {
@@ -67,23 +113,14 @@ namespace Cargohub.controllers.v2
 
             // Return plain list if pagination is not applied
             return Ok(shipments);
-}
+        }
 
 
         [HttpGet("{id}")]
         public IActionResult GetShipmentById(int id)
         {
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
-            {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "shipments", "get"))
-            {
-                return Forbid("You do not have permission to delete clients.");
-            }
+            var validationResult = ValidateApiKeyAndUser("get");
+            if (validationResult != null) return validationResult;
 
             try
             {
@@ -99,17 +136,8 @@ namespace Cargohub.controllers.v2
         [HttpPost]
         public async Task<IActionResult> CreateShipment([FromBody] Shipment shipment)
         {
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
-            {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "shipments", "post"))
-            {
-                return Forbid("You do not have permission to delete clients.");
-            }
+            var validationResult = ValidateApiKeyAndUser("post");
+            if (validationResult != null) return validationResult;
 
             if (shipment == null)
             {
@@ -123,17 +151,8 @@ namespace Cargohub.controllers.v2
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateShipment(int id, [FromBody] Shipment shipment)
         {
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
-            {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "shipments", "put"))
-            {
-                return Forbid("You do not have permission to delete clients.");
-            }
+            var validationResult = ValidateApiKeyAndUser("put");
+            if (validationResult != null) return validationResult;
 
             if (shipment == null || shipment.Id != id)
             {
@@ -154,17 +173,8 @@ namespace Cargohub.controllers.v2
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteShipment(int id)
         {
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
-            {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "shipments", "delete"))
-            {
-                return Forbid("You do not have permission to delete clients.");
-            }
+            var validationResult = ValidateApiKeyAndUser("delete");
+            if (validationResult != null) return validationResult;
 
             try
             {
@@ -180,17 +190,8 @@ namespace Cargohub.controllers.v2
         [HttpGet("{id}/items")]
         public async Task<IActionResult> GetShipmentItems(int id)
         {
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
-            {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "shipments", "get"))
-            {
-                return Forbid("You do not have permission to delete clients.");
-            }
+            var validationResult = ValidateApiKeyAndUser("get");
+            if (validationResult != null) return validationResult;
 
             try
             {
@@ -207,17 +208,8 @@ namespace Cargohub.controllers.v2
         [HttpPut("{id}/items")]
         public async Task<IActionResult> UpdateShipmentItems(int id, [FromBody] Shipment shipmentBody)
         {
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
-            {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "shipments", "put"))
-            {
-                return Forbid("You do not have permission to delete clients.");
-            }
+            var validationResult = ValidateApiKeyAndUser("put");
+            if (validationResult != null) return validationResult;
 
             try
             {
@@ -236,17 +228,8 @@ namespace Cargohub.controllers.v2
         [HttpGet("{id}/orders")]
         public async Task<IActionResult> GetShipmentOrder(int id)
         {
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
-            {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "shipments", "get"))
-            {
-                return Forbid("You do not have permission to delete clients.");
-            }
+            var validationResult = ValidateApiKeyAndUser("get");
+            if (validationResult != null) return validationResult;
 
             try
             {
@@ -263,17 +246,8 @@ namespace Cargohub.controllers.v2
         [HttpPut("{id}/orders")]
         public async Task<IActionResult> UpdateShipmentOrder(int id, [FromBody] Order order)
         {
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
-            {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "shipments", "put"))
-            {
-                return Forbid("You do not have permission to delete clients.");
-            }
+            var validationResult = ValidateApiKeyAndUser("put");
+            if (validationResult != null) return validationResult;
             
             try
             {

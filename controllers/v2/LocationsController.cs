@@ -21,8 +21,7 @@ namespace StrawhatsV2.controllers.v2
             _locationService = locationService;
         }
 
-        [HttpGet]
-        public IActionResult GetLocations()
+        private IActionResult ValidateApiKeyAndUser(string permission)
         {
             var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
             if (string.IsNullOrEmpty(apiKey))
@@ -31,9 +30,21 @@ namespace StrawhatsV2.controllers.v2
             }
 
             var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "locations", "get"))
+            if (user == null || !AuthProvider.HasAccess(user, "locations", permission))
             {
-                return Forbid("You do not have permission to delete clients.");
+                return Forbid("You do not have permission to access this resource.");
+            }
+
+            return null;
+        }
+
+        [HttpGet]
+        public IActionResult GetLocations()
+        {
+            var validationResult = ValidateApiKeyAndUser("get");
+            if (validationResult != null)
+            {
+                return validationResult;
             }
 
             var locations = _locationService.GetAll();
@@ -47,16 +58,10 @@ namespace StrawhatsV2.controllers.v2
         [HttpGet("{id}")]
         public IActionResult GetLocationById(int id)
         {
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
+            var validationResult = ValidateApiKeyAndUser("get");
+            if (validationResult != null)
             {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "locations", "get"))
-            {
-                return Forbid("You do not have permission to delete clients.");
+                return validationResult;
             }
 
             try
@@ -73,16 +78,10 @@ namespace StrawhatsV2.controllers.v2
         [HttpPost]
         public async Task<IActionResult> CreateLocation([FromBody] Location location)
         {
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
+            var validationResult = ValidateApiKeyAndUser("post");
+            if (validationResult != null)
             {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "locations", "post"))
-            {
-                return Forbid("You do not have permission to delete clients.");
+                return validationResult;
             }
 
             if (location == null)
@@ -97,16 +96,10 @@ namespace StrawhatsV2.controllers.v2
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateLocation(int id, [FromBody] Location location)
         {
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
+            var validationResult = ValidateApiKeyAndUser("put");
+            if (validationResult != null)
             {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "locations", "put"))
-            {
-                return Forbid("You do not have permission to delete clients.");
+                return validationResult;
             }
 
             if (location == null || location.Id != id)
@@ -128,18 +121,12 @@ namespace StrawhatsV2.controllers.v2
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLocation(int id)
         {
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
+            var validationResult = ValidateApiKeyAndUser("delete");
+            if (validationResult != null)
             {
-                return Unauthorized("API_KEY header is missing.");
+                return validationResult;
             }
 
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "locations", "delete"))
-            {
-                return Forbid("You do not have permission to delete clients.");
-            }
-            
             try
             {
                 await _locationService.Delete(id);

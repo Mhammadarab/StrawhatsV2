@@ -19,35 +19,39 @@ class TestOrdersAPI(unittest.TestCase):
         # Order data
         self.new_order = {
             "id": max_id + 1,
-            "source_id": random.randint(10, 99),
-            "order_date": datetime.now().isoformat() + "Z",
-            "request_date": datetime.now().isoformat() + "Z",
-            "reference": f"ORD{random.randint(10000, 99999)}",
-            "reference_extra": "This is a test order.",
-            "order_status": "Pending",
-            "notes": "These are some test notes.",
-            "shipping_notes": "Test shipping notes.",
-            "picking_notes": "Test picking notes.",
-            "warehouse_id": random.randint(10, 99),
-            "ship_to": None,
-            "bill_to": None,
-            "shipment_id": random.randint(1, 100),
-            "total_amount": round(random.uniform(100, 10000), 2),
-            "total_discount": round(random.uniform(0, 500), 2),
-            "total_tax": round(random.uniform(0, 500), 2),
-            "total_surcharge": round(random.uniform(0, 100), 2),
-            "created_at": datetime.now().isoformat() + "Z",
-            "updated_at": datetime.now().isoformat() + "Z",
-            "items": [
+            "Source_Id": random.randint(10, 99),
+            "Order_Date": datetime.now().isoformat() + "Z",
+            "Request_Date": datetime.now().isoformat() + "Z",
+            "Reference": f"ORD{random.randint(10000, 99999)}",
+            "Reference_Extra": "This is a test order.",
+            "Order_Status": "Pending",
+            "Notes": "These are some test notes.",
+            "Shipping_Notes": "Test shipping notes.",
+            "Picking_Notes": "Test picking notes.",
+            "Warehouse_Id": random.randint(10, 99),
+            "Ship_To": random.randint(1000, 9999),
+            "Bill_To": random.randint(1000, 9999),
+            "Shipment_Id": random.randint(1, 100),
+            "Total_Amount": round(random.uniform(100, 10000), 2),
+            "Total_Discount": round(random.uniform(0, 500), 2),
+            "Total_Tax": round(random.uniform(0, 500), 2),
+            "Total_Surcharge": round(random.uniform(0, 100), 2),
+            "Created_At": datetime.now().isoformat() + "Z",
+            "Updated_At": datetime.now().isoformat() + "Z",
+            "Items": [
                 {
-                    "item_id": f"P{random.randint(1000, 9999)}",
-                    "amount": random.randint(1, 50)
+                    "Item_Id": f"P{random.randint(1000, 9999)}",
+                    "Amount": random.randint(1, 50),
+                    "CrossDockingStatus": None
                 },
                 {
-                    "item_id": f"P{random.randint(1000, 9999)}",
-                    "amount": random.randint(1, 50)
+                    "Item_Id": f"P{random.randint(1000, 9999)}",
+                    "Amount": random.randint(1, 50),
+                    "CrossDockingStatus": None
                 }
-            ]
+            ],
+            "IsBackordered": True,
+            "ShipmentDetails": "test "
         }
 
     def test_get_orders(self):

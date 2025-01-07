@@ -14,15 +14,14 @@ namespace Cargohub.controllers.v2
     [ApiController]
     public class WarehouseController : Controller
     {
-        private readonly ICrudService<Warehouse, int> _warehouseService;
-        public WarehouseController(ICrudService<Warehouse, int> warehouseService)
+        private readonly WarehouseService _warehouseService;
+        public WarehouseController(WarehouseService warehouseService)
         {
             _warehouseService = warehouseService;
         }
-         [HttpGet("{warehouse_id}/locations")]
-        public IActionResult GetWarehouseLocations(int warehouse_id)
-        {
 
+        private IActionResult ValidateApiKeyAndUser(string permission)
+        {
             var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
             if (string.IsNullOrEmpty(apiKey))
             {
@@ -30,10 +29,19 @@ namespace Cargohub.controllers.v2
             }
 
             var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "warehouses", "get"))
+            if (user == null || !AuthProvider.HasAccess(user, "warehouses", permission))
             {
-                return Forbid("You do not have permission to delete clients.");
+                return Forbid("You do not have permission to access this resource.");
             }
+
+            return null;
+        }
+        
+        [HttpGet("{warehouse_id}/locations")]
+        public IActionResult GetWarehouseLocations(int warehouse_id)
+        {
+            var validationResult = ValidateApiKeyAndUser("get");
+            if (validationResult != null) return validationResult;
 
             try
             {
@@ -53,18 +61,8 @@ namespace Cargohub.controllers.v2
         [HttpGet]
         public IActionResult GetWarehouses()
         {
-
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
-            {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "warehouses", "get"))
-            {
-                return Forbid("You do not have permission to delete clients.");
-            }
+            var validationResult = ValidateApiKeyAndUser("get");
+            if (validationResult != null) return validationResult;
 
             var warehouses = _warehouseService.GetAll();
             if (warehouses == null || !warehouses.Any())
@@ -77,18 +75,8 @@ namespace Cargohub.controllers.v2
         [HttpGet("{id}")]
         public IActionResult GetWarehouseById(int id)
         {
-
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
-            {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "warehouses", "get"))
-            {
-                return Forbid("You do not have permission to delete clients.");
-            }
+            var validationResult = ValidateApiKeyAndUser("get");
+            if (validationResult != null) return validationResult;
 
             try
             {
@@ -104,18 +92,8 @@ namespace Cargohub.controllers.v2
         [HttpPost]
         public async Task<IActionResult> CreateWarehouse([FromBody] Warehouse warehouse)
         {
-
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
-            {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "warehouses", "post"))
-            {
-                return Forbid("You do not have permission to delete clients.");
-            }
+            var validationResult = ValidateApiKeyAndUser("post");
+            if (validationResult != null) return validationResult;
 
             if (warehouse == null)
             {
@@ -129,18 +107,8 @@ namespace Cargohub.controllers.v2
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateWarehouse(int id, [FromBody] Warehouse warehouse)
         {
-
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
-            {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "warehouses", "put"))
-            {
-                return Forbid("You do not have permission to delete clients.");
-            }
+            var validationResult = ValidateApiKeyAndUser("put");
+            if (validationResult != null) return validationResult;
 
             if (warehouse == null || warehouse.Id != id)
             {
@@ -161,18 +129,8 @@ namespace Cargohub.controllers.v2
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteWarehouse(int id)
         {
-
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
-            {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "warehouses", "delete"))
-            {
-                return Forbid("You do not have permission to delete clients.");
-            }
+            var validationResult = ValidateApiKeyAndUser("delete");
+            if (validationResult != null) return validationResult;
 
             try
             {
@@ -188,18 +146,8 @@ namespace Cargohub.controllers.v2
         [HttpGet("capacities")]
         public IActionResult GetAllWarehouseCapacities(int pageNumber = 1, int pageSize = 10)
         {
-
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
-            {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "warehouses", "get"))
-            {
-                return Forbid("You do not have permission to delete clients.");
-            }
+            var validationResult = ValidateApiKeyAndUser("get");
+            if (validationResult != null) return validationResult;
 
             try
             {
@@ -222,18 +170,8 @@ namespace Cargohub.controllers.v2
         [HttpGet("{id}/capacities")]
         public IActionResult GetWarehouseCapacities(int id)
         {
-
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
-            {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "warehouses", "get"))
-            {
-                return Forbid("You do not have permission to delete clients.");
-            }
+            var validationResult = ValidateApiKeyAndUser("get");
+            if (validationResult != null) return validationResult;
             
             try
             {
@@ -248,6 +186,26 @@ namespace Cargohub.controllers.v2
             catch (KeyNotFoundException ex)
             {
                 return NotFound(ex.Message);
+            }
+        }
+        [HttpPut("{id}/add-classifications")]
+        public IActionResult AddClassificationsToWarehouse(int id, [FromBody] List<int> classificationIds)
+        {
+            var validationResult = ValidateApiKeyAndUser("put");
+            if (validationResult != null) return validationResult;
+
+            try
+            {
+                var updatedWarehouse = _warehouseService.AddClassifications(id, classificationIds);
+                return Ok(updatedWarehouse); // Return the updated warehouse
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
     }
