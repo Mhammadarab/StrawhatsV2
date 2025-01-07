@@ -62,13 +62,18 @@ class TestCrossdockingAPI(unittest.TestCase):
     def test_receive_shipment(self):
         """Test receiving a shipment (happy path)."""
         response = requests.post(f"{self.base_url}/receive", json={"shipmentId": self.shipment_id}, headers=self.headers)
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 200)
         print(f"POST /cross-docking/receive - Status Code: {response.status_code}, Response: {response.text}")
 
     def test_ship_shipment(self):
         """Test shipping a shipment (happy path)."""
+        # First, receive the shipment to set its status to "In Transit"
+        receive_response = requests.post(f"{self.base_url}/receive", json={"shipmentId": self.shipment_id}, headers=self.headers)
+        self.assertEqual(receive_response.status_code, 200)
+
+        # Then, ship the shipment
         response = requests.post(f"{self.base_url}/ship", json={"shipmentId": self.shipment_id}, headers=self.headers)
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 200)
         print(f"POST /cross-docking/ship - Status Code: {response.status_code}, Response: {response.text}")
 
     def test_receive_shipment_invalid_api_key(self):
