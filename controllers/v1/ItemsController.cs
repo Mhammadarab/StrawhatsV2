@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Cargohub.interfaces;
 using Cargohub.models;
+using Cargohub.services;
 
 namespace Cargohub.Controllers.v1
 {
@@ -11,9 +12,9 @@ namespace Cargohub.Controllers.v1
     [ApiController]
     public class ItemController : Controller
     {
-        private readonly IItemService _itemService;
+        private readonly ItemService _itemService;
 
-        public ItemController(IItemService itemService)
+        public ItemController(ItemService itemService)
         {
             _itemService = itemService;
         }
@@ -47,7 +48,7 @@ namespace Cargohub.Controllers.v1
         {
             try
             {
-                var inventoryTotals = _itemService.GetItemInventoryTotals(itemId);
+                var inventoryTotals = _itemService.GetTotalInventory(itemId);
                 return Ok(inventoryTotals);
             }
             catch (KeyNotFoundException)

@@ -21,14 +21,30 @@ namespace Cargohub.controllers.v2
         {
             _classificationService = classificationService;
         }
-
-        [HttpGet]
-        public IActionResult GetClassifications()
+        private IActionResult ValidateApiKeyAndUser(string permission)
         {
             var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
             if (string.IsNullOrEmpty(apiKey))
             {
                 return Unauthorized("API_KEY header is missing.");
+            }
+
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null || !AuthProvider.HasAccess(user, "classifications", permission))
+            {
+                return Forbid("You do not have permission to access this resource.");
+            }
+
+            return null;
+        }
+
+        [HttpGet]
+        public IActionResult GetClassifications()
+        {
+            var validationResult = ValidateApiKeyAndUser("get");
+            if (validationResult != null)
+            {
+                return validationResult;
             }
             var classifications = _classificationService.GetAll();
             if (classifications == null || !classifications.Any())
@@ -41,10 +57,10 @@ namespace Cargohub.controllers.v2
         [HttpGet("{id}")]
         public IActionResult GetClassificationById(int id)
         {
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
+            var validationResult = ValidateApiKeyAndUser("get");
+            if (validationResult != null)
             {
-                return Unauthorized("API_KEY header is missing.");
+                return validationResult;
             }
 
             try
@@ -63,11 +79,12 @@ namespace Cargohub.controllers.v2
         public async Task<IActionResult> CreateClassification([FromBody] Classifications classification)
         {
 
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
+            var validationResult = ValidateApiKeyAndUser("post");
+            if (validationResult != null)
             {
-                return Unauthorized("API_KEY header is missing.");
+                return validationResult;
             }
+
 
             if (classification == null)
             {
@@ -82,13 +99,11 @@ namespace Cargohub.controllers.v2
         public async Task<IActionResult> UpdateClassification(int id, [FromBody] Classifications classification)
         {
 
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
+            var validationResult = ValidateApiKeyAndUser("put");
+            if (validationResult != null)
             {
-                return Unauthorized("API_KEY header is missing.");
+                return validationResult;
             }
-
-
 
             if (classification == null || classification.Id != id)
             {
@@ -110,10 +125,10 @@ namespace Cargohub.controllers.v2
         public async Task<IActionResult> DeleteClassification(int id)
         {
 
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
+            var validationResult = ValidateApiKeyAndUser("delete");
+            if (validationResult != null)
             {
-                return Unauthorized("API_KEY header is missing.");
+                return validationResult;
             }
 
             try

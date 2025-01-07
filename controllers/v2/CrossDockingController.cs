@@ -35,6 +35,16 @@ namespace Cargohub.Controllers.v2
             }
         }
 
+        private IActionResult ValidateApiKey()
+        {
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Unauthorized("API_KEY header is required.");
+            }
+            return null;
+        }
+
         /// <summary>
         /// Marks a shipment as "In Transit."
         /// </summary>
@@ -43,15 +53,15 @@ namespace Cargohub.Controllers.v2
         [HttpPost("receive")]
         public IActionResult ReceiveShipment([FromBody] int shipmentId)
         {
+            var validationResult = ValidateApiKey();
+            if (validationResult != null)
+            {
+                return validationResult;
+            }
+
             try
             {
-                // Extract API key from headers
                 var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-                if (string.IsNullOrEmpty(apiKey))
-                {
-                    return Unauthorized("API_KEY header is required.");
-                }
-
                 var message = _crossDockingService.ReceiveShipment(shipmentId, apiKey);
                 return Ok(new { message });
             }
@@ -69,15 +79,15 @@ namespace Cargohub.Controllers.v2
         [HttpPost("ship")]
         public IActionResult ShipShipment([FromBody] int shipmentId)
         {
+            var validationResult = ValidateApiKey();
+            if (validationResult != null)
+            {
+                return validationResult;
+            }
+
             try
             {
-                // Extract API key from headers
                 var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-                if (string.IsNullOrEmpty(apiKey))
-                {
-                    return Unauthorized("API_KEY header is required.");
-                }
-
                 var message = _crossDockingService.ShipItems(shipmentId, apiKey);
                 return Ok(new { message });
             }
