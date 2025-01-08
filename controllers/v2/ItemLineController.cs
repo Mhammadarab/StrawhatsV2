@@ -43,7 +43,7 @@ namespace Cargohub.Controllers.v2
         [HttpGet]
         public IActionResult GetItemLines([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
         {
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("all");
             if (validationResult != null)
             {
                 return validationResult;
@@ -81,7 +81,7 @@ namespace Cargohub.Controllers.v2
         [HttpGet("{id}")]
         public IActionResult GetItemLineById(int id)
         {
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("single");
             if (validationResult != null)
             {
                 return validationResult;
@@ -101,7 +101,7 @@ namespace Cargohub.Controllers.v2
         [HttpGet("{id}/items")]
         public IActionResult GetItemsByItemLineId(int id)
         {
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("all");
             if (validationResult != null)
             {
                 return validationResult;

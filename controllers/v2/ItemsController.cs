@@ -39,7 +39,7 @@ namespace Cargohub.Controllers.v2
         [HttpGet]
         public IActionResult GetItems()
         {
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("all");
             if (validationResult != null)
             {
                 return validationResult;
@@ -52,7 +52,7 @@ namespace Cargohub.Controllers.v2
         [HttpGet("{uid}")]
         public IActionResult GetItemById(string uid)
         {
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("single");
             if (validationResult != null)
             {
                 return validationResult;
@@ -69,7 +69,7 @@ namespace Cargohub.Controllers.v2
         [HttpGet("{itemId}/inventory")]
         public IActionResult GetItemInventory(string itemId)
         {
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("single");
             if (validationResult != null)
             {
                 return validationResult;
@@ -81,7 +81,7 @@ namespace Cargohub.Controllers.v2
         [HttpGet("{itemId}/inventory/totals")]
         public IActionResult GetItemInventoryTotals(string itemId)
         {
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("all");
             if (validationResult != null)
             {
                 return validationResult;
