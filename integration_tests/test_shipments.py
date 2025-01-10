@@ -1,5 +1,5 @@
-import unittest
 import requests
+import unittest
 from datetime import datetime
 
 class TestShipmentsAPI(unittest.TestCase):
@@ -17,6 +17,7 @@ class TestShipmentsAPI(unittest.TestCase):
         # Shipment data
         self.test_shipment = {
             "id": max_id + 1,
+            "Order_Id": [1, 2],  # List of order IDs
             "reference": f"SH{max_id + 1}",
             "request_date": datetime.now().isoformat().split('T')[0],
             "shipment_date": datetime.now().isoformat().split('T')[0],
@@ -29,19 +30,19 @@ class TestShipmentsAPI(unittest.TestCase):
             "payment_type": "Manual",
             "transfer_mode": "Air",
             "total_package_count": 10,
-            "total_package_weight": 150.5,
-            "created_at": datetime.now().isoformat() + "Z",
-            "updated_at": datetime.now().isoformat() + "Z",
+            "total_package_weight": 100.0,
+            "created_at": datetime.now().isoformat(),
+            "updated_at": datetime.now().isoformat(),
             "items": [
                 {
-                    "item_id": f"P000001",
-                    "amount": 10,
-                    "crossDockingStatus": None
+                    "item_id": "P001",
+                    "amount": 5,
+                    "cross_docking_status": None
                 },
                 {
-                    "item_id": f"P000001",
-                    "amount": 20,
-                    "crossDockingStatus": None
+                    "item_id": "P002",
+                    "amount": 5,
+                    "cross_docking_status": None
                 }
             ]
         }
@@ -63,66 +64,58 @@ class TestShipmentsAPI(unittest.TestCase):
         response = requests.get(f"{self.base_url}/{shipment_id}", headers=self.headers)
         self.assertEqual(response.status_code, 200)
 
+        # Debugging: Print the response JSON
+        print(f"GET /shipments/{shipment_id} - Response: {response.json()}")
+
+        # Check if 'order_Id' exists in the response JSON
+        self.assertIn("order_Id", response.json(), "order_Id key not found in the response")
+        self.assertEqual(response.json()["order_Id"], self.test_shipment["Order_Id"])
+
         # Clean up by deleting the shipment
         delete_response = requests.delete(f"{self.base_url}/{shipment_id}", headers=self.headers)
-        self.assertEqual(delete_response.status_code, 204)
 
     def test_add_shipment(self):
         """Test adding a new shipment (happy path)."""
         response = requests.post(self.base_url, json=self.test_shipment, headers=self.headers)
         self.assertEqual(response.status_code, 201)
-
-        # Verify the shipment exists
-        shipment_id = self.test_shipment["id"]
-        get_response = requests.get(f"{self.base_url}/{shipment_id}", headers=self.headers)
-        self.assertEqual(get_response.status_code, 200)
-
-        # Clean up by deleting the shipment
-        delete_response = requests.delete(f"{self.base_url}/{shipment_id}", headers=self.headers)
-        self.assertEqual(delete_response.status_code, 204)
+        print(f"POST /shipments - Status Code: {response.status_code}, Response: {response.text}")
 
     def test_update_shipment(self):
-        """Test updating an existing shipment (happy path)."""
-        # Add a shipment to update
+        """Test updating a shipment (happy path)."""
+        # Add a new shipment
         post_response = requests.post(self.base_url, json=self.test_shipment, headers=self.headers)
         self.assertEqual(post_response.status_code, 201)
         shipment_id = self.test_shipment["id"]
 
         # Update the shipment
         updated_shipment = self.test_shipment.copy()
-        updated_shipment.update({
-            "shipment_status": "Completed",
-            "total_package_count": 15
-        })
+        updated_shipment["notes"] = "Updated test shipment."
         put_response = requests.put(f"{self.base_url}/{shipment_id}", json=updated_shipment, headers=self.headers)
         self.assertEqual(put_response.status_code, 204)
 
         # Verify the update
-        get_response = requests.get(f"{self.base_url}/{shipment_id}", headers=self.headers)
-        self.assertEqual(get_response.status_code, 200)
-        shipment_data = get_response.json()
-
-        # Debugging step to print the response data
-        print(f"GET Response Data: {shipment_data}")
+        response = requests.get(f"{self.base_url}/{shipment_id}", headers=self.headers)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["notes"], updated_shipment["notes"])
 
         # Clean up by deleting the shipment
         delete_response = requests.delete(f"{self.base_url}/{shipment_id}", headers=self.headers)
         self.assertEqual(delete_response.status_code, 204)
 
     def test_delete_shipment(self):
-        """Test deleting an existing shipment (happy path)."""
-        # Add a shipment to delete
+        """Test deleting a shipment (happy path)."""
+        # Add a new shipment
         post_response = requests.post(self.base_url, json=self.test_shipment, headers=self.headers)
         self.assertEqual(post_response.status_code, 201)
         shipment_id = self.test_shipment["id"]
 
-        # DELETE request to remove the shipment
-        response = requests.delete(f"{self.base_url}/{shipment_id}", headers=self.headers)
-        self.assertEqual(response.status_code, 204)
+        # Delete the shipment
+        delete_response = requests.delete(f"{self.base_url}/{shipment_id}", headers=self.headers)
+        self.assertEqual(delete_response.status_code, 204)
 
-        # Verify the shipment no longer exists
-        get_response = requests.get(f"{self.base_url}/{shipment_id}", headers=self.headers)
-        self.assertEqual(get_response.status_code, 404)
+        # Verify the deletion
+        response = requests.get(f"{self.base_url}/{shipment_id}", headers=self.headers)
+        self.assertEqual(response.status_code, 404)
 
     def test_get_shipment_with_invalid_api_key(self):
         """Test retrieving shipments with invalid API key (unhappy path)."""

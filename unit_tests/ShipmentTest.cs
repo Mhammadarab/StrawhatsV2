@@ -20,7 +20,7 @@ namespace Cargohub.UnitTests
             var shipment = new Shipment
             {
                 Id = 1,
-                Order_Id = 123,
+                Order_Id = [123],
                 Source_Id = 456,
                 Order_Date = DateTime.Now.AddDays(-3),
                 Request_Date = DateTime.Now.AddDays(-2),
@@ -42,7 +42,7 @@ namespace Cargohub.UnitTests
 
             // Act & Assert
             Assert.Equal(1, shipment.Id);
-            Assert.Equal(123, shipment.Order_Id);
+            Assert.Equal(new List<int> { 123 }, shipment.Order_Id);
             Assert.Equal(456, shipment.Source_Id);
             Assert.Equal("Type A", shipment.Shipment_Type);
             Assert.Equal("In Transit", shipment.Shipment_Status);
