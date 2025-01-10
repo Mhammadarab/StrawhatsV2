@@ -234,8 +234,8 @@ namespace Cargohub.controllers.v2
             try
             {
                 var shipment = _shipmentService.GetById(id);
-                var order = _orderService.GetById(shipment.Order_Id);
-                return Ok(order);
+                var orders = shipment.Order_Id.Select(orderId => _orderService.GetById(orderId)).ToList();
+                return Ok(orders);
             }
             catch (KeyNotFoundException e)
             {
@@ -255,7 +255,7 @@ namespace Cargohub.controllers.v2
 
                 var targetOrder = _orderService.GetById(order.Id);
                 var targetShipment = _shipmentService.GetById(id);
-                targetShipment.Order_Id = targetOrder.Id;
+                targetShipment.Order_Id.Add(targetOrder.Id);
                 targetShipment.Order_Date = targetOrder.Order_Date;
                 await _shipmentService.Update(targetShipment);
                 return NoContent();
