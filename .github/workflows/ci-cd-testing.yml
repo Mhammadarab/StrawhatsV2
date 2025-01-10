@@ -73,7 +73,6 @@ jobs:
 
       - name: Notify Discord about Test Completion
         run: |
-          python_coverage=$(coverage report --format=markdown)
           curl -X POST -H "Content-Type: application/json" \
-          -d '{"content": "✅ **Testing stage completed successfully** for staging branch, despite potential errors.\n\n**Python Coverage Summary:**\n'"$python_coverage"'" }' \
+          -d '{"content": "✅ **Testing stage completed successfully** for staging branch, despite potential errors."}' \
           ${{inputs.DEPLOY_WEBHOOK_URL}}
