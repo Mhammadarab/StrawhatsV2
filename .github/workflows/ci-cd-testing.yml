@@ -43,7 +43,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: cobertura-coverage
-          path: cobertura/*/coverage.cobertura.xml
+          path: unit_tests/cobertura/*/coverage.cobertura.xml
 
       - name: Setup Python
         uses: actions/setup-python@v4
