@@ -42,11 +42,11 @@ jobs:
       - name: Generate .NET coverage report
         run: |
           dotnet tool install -g dotnet-reportgenerator-globaltool
-          reportgenerator -reports:unit_tests/cobertura/*/coverage.cobertura.xml -targetdir:coverage -reporttypes:TextSummary
+          reportgenerator -reports:unit_tests/cobertura/*/coverage.cobertura.xml -targetdir:coverage -reporttypes:TextSummary -assemblyfilters:+Cargohub.UnitTests.*
 
       - name: Display .NET coverage summary
         run: |
-          reportgenerator -reports:unit_tests/cobertura/*/coverage.cobertura.xml -targetdir:coverage -reporttypes:MarkdownSummary
+          reportgenerator -reports:unit_tests/cobertura/*/coverage.cobertura.xml -targetdir:coverage -reporttypes:MarkdownSummary -assemblyfilters:+Cargohub.UnitTests.*
           cat coverage/Summary.md >> $GITHUB_STEP_SUMMARY
 
       - name: Upload .NET coverage report
