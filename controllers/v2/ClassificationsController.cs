@@ -12,7 +12,7 @@ using Microsoft.VisualBasic;
 namespace Cargohub.controllers.v2
 {
     [ApiExplorerSettings(GroupName = "Classifications")]
-    [Route("api/v2/classifications")]
+    [Route("api/v2/classifications/")]
     [ApiController]
     public class ClassificationsController : Controller
     {
@@ -41,7 +41,7 @@ namespace Cargohub.controllers.v2
         [HttpGet]
         public IActionResult GetClassifications()
         {
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("all");
             if (validationResult != null)
             {
                 return validationResult;
@@ -57,7 +57,7 @@ namespace Cargohub.controllers.v2
         [HttpGet("{id}")]
         public IActionResult GetClassificationById(int id)
         {
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("single");
             if (validationResult != null)
             {
                 return validationResult;

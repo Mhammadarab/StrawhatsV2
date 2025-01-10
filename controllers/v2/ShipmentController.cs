@@ -33,7 +33,7 @@ namespace Cargohub.controllers.v2
             }
 
             var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "inventories", permission))
+            if (user == null || !AuthProvider.HasAccess(user, "shipments", permission))
             {
                 return Forbid("You do not have permission to access this resource.");
             }
@@ -44,7 +44,7 @@ namespace Cargohub.controllers.v2
         [HttpGet("{id}/picklist")]
         public IActionResult GeneratePicklist(int id)
         {
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("single");
             if (validationResult != null) return validationResult;
 
             try
@@ -82,7 +82,7 @@ namespace Cargohub.controllers.v2
         [HttpGet]
         public IActionResult GetShipments([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
         {
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("all");
             if (validationResult != null) return validationResult;
 
             // Validate pagination parameters if provided
@@ -119,7 +119,7 @@ namespace Cargohub.controllers.v2
         [HttpGet("{id}")]
         public IActionResult GetShipmentById(int id)
         {
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("single");
             if (validationResult != null) return validationResult;
 
             try
@@ -190,7 +190,7 @@ namespace Cargohub.controllers.v2
         [HttpGet("{id}/items")]
         public async Task<IActionResult> GetShipmentItems(int id)
         {
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("all");
             if (validationResult != null) return validationResult;
 
             try
@@ -228,7 +228,7 @@ namespace Cargohub.controllers.v2
         [HttpGet("{id}/orders")]
         public async Task<IActionResult> GetShipmentOrder(int id)
         {
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("all");
             if (validationResult != null) return validationResult;
 
             try

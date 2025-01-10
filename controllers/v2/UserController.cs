@@ -37,7 +37,7 @@ namespace Cargohub.Controllers.v2
             }
 
             var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "inventories", permission))
+            if (user == null || !AuthProvider.HasAccess(user, "users", permission))
             {
                 return Forbid("You do not have permission to access this resource.");
             }
@@ -48,7 +48,7 @@ namespace Cargohub.Controllers.v2
         [HttpPost]
         public IActionResult CreateUser([FromBody] User user)
         {
-            var validationResult = ValidateApiKeyAndUser("create");
+            var validationResult = ValidateApiKeyAndUser("post");
             if (validationResult != null)
             {
                 return validationResult;
@@ -73,7 +73,7 @@ namespace Cargohub.Controllers.v2
         [HttpPut("{apiKey}")]
         public IActionResult UpdateUser(string apiKey, [FromBody] User updatedUser)
         {
-            var validationResult = ValidateApiKeyAndUser("update");
+            var validationResult = ValidateApiKeyAndUser("put");
             if (validationResult != null)
             {
                 return validationResult;
@@ -126,7 +126,7 @@ namespace Cargohub.Controllers.v2
                 return NotFound(ex.Message);
             }
         }
-
+        // TODO: Check this 
         [HttpPost("{apiKey}/deactivate")]
         public IActionResult DeactivateUser(string apiKey)
         {
