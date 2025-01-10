@@ -39,6 +39,15 @@ jobs:
           dotnet test --configuration Release --no-restore --collect:"XPlat Code Coverage" --results-directory cobertura
         continue-on-error: true
 
+      - name: Generate .NET coverage report
+        run: |
+          dotnet tool install -g dotnet-reportgenerator-globaltool
+          reportgenerator -reports:unit_tests/cobertura/*/coverage.cobertura.xml -targetdir:coverage -reporttypes:TextSummary
+
+      - name: Display .NET coverage summary
+        run: |
+          cat coverage/Summary.txt >> $GITHUB_STEP_SUMMARY
+
       - name: Upload .NET coverage report
         uses: actions/upload-artifact@v3
         with:
