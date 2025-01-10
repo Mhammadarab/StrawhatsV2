@@ -39,16 +39,6 @@ jobs:
           dotnet test --configuration Release --no-restore --collect:"XPlat Code Coverage" --results-directory cobertura
         continue-on-error: true
 
-      - name: Generate .NET coverage report
-        run: |
-          dotnet tool install -g dotnet-reportgenerator-globaltool
-          reportgenerator -reports:unit_tests/cobertura/*/coverage.cobertura.xml -targetdir:coverage -reporttypes:TextSummary -assemblyfilters:+Cargohub.UnitTests.*
-
-      - name: Display .NET coverage summary
-        run: |
-          reportgenerator -reports:unit_tests/cobertura/*/coverage.cobertura.xml -targetdir:coverage -reporttypes:MarkdownSummary -assemblyfilters:+Cargohub.UnitTests.*
-          cat coverage/Summary.md >> $GITHUB_STEP_SUMMARY
-
       - name: Upload .NET coverage report
         uses: actions/upload-artifact@v3
         with:
@@ -83,6 +73,7 @@ jobs:
 
       - name: Notify Discord about Test Completion
         run: |
+          python_coverage=$(coverage report --format=markdown)
           curl -X POST -H "Content-Type: application/json" \
-          -d '{"content": "✅ **Testing stage completed successfully** for staging branch, despite potential errors."}' \
+          -d '{"content": "✅ **Testing stage completed successfully** for staging branch, despite potential errors.\n\n**Python Coverage Summary:**\n'"$python_coverage"'" }' \
           ${{inputs.DEPLOY_WEBHOOK_URL}}
