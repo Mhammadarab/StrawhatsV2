@@ -37,7 +37,7 @@ namespace Cargohub.services
                 {
                     new User
                     {
-                        ApiKey = "a1b2c3d4e5",
+                        ApiKey = "owner",
                         App = "CargoHUB Dashboard 1",
                         EndpointAccess = new Dictionary<string, EndpointAccess>
                         {
