@@ -1,4 +1,107 @@
 [
+  {"ApiKey": "owner",
+    "App": "CargoHUB Owner Dashboard ",
+    "EndpointAccess": {
+      "clients": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "orders": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "inventories": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "shipments": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "suppliers": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "items": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "warehouses": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "transfers": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "locations": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "item_types": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "item_lines": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "users": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
+      "item_groups": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      }
+    },
+    "IsActive": true,
+    "Warehouses": [
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 
+      21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 
+      39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 
+      57, 58, 59, 60, 61,62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74
+    ]
+  },
   {
     "ApiKey": "a1b2c3d4e5",
     "App": "CargoHUB Dashboard 1",
