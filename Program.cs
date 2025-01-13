@@ -107,6 +107,7 @@ if (app.Environment.IsDevelopment())
 }
 
 
+AuthProvider.ReloadUsers();
 app.UseAuthorization();
 app.Use(async (ctx, next) =>
 {
@@ -125,7 +126,6 @@ app.Use(async (ctx, next) =>
         await ctx.Response.WriteAsync("API key is missing");
         return;
     }
-
     var user = AuthProvider.GetUser(apiKey);
     if (user == null)
     {
