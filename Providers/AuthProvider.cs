@@ -11,7 +11,7 @@ namespace Cargohub.services
     public static class AuthProvider
     {
         private static List<User> _users;
-        private static readonly string filePath = Path.Combine("data", "users.json");
+        private static readonly string filePath = Path.Combine("Data", "users.json");
         private static readonly string logFilePath = Path.Combine("Logs", "user_changes.json");
 
         static AuthProvider()
