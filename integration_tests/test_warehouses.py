@@ -13,9 +13,9 @@ class TestWarehousesAPI(unittest.TestCase):
         print(self.headers)
         # Get the current max ID
         response = requests.get(self.base_url, headers=self.headers)
+
         warehouses = response.json()
         max_id = max([warehouse["id"] for warehouse in warehouses], default=0)
-
         self.test_warehouse = {
             "id": max_id + 1,
             "code": "WAREHOUSE",
@@ -25,11 +25,18 @@ class TestWarehousesAPI(unittest.TestCase):
             "city": "Test City",
             "province": "Test Province",
             "country": "NL",
-            "contact": {
-                "name": "John Doe",
-                "phone": f"(078) {random.randint(1000000, 9999999)}",
-                "email": f"test{random.randint(100, 999)}@example.net"
-            },
+            "contact": [  # Updated to use a list of contacts
+                {
+                    "name": "John Doe",
+                    "phone": f"(078) {random.randint(1000000, 9999999)}",
+                    "email": f"test{random.randint(100, 999)}@example.net"
+                },
+                {
+                    "name": "Jane Smith",
+                    "phone": f"(078) {random.randint(1000000, 9999999)}",
+                    "email": f"test{random.randint(100, 999)}@example.net"
+                }
+            ],
             "created_at": datetime.now().isoformat() + "Z",
             "updated_at": datetime.now().isoformat() + "Z",
             "classifications_id": [
@@ -82,7 +89,6 @@ class TestWarehousesAPI(unittest.TestCase):
         delete_response = requests.delete(f"{self.base_url}/{warehouse_id}", headers=self.headers)
         self.assertEqual(delete_response.status_code, 204)
         print("WE IN THE TEST ADD WAREHOUSES [ DELETE ] ")
-
 
     def test_update_warehouse(self):
         """Test updating an existing warehouse (happy path)."""
