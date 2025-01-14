@@ -33,7 +33,8 @@ builder.Services.AddSingleton<ICrudService<Inventory, int>, InventoryService>();
 builder.Services.AddSingleton<ICrudService<Classifications, int>, ClassificationService>();
 builder.Services.AddSingleton<ICrudService<Item, string>, ItemService>();
 builder.Services.AddSingleton<InventoryService>();
-
+builder.Services.AddSingleton<ShipmentService>();
+builder.Services.AddSingleton<OrderService>();
 builder.Services.AddSingleton<CrossDockingService>();
 builder.Services.AddSingleton<ShipmentService>();
 builder.Services.AddSingleton<LogService>();

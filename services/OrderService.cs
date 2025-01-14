@@ -12,7 +12,12 @@ namespace Cargohub.services
     public class OrderService : ICrudService<Order, int>
     {
         private readonly string jsonFilePath = "data/orders.json";
+        private readonly ShipmentService _shipmentService;
 
+        public OrderService(ShipmentService shipmentService)
+        {
+            _shipmentService = shipmentService;
+        }
         public Task Create(Order entity)
         {
             var orders = GetAll() ?? new List<Order>();
@@ -23,6 +28,47 @@ namespace Cargohub.services
             orders.Add(entity);
             SaveToFile(orders);
             return Task.CompletedTask;
+        }
+
+        public async Task UpdateBackorderStatus(int orderId)
+        {
+            var orders = GetAll() ?? new List<Order>();
+            var order = orders.FirstOrDefault(o => o.Id == orderId);
+
+            if (order == null)
+            {
+                throw new KeyNotFoundException($"Order with ID {orderId} not found.");
+            }
+
+            var shipments = _shipmentService.GetAll();
+            var orderShipments = shipments.Where(s => s.Order_Id.Contains(orderId)).ToList();
+
+            var missingItems = new List<ItemDetail>();
+            foreach (var item in order.Items)
+            {
+                var totalShippedAmount = orderShipments
+                    .SelectMany(s => s.Items)
+                    .Where(si => si.Item_Id == item.Item_Id)
+                    .Sum(si => si.Amount);
+
+                if (totalShippedAmount < item.Amount)
+                {
+                    missingItems.Add(new ItemDetail
+                    {
+                        Item_Id = item.Item_Id,
+                        Amount = item.Amount - totalShippedAmount,
+                        CrossDockingStatus = null
+                    });
+                }
+            }
+
+            order.IsBackordered = missingItems.Any();
+            order.ShipmentDetails = missingItems;
+
+            // Remove the missing items from the order's Items list to avoid duplicates
+            order.Items = order.Items.Where(item => !missingItems.Any(mi => mi.Item_Id == item.Item_Id)).ToList();
+
+            await Update(order);
         }
 
         public Task Delete(int id)

@@ -14,8 +14,8 @@ namespace Cargohub.controllers.v2
     [ApiController]
     public class OrderContoller : Controller
     {
-        private readonly ICrudService<Order, int> _orderService;
-        public OrderContoller(ICrudService<Order, int> orderService)
+        private readonly OrderService _orderService;
+        public OrderContoller(OrderService orderService)
         {
             _orderService = orderService;
         }
@@ -169,6 +169,20 @@ namespace Cargohub.controllers.v2
             {
                 var order = _orderService.GetById(id);
                 return Ok(order.Items);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpPut("{id}/backorder-status")]
+        public async Task<IActionResult> UpdateBackorderStatus(int id)
+        {
+            try
+            {
+                await _orderService.UpdateBackorderStatus(id);
+                return NoContent();
             }
             catch (KeyNotFoundException ex)
             {

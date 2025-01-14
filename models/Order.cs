@@ -24,6 +24,6 @@ namespace Cargohub.models
         public DateTime Updated_At { get; set; }
         public List<ItemDetail> Items { get; set; }
         public bool IsBackordered { get; set; } // New property for backorder status
-        public string ShipmentDetails { get; set; } // New property for shipment details
+        public List<ItemDetail> ShipmentDetails { get; set; } // New property for shipment details
     }
 }
