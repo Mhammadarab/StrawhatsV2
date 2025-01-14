@@ -63,12 +63,12 @@ namespace Cargohub.controllers.v2
         {
             var validationResult = ValidateApiKeyAndUser("all");
             if (validationResult != null) return validationResult;
-            
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            
-            var warehouses = _warehouseService.GetAll()
-                .Where(warehouse => AuthProvider.HasWarehouseAccess(apiKey, warehouse.Id))
-                .ToList();
+
+            var warehouses = _warehouseService.GetAll();
+            if (warehouses == null || !warehouses.Any())
+            {
+                return NotFound();
+            }
             return Ok(warehouses);
         }
 
@@ -78,6 +78,7 @@ namespace Cargohub.controllers.v2
             var validationResult = ValidateApiKeyAndUser("single");
             if (validationResult != null) return validationResult;
             
+
             try
             {
                 var warehouse = _warehouseService.GetById(id);

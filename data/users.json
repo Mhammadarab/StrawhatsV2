@@ -1,5 +1,6 @@
 [
-  {"ApiKey": "owner",
+  {
+    "ApiKey": "owner",
     "App": "CargoHUB Owner Dashboard ",
     "EndpointAccess": {
       "clients": {
@@ -187,7 +188,7 @@
       }
     },
     "IsActive": true,
-    "Warehouses": [-1]
+    "Warehouses": [1, 2, 3, 4, 5]
   },
   {
     "ApiKey": "admin12345",
@@ -279,13 +280,7 @@
       }
     },
     "IsActive": true,
-    "Warehouses": [
-      1,
-      2,
-      3,
-      4,
-      5
-    ]
+    "Warehouses": [1, 2, 3, 4, 5]
   },
   {
     "ApiKey": "warehouseManager12345",
@@ -377,13 +372,7 @@
       }
     },
     "IsActive": true,
-    "Warehouses": [
-      2,
-      3,
-      4,
-      5,
-      6
-    ]
+    "Warehouses": [2, 3, 4, 5, 6]
   },
   {
     "ApiKey": "inventoryManager12345",
@@ -475,13 +464,7 @@
       }
     },
     "IsActive": true,
-    "Warehouses": [
-      3,
-      4,
-      5,
-      6,
-      7
-    ]
+    "Warehouses": [3, 4, 5, 6, 7]
   },
   {
     "ApiKey": "FloorManager12345",
@@ -573,13 +556,7 @@
       }
     },
     "IsActive": true,
-    "Warehouses": [
-      4,
-      5,
-      6,
-      7,
-      8
-    ]
+    "Warehouses": [4, 5, 6, 7, 8]
   },
   {
     "ApiKey": "operative12345",
@@ -671,13 +648,7 @@
       }
     },
     "IsActive": true,
-    "Warehouses": [
-      5,
-      6,
-      7,
-      8,
-      9
-    ]
+    "Warehouses": [5, 6, 7, 8, 9]
   },
   {
     "ApiKey": "supervisor12345",
@@ -769,13 +740,7 @@
       }
     },
     "IsActive": true,
-    "Warehouses": [
-      6,
-      7,
-      8,
-      9,
-      10
-    ]
+    "Warehouses": [6, 7, 8, 9, 10]
   },
   {
     "ApiKey": "analyst12345",
@@ -867,13 +832,7 @@
       }
     },
     "IsActive": true,
-    "Warehouses": [
-      7,
-      8,
-      9,
-      10,
-      11
-    ]
+    "Warehouses": [7, 8, 9, 10, 11]
   },
   {
     "ApiKey": "logistics12345",
@@ -965,13 +924,7 @@
       }
     },
     "IsActive": true,
-    "Warehouses": [
-      8,
-      9,
-      10,
-      11,
-      12
-    ]
+    "Warehouses": [8, 9, 10, 11, 12]
   },
   {
     "ApiKey": "sales12345",
@@ -1063,12 +1016,6 @@
       }
     },
     "IsActive": true,
-    "Warehouses": [
-      9,
-      10,
-      11,
-      12,
-      13
-    ]
+    "Warehouses": [9, 10, 11, 12, 13]
   }
 ]
