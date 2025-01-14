@@ -49,7 +49,7 @@ namespace Cargohub.Controllers.v2
                 return validationResult;
             }
 
-            // Validate pagination parameters if provided
+            // Validate pagination parameters if provide
             if ((pageNumber.HasValue && pageNumber <= 0) || (pageSize.HasValue && pageSize <= 0))
             {
                 return BadRequest("Page number and page size must be greater than zero if provided.");
