@@ -37,7 +37,7 @@ jobs:
         id: run_dotnet_tests
         run: |
           cd ./unit_tests
-          dotnet test --configuration Release --no-restore --collect:"XPlat Code Coverage" --results-directory cobertura
+          dotnet test --configuration Release --no-restore --collect:"XPlat Code Coverage" --results-directory cobertura > ../dotnet_test.log 2>&1 || true
 
       - name: Upload .NET coverage report
         if: always()
@@ -62,7 +62,7 @@ jobs:
       - name: Run Python integration tests with coverage
         id: run_python_tests
         run: |
-          pytest --cov=integration_tests --cov-report=xml --cov-report=term-missing
+          pytest --cov=integration_tests --cov-report=xml --cov-report=term-missing > python_test.log 2>&1 || true
           coverage xml -o coverage.xml
           coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
           coverage report --fail-under=90
@@ -77,11 +77,14 @@ jobs:
       - name: Notify Discord about Test Completion
         if: always()
         run: |
-          if [ ${{ steps.run_dotnet_tests.outcome }} == 'failure' ] || [ ${{ steps.run_python_tests.outcome }} == 'failure' ]; then
-            error_message="❌ **Testing stage failed** for staging branch.\n\n**.NET Test Errors:**\n${{ steps.run_dotnet_tests.outputs.error }}\n\n**Python Test Errors:**\n${{ steps.run_python_tests.outputs.error }}"
+          dotnet_errors=$(cat unit_tests/dotnet_test.log || echo "No errors.")
+          python_errors=$(cat python_test.log || echo "No errors.")
+          
+          if grep -q "Failed" unit_tests/dotnet_test.log || grep -q "ERROR" python_test.log; then
+            error_message="❌ **Testing stage failed** for staging branch.\n\n**.NET Test Errors:**\n\`\`\`\n$dotnet_errors\n\`\`\`\n\n**Python Test Errors:**\n\`\`\`\n$python_errors\n\`\`\`"
           else
             error_message="✅ **Testing stage completed successfully** for staging branch."
           fi
           curl -X POST -H "Content-Type: application/json" \
           -d '{"content": "'"$error_message"'"}' \
-          ${{inputs.DEPLOY_WEBHOOK_URL}}
+          ${{ inputs.DEPLOY_WEBHOOK_URL }}
