@@ -10,6 +10,24 @@ namespace Cargohub.Controllers.v2
     [ApiController]
     public class UserController : ControllerBase
     {
+        [HttpGet]
+        public IActionResult GetUsers()
+        {
+            var users = AuthProvider.GetUsers();
+            return Ok(users);
+        }
+
+        [HttpGet("{apiKey}")]
+        public IActionResult GetUserByApiKey(string apiKey)
+        {
+            var user = AuthProvider.GetUser(apiKey);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+            return Ok(user);
+        }
+
         private IActionResult ValidateApiKeyAndUser(string permission)
         {
             var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
@@ -26,26 +44,6 @@ namespace Cargohub.Controllers.v2
 
             return null;
         }
-        [HttpGet]
-        public IActionResult GetUsers()
-        {
-            var validationResult = ValidateApiKeyAndUser("all");
-            if (validationResult != null) return validationResult;
-            var users = AuthProvider.GetUsers();
-            return Ok(users);
-        }
-
-        [HttpGet("{apiKey}")]
-        public IActionResult GetUserByApiKey(string apiKey)
-        {
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null)
-            {
-                return NotFound("User not found.");
-            }
-            return Ok(user);
-        }
-
 
         [HttpPost]
         public IActionResult CreateUser([FromBody] User user)
