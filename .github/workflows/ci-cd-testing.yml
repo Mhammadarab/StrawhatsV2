@@ -30,7 +30,6 @@ jobs:
 
       - name: Restore unit test dependencies
         run: |
-          cd ./unit_tests
           dotnet restore
 
       - name: Run .NET tests with coverage
