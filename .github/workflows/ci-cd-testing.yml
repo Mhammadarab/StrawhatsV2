@@ -91,4 +91,4 @@ jobs:
           fi
 
           # Send the message to Discord
-          echo '{"content": "'"$error_message"'"}' | jq -c . | curl -X POST -H "Content-Type: application/json" -d @- ${{ inputs.DEPLOY_WEBHOOK_URL }}
+          echo '{"content": "'"$error_message"'"}' | jq -Rs '{content: .}' | curl -X POST -H "Content-Type: application/json" -d @- ${{ inputs.DEPLOY_WEBHOOK_URL }}
