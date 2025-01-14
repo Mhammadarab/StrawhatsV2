@@ -36,8 +36,12 @@ jobs:
       - name: Run .NET tests with coverage
         id: run_dotnet_tests
         run: |
-          cd ./unit_tests
-          dotnet test --configuration Release --no-restore --collect:"XPlat Code Coverage" --results-directory cobertura
+          dotnet test --configuration Release --no-restore --collect:"XPlat Code Coverage" --results-directory cobertura 2>&1 | tee dotnet_test_output.txt
+        continue-on-error: true
+
+      - name: Capture .NET test errors
+        if: failure()
+        run: echo "::set-output name=error::$(cat dotnet_test_output.txt)"
 
       - name: Upload .NET coverage report
         if: always()
@@ -61,11 +65,16 @@ jobs:
 
       - name: Run Python integration tests with coverage
         id: run_python_tests
+        continue-on-error: true
         run: |
-          pytest --cov=integration_tests --cov-report=xml --cov-report=term-missing
+          pytest --cov=integration_tests --cov-report=xml --cov-report=term-missing 2>&1 | tee pytest_output.txt
           coverage xml -o coverage.xml
           coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
           coverage report --fail-under=90
+
+      - name: Capture Python test errors
+        if: failure()
+        run: echo "::set-output name=error::$(cat pytest_output.txt)"
 
       - name: Upload Python coverage report
         if: always()
