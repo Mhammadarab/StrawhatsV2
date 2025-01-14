@@ -42,4 +42,4 @@ jobs:
           fi
           curl -X POST -H "Content-Type: application/json" \
           -d '{"content": "'"$error_message"'"}' \
-          ${{ vars.DISCORD_WEBHOOK_URL }}
+          ${{ inputs.DISCORD_WEBHOOK_URL }}

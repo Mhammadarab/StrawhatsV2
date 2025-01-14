@@ -58,11 +58,11 @@ jobs:
         if: always()
         run: |
           error_message=""
-          if [ ${{ steps.run_dotnet_tests.outcome }} == 'failure' ]; then
+          if [ "${{ steps.run_dotnet_tests.outcome }}" == 'failure' ]; then
             dotnet_errors=$(cat unit_tests/cobertura/*/coverage.cobertura.xml | grep -oP '(?<=<message>).*?(?=</message>)')
             error_message="❌ **Testing stage failed** for staging branch.\n\n**.NET Test Errors:  **\n$dotnet_errors\n\n"
           fi
-          if [ ${{ steps.run_python_tests.outcome }} == 'failure' ]; then
+          if [ "${{ steps.run_python_tests.outcome }}" == 'failure' ]; then
             python_errors=$(cat coverage.xml | grep -oP '(?<=<message>).*?(?=</message>)')
             error_message="${error_message}**Python Test Errors:  **\n$python_errors\n"
           fi
@@ -71,4 +71,4 @@ jobs:
           fi
           curl -X POST -H "Content-Type: application/json" \
           -d '{"content": "'"$error_message"'"}' \
-          ${{ vars.DISCORD_WEBHOOK_URL }}
+          ${{ inputs.DEPLOY_WEBHOOK_URL }}
