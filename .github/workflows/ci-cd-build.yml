@@ -32,7 +32,7 @@ jobs:
         if: always()
         run: |
           error_message=""
-          if [ ${{ steps.build_solution.outcome }} == 'failure' ]; then
+          if [ "${{ steps.build_solution.outcome }}" == 'failure' ]; then
             build_errors=$(dotnet build --configuration Release --no-restore 2>&1)
             error_message="❌ **Build stage failed** for staging branch.\n\n**Build Errors:  **\n$build_errors\n\n"
           fi
