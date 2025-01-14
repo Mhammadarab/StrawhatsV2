@@ -65,8 +65,7 @@ namespace Cargohub.controllers.v2
             if (validationResult != null) return validationResult;
             
             var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            var user = AuthProvider.GetUser(apiKey);
-
+            
             var warehouses = _warehouseService.GetAll()
                 .Where(warehouse => AuthProvider.HasWarehouseAccess(apiKey, warehouse.Id))
                 .ToList();

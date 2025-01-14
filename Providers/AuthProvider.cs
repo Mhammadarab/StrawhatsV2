@@ -293,7 +293,7 @@ namespace Cargohub.services
                 throw new KeyNotFoundException("User not found.");
             }
 
-            return user.Warehouses.Contains(warehouseId);
+            return user.Warehouses.First() == -1 || user.Warehouses.Contains(warehouseId);
         }
         public static void AddWarehouse(string performedBy, string apiKey, int warehouseId)
         {
