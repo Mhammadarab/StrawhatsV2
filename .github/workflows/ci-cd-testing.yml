@@ -75,7 +75,7 @@ jobs:
           if [ -z "$error_message" ]; then
             error_message="✅ **All tests passed successfully** for the branch."
           fi
-          coverage_summary=$(tail -n 20 $GITHUB_STEP_SUMMARY)
+          coverage_summary=$(cat $GITHUB_STEP_SUMMARY)
           error_message+="\n**Coverage Summary:**\n$coverage_summary"
           curl -X POST -H "Content-Type: application/json" \
           -d '{"content": "'"$error_message"'"}' \
