@@ -1,60 +1,56 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using Newtonsoft.Json;
-using Cargohub.models;
 
 namespace Cargohub.services
 {
     public class LogService
     {
-        private readonly string logFilePath = "Logs/user_changes.json";
+        private readonly string logFilePath = Path.Combine(Directory.GetCurrentDirectory(), "logs", "user_changes.log");
 
-        public List<LoggingEntry> GetAll(int? pageNumber = null, int? pageSize = null)
+        public List<Dictionary<string, object>> GetAllLogs()
         {
             if (!File.Exists(logFilePath))
             {
-                return new List<LoggingEntry>();
+                Console.WriteLine($"Log file not found at path: {logFilePath}");
+                return new List<Dictionary<string, object>>();
             }
 
-            var jsonData = File.ReadAllText(logFilePath);
-            var logs = JsonConvert.DeserializeObject<List<LoggingEntry>>(jsonData) ?? new List<LoggingEntry>();
+            var logs = new List<Dictionary<string, object>>();
+            var logLines = File.ReadAllLines(logFilePath);
 
-            // Apply pagination only if pageNumber and pageSize are provided and valid
-            if (pageNumber.HasValue && pageSize.HasValue && pageNumber > 0 && pageSize > 0)
+            foreach (var line in logLines)
             {
-                logs = logs
-                    .Skip((pageNumber.Value - 1) * pageSize.Value)
-                    .Take(pageSize.Value)
-                    .ToList();
+                var parsedLog = ParseLogLine(line);
+                if (parsedLog != null)
+                {
+                    logs.Add(parsedLog);
+                }
             }
 
             return logs;
         }
 
-        public List<LoggingEntry> FilterLogsByAction(string action)
+        private Dictionary<string, object> ParseLogLine(string line)
         {
-            var logs = GetAll();
-            return logs.Where(log => log.Action?.Equals(action, StringComparison.OrdinalIgnoreCase) == true).ToList();
-        }
-
-        public List<LoggingEntry> FilterLogsByDate(DateTime date)
-        {
-            var logs = GetAll();
-            return logs.Where(log => log.Timestamp.Date == date.Date).ToList();
-        }
-
-        public List<LoggingEntry> FilterLogsByPerformedBy(string performedBy)
-        {
-            var logs = GetAll();
-            return logs.Where(log => log.PerformedBy?.Equals(performedBy, StringComparison.OrdinalIgnoreCase) == true).ToList();
-        }
-
-        public List<LoggingEntry> FilterLogsByApiKey(string apiKey)
-        {
-            var logs = GetAll();
-            return logs.Where(log => log.ApiKey?.Equals(apiKey, StringComparison.OrdinalIgnoreCase) == true).ToList();
+            try
+            {
+                var parts = line.Split('|');
+                var logEntry = new Dictionary<string, object>
+                {
+                    ["Timestamp"] = parts[0].Split('=')[1].Trim(),
+                    ["Action"] = parts[1].Split('=')[1].Trim(),
+                    ["PerformedBy"] = parts[2].Split('=')[1].Trim(),
+                    ["ApiKey"] = parts[3].Split('=')[1].Trim(),
+                    ["Changes"] = parts.Length > 4 ? parts[4].Split('=', 2)[1].Trim() : null
+                };
+                return logEntry;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error parsing log line: {line}. Exception: {ex.Message}");
+                return null;
+            }
         }
     }
 }

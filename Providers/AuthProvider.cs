@@ -129,6 +129,9 @@ namespace Cargohub.services
 
             Directory.CreateDirectory("logs");
 
+            // Change the log file extension to .log
+            var logFilePath = Path.Combine("logs", "user_changes.log");
+
             List<JObject> logs;
             if (File.Exists(logFilePath))
             {

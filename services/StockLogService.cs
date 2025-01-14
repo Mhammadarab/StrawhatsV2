@@ -11,7 +11,7 @@ namespace Cargohub.services
 {
     public class StockLogService : ICrudService<LogEntry, string>
     {
-        private readonly string logFilePath = Path.Combine(Directory.GetCurrentDirectory(), "logs", "inventory_audit.json");
+        private readonly string logFilePath = Path.Combine(Directory.GetCurrentDirectory(), "logs", "inventory_audit.log");
 
         public List<LogEntry> GetAll(int? pageNumber = null, int? pageSize = null)
         {
