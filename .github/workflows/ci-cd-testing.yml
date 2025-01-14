@@ -33,12 +33,11 @@ jobs:
           cd ./unit_tests
           dotnet restore
 
-      - name: Run .NET tests with coverage
+      - name: Run .NET tests
         id: run_dotnet_tests
         run: |
           cd ./unit_tests
-          dotnet test --configuration Release --no-restore --collect:"XPlat Code Coverage" --results-directory cobertura
-          reportgenerator -reports:cobertura/coverage.cobertura.xml -targetdir:coverage -reporttypes:TextSummary
+          dotnet test --configuration Release --no-restore
         continue-on-error: true
 
       - name: Setup Python
@@ -86,10 +85,10 @@ jobs:
           # Extract coverage summary
           if [ -f coverage_summary.md ]; then
             coverage_summary=$(cat coverage_summary.md)
-            error_message+="\n**Coverage Summary:**\n$coverage_summary"
+            error_message+="**Coverage Summary:**$coverage_summary"
           else
             error_message+="\n**Coverage Summary:** Not available."
           fi
 
           # Send the message to Discord
-          echo "$error_message" | jq -Rs '{content: .}' | curl -X POST -H "Content-Type: application/json" -d @- ${{ inputs.DEPLOY_WEBHOOK_URL }}
+          echo '{'"$error_message"'"}' | jq -Rs '{content: .}' | curl -X POST -H "Content-Type: application/json" -d @- ${{ inputs.DEPLOY_WEBHOOK_URL }}
