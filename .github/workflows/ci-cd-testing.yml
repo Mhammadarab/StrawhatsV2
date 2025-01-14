@@ -30,15 +30,12 @@ jobs:
 
       - name: Restore unit test dependencies
         run: |
-          cd ./unit_tests
           dotnet restore
 
       - name: Run .NET tests with coverage
         id: run_dotnet_tests
         run: |
-          cd ./unit_tests
           dotnet test --configuration Release --no-restore --collect:"XPlat Code Coverage" --results-directory cobertura --invalid-flag 2>&1 | tee dotnet_test_output.txt
-        continue-on-error: false
 
       - name: Capture .NET test errors
         if: failure()
