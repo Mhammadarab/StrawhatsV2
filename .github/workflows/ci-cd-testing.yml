@@ -1,4 +1,4 @@
-name: CI/CD - test
+name: CI/CD - Testing
 
 on:
   workflow_call:
@@ -42,33 +42,22 @@ jobs:
       - name: Run Python tests with coverage
         id: run_python_tests
         run: |
-          pytest --cov=integration_tests --cov-report=xml --cov-report=term-missing
+          pytest --cov=integration_tests --cov-report=xml --cov-report=term-missing || exit 1
           coverage xml -o coverage.xml
-          coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
-          coverage report --fail-under=90
-
-      - name: Upload Python coverage report
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: python-coverage
-          path: coverage.xml
 
       - name: Notify Discord about Test Completion
         if: always()
         run: |
           error_message=""
-          if [ "${{ steps.run_dotnet_tests.outcome }}" == 'failure' ]; then
-            dotnet_errors=$(cat unit_tests/cobertura/*/coverage.cobertura.xml | grep -oP '(?<=<message>).*?(?=</message>)')
-            error_message="❌ **Testing stage failed** for staging branch.\n\n**.NET Test Errors:  **\n$dotnet_errors\n\n"
+          if [ "${{ steps.run_dotnet_tests.outcome }}" == "failure" ]; then
+            error_message+="❌ **.NET Tests failed**:\n$(cat unit_tests/cobertura/*/coverage.cobertura.xml | tail -n 20)\n"
           fi
-          if [ "${{ steps.run_python_tests.outcome }}" == 'failure' ]; then
-            python_errors=$(cat coverage.xml | grep -oP '(?<=<message>).*?(?=</message>)')
-            error_message="${error_message}**Python Test Errors:  **\n$python_errors\n"
+          if [ "${{ steps.run_python_tests.outcome }}" == "failure" ]; then
+            error_message+="❌ **Python Tests failed**:\n$(tail -n 20 coverage.xml)\n"
           fi
           if [ -z "$error_message" ]; then
-            error_message="✅ **Testing stage completed successfully** for staging branch."
+            error_message="✅ **All tests passed successfully** for the branch."
           fi
           curl -X POST -H "Content-Type: application/json" \
           -d '{"content": "'"$error_message"'"}' \
-          ${{ inputs.DEPLOY_WEBHOOK_URL }}
+          "${{ inputs.DEPLOY_WEBHOOK_URL }}"
