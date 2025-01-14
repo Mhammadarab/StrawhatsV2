@@ -3,7 +3,7 @@ name: CI - Staging Branch
 on:
   pull_request:
     branches:
-      - staging
+      - sending-coverage-to-discord
   workflow_dispatch:
 
 env:
