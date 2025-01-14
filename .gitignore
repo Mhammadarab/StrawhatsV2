@@ -83,3 +83,4 @@ StarterKit.GeneratedMSBuildEditorConfig.editorconfig
 StarterKit.csproj.nuget.dgspec.json
 *.sln
 */__pycache__/*
+*/.venv

@@ -37,7 +37,7 @@ namespace Cargohub.services
                 {
                     new User
                     {
-                        ApiKey = "a1b2c3d4e5",
+                        ApiKey = "owner",
                         App = "CargoHUB Dashboard 1",
                         EndpointAccess = new Dictionary<string, EndpointAccess>
                         {
@@ -54,7 +54,7 @@ namespace Cargohub.services
                             { "item_lines", new EndpointAccess { All = true, Single = true, Create = true, Update = true, Delete = true } },
                             { "item_groups", new EndpointAccess { All = true, Single = true, Create = true, Update = true, Delete = true } }
                         },
-                        Warehouses = new List<int> { 1, 2, 3, 4, 5 }
+                        Warehouses = new List<int> { -1 }
                     }
                 };
                 SaveUsers();
@@ -295,7 +295,7 @@ namespace Cargohub.services
                 throw new KeyNotFoundException("User not found.");
             }
 
-            return user.Warehouses.Contains(warehouseId);
+            return user.Warehouses.First() == -1 || user.Warehouses.Contains(warehouseId);
         }
         public static void AddWarehouse(string performedBy, string apiKey, int warehouseId)
         {

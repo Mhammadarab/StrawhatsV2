@@ -7,7 +7,7 @@ class TestClientsAPI(unittest.TestCase):
 
     def setUp(self):
         self.base_url = 'http://localhost:3000/api/v2/clients'
-        self.headers = {'API_KEY': 'a1b2c3d4e5'}
+        self.headers = {'API_KEY': 'owner'}
         self.invalid_headers = {'API_KEY': 'invalid_key'}
 
         # Get the current max ID
