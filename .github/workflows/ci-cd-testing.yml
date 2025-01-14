@@ -36,7 +36,6 @@ jobs:
       - name: Run .NET tests with coverage
         id: run_dotnet_tests
         run: |
-          cd ./unit_tests
           dotnet test --configuration Release --no-restore --collect:"XPlat Code Coverage" --results-directory cobertura
 
       - name: Upload .NET coverage report
