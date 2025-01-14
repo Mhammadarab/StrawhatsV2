@@ -13,9 +13,14 @@ class TestWarehousesAPI(unittest.TestCase):
         print(self.headers)
         # Get the current max ID
         response = requests.get(self.base_url, headers=self.headers)
-
-        warehouses = response.json()
-        max_id = max([warehouse["id"] for warehouse in warehouses], default=0)
+        if response.status_code == 200 and response.content:
+            warehouses = response.json()
+            for warehouse in warehouses:
+                if isinstance(warehouse.get("contact"), dict):
+                    warehouse["contacts"] = [warehouse.pop("contact")]
+            max_id = max([warehouse["id"] for warehouse in warehouses], default=0)
+        else:
+            max_id = 0
         self.test_warehouse = {
             "id": max_id + 1,
             "code": "WAREHOUSE",
