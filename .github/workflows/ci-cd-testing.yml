@@ -78,7 +78,7 @@ jobs:
         if: always()
         run: |
           if [ ${{ steps.run_dotnet_tests.outcome }} == 'failure' ] || [ ${{ steps.run_python_tests.outcome }} == 'failure' ]; then
-            error_message="❌ **Testing stage failed** for staging branch.\n\n**.NET Test Errors:**\n${{ steps.run_dotnet_tests.outputs.error }}\n\n**Python Test Errors:**\n${{ steps.run_python_tests.outputs.error }}"
+            error_message="❌ **Testing stage failed** for staging branch.\n\n**.NET Test Errors:  **\n\n\n**Python Test Errors:  **\n"
           else
             error_message="✅ **Testing stage completed successfully** for staging branch."
           fi
