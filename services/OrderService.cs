@@ -62,7 +62,12 @@ namespace Cargohub.services
                 }
             }
 
-            order.IsBackordered = missingItems.Any();
+            if (!missingItems.Any())
+            {
+                throw new InvalidOperationException("All items in the order match the items in the shipment. No items to backorder.");
+            }
+
+            order.IsBackordered = true;
             order.ShipmentDetails = missingItems;
 
             // Remove the missing items from the order's Items list to avoid duplicates

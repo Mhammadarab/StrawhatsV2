@@ -188,6 +188,10 @@ namespace Cargohub.controllers.v2
             {
                 return NotFound(ex.Message);
             }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("{id}/items")]
