@@ -41,7 +41,7 @@ namespace StrawhatsV2.controllers.v2
         [HttpGet]
         public IActionResult GetLocations()
         {
-            var validationResult = ValidateApiKeyAndUser("all");
+            var validationResult = ValidateApiKeyAndUser("get");
             if (validationResult != null)
             {
                 return validationResult;
@@ -58,7 +58,7 @@ namespace StrawhatsV2.controllers.v2
         [HttpGet("{id}")]
         public IActionResult GetLocationById(int id)
         {
-            var validationResult = ValidateApiKeyAndUser("single");
+            var validationResult = ValidateApiKeyAndUser("get");
             if (validationResult != null)
             {
                 return validationResult;

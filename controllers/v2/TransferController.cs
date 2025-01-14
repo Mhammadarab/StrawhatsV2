@@ -41,7 +41,7 @@ namespace Cargohub.controllers.v2
     [HttpGet]
     public IActionResult GetTransfers([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
     {
-        var validationResult = ValidateApiKeyAndUser("all");
+        var validationResult = ValidateApiKeyAndUser("get");
         if (validationResult != null)
         {
             return validationResult;
@@ -81,7 +81,7 @@ namespace Cargohub.controllers.v2
     [HttpGet("{id}")]
     public IActionResult GetTransferById(int id)
     {
-        var validationResult = ValidateApiKeyAndUser("single");
+        var validationResult = ValidateApiKeyAndUser("get");
         if (validationResult != null)
         {
             return validationResult;
@@ -101,7 +101,7 @@ namespace Cargohub.controllers.v2
     [HttpGet("transfers/{transfer_id}/items")]
     public IActionResult GetTransferItems(int transfer_id)
     {
-        var validationResult = ValidateApiKeyAndUser("all");
+        var validationResult = ValidateApiKeyAndUser("get");
         if (validationResult != null)
         {
             return validationResult;

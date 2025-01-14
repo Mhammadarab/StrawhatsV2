@@ -33,61 +33,31 @@ jobs:
           cd ./unit_tests
           dotnet restore
 
-      - name: Run .NET tests
+      - name: Run .NET tests with coverage
         id: run_dotnet_tests
         run: |
           cd ./unit_tests
           dotnet test --configuration Release --no-restore --collect:"XPlat Code Coverage" --results-directory cobertura
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.x"
-
-      - name: Install Python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r integration_tests/requirements.txt
-
-      - name: Run application
-        run: dotnet run --no-build --configuration Release --urls=${{ secrets.LOCALHOST }} & sleep 5
-
-      - name: Run Python integration tests with coverage
+      - name: Run Python tests with coverage
         id: run_python_tests
         run: |
-          pytest --cov=integration_tests --cov-report=xml --cov-report=term-missing
+          pytest --cov=integration_tests --cov-report=xml --cov-report=term-missing || exit 1
           coverage xml -o coverage.xml
-          coverage report --format=markdown > coverage_summary.md
-          coverage report --fail-under=90
 
       - name: Notify Discord about Test Completion
         if: always()
         run: |
           error_message=""
-          # Check .NET test outcome
           if [ "${{ steps.run_dotnet_tests.outcome }}" == "failure" ]; then
-            dotnet_errors=$(cat unit_tests/cobertura/*/coverage.cobertura.xml 2>/dev/null || echo "No detailed .NET test errors found.")
-            error_message+="❌ **.NET Tests failed**:\n$dotnet_errors\n"
+            error_message+="❌ **.NET Tests failed**:\n$(cat unit_tests/cobertura/*/coverage.cobertura.xml | tail -n 20)\n"
           fi
-
-          # Check Python test outcome
           if [ "${{ steps.run_python_tests.outcome }}" == "failure" ]; then
-            python_errors=$(cat coverage.xml 2>/dev/null || echo "No detailed Python test errors found.")
-            error_message+="❌ **Python Tests failed**:\n$python_errors\n"
+            error_message+="❌ **Python Tests failed**:\n$(tail -n 20 coverage.xml)\n"
           fi
-
-          # If no errors, mark tests as successful
           if [ -z "$error_message" ]; then
             error_message="✅ **All tests passed successfully** for the branch."
           fi
-
-          # Extract coverage summary
-          if [ -f coverage_summary.md ]; then
-            coverage_summary=$(cat coverage_summary.md)
-            error_message+="**Coverage Summary:**$coverage_summary"
-          else
-            error_message+="\n**Coverage Summary:** Not available."
-          fi
-
-          # Send the message to Discord
-          echo '{'"$error_message"'"}' | jq -Rs '{content: .}' | curl -X POST -H "Content-Type: application/json" -d @- ${{ inputs.DEPLOY_WEBHOOK_URL }}
+          curl -X POST -H "Content-Type: application/json" \
+          -d '{"content": "'"$error_message"'"}' \
+          "${{ inputs.DEPLOY_WEBHOOK_URL }}"

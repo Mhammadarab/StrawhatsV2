@@ -8,7 +8,7 @@ namespace Cargohub.models
     public class Shipment
     {
         public int Id { get; set; }
-        public List<int> Order_Id { get; set; }
+        public int Order_Id { get; set; }
         public int Source_Id { get; set; }
         public DateTime Order_Date { get; set; }
         public DateTime Request_Date { get; set; }

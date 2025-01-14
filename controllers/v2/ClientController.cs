@@ -24,8 +24,6 @@ namespace Cargohub.controllers.v2
             _clientService = clientService;
             _orderService = orderService;
         }
-
-        // TODO: add path as parameter and pass it to HasAccess
         private IActionResult ValidateApiKeyAndUser(string permission)
         {
             var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
@@ -35,8 +33,7 @@ namespace Cargohub.controllers.v2
             }
 
             var user = AuthProvider.GetUser(apiKey);
-            // TODO: change inventories to clients
-            if (user == null || !AuthProvider.HasAccess(user, "clients", permission))
+            if (user == null || !AuthProvider.HasAccess(user, "inventories", permission))
             {
                 return Forbid("You do not have permission to access this resource.");
             }
@@ -48,8 +45,8 @@ namespace Cargohub.controllers.v2
         [HttpGet]
         public IActionResult GetClients([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
         {
-            // TODO: check/change "get" to correct permission
-            var validationResult = ValidateApiKeyAndUser("all");
+
+            var validationResult = ValidateApiKeyAndUser("get");
             if (validationResult != null)
             {
                 return validationResult;
@@ -83,11 +80,12 @@ namespace Cargohub.controllers.v2
             }
             return Ok(clients);
         }
+
         [HttpGet("{id}/orders")]
         public async Task<IActionResult> GetClientOrder(int id)
         {
 
-            var validationResult = ValidateApiKeyAndUser("all");
+            var validationResult = ValidateApiKeyAndUser("get");
             if (validationResult != null)
             {
                 return validationResult;
@@ -109,7 +107,7 @@ namespace Cargohub.controllers.v2
         public IActionResult GetClientById(int id)
         {
 
-            var validationResult = ValidateApiKeyAndUser("single");
+            var validationResult = ValidateApiKeyAndUser("get");
             if (validationResult != null)
             {
                 return validationResult;

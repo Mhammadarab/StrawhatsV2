@@ -265,15 +265,14 @@ namespace Cargohub.services
             LogChange("Deleted", performedBy, oldUser: user);
         }
 
-        public static bool HasAccess(User user, string path, string permission)
+        public static bool HasAccess(User user, string path, string method)
         {
             // Check for path-specific access
             if (user.EndpointAccess.TryGetValue(path, out var specificAccess))
             {
-                return permission switch
+                return method switch
                 {
-                    "single" => specificAccess.Single,
-                    "all" => specificAccess.All,
+                    "get" => specificAccess.All || specificAccess.Single,
                     "post" => specificAccess.Create,
                     "put" => specificAccess.Update,
                     "delete" => specificAccess.Delete, 

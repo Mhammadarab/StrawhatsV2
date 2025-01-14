@@ -15,7 +15,7 @@ namespace Cargohub.models
         public string City { get; set; }
         public string Province { get; set; }
         public string Country { get; set; }
-        public List<Contact> Contact { get; set; } // Contact details nested class
+        public Contact Contact { get; set; } // Contact details nested class
         public DateTime Created_At { get; set; }
         public DateTime Updated_At { get; set; }
         public List<int> Classifications_Id {get; set;}

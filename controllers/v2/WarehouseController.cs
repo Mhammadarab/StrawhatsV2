@@ -40,7 +40,7 @@ namespace Cargohub.controllers.v2
         [HttpGet("{warehouse_id}/locations")]
         public IActionResult GetWarehouseLocations(int warehouse_id)
         {
-            var validationResult = ValidateApiKeyAndUser("all");
+            var validationResult = ValidateApiKeyAndUser("get");
             if (validationResult != null) return validationResult;
 
             try
@@ -61,7 +61,7 @@ namespace Cargohub.controllers.v2
         [HttpGet]
         public IActionResult GetWarehouses()
         {
-            var validationResult = ValidateApiKeyAndUser("all");
+            var validationResult = ValidateApiKeyAndUser("get");
             if (validationResult != null) return validationResult;
 
             var warehouses = _warehouseService.GetAll();
@@ -75,9 +75,8 @@ namespace Cargohub.controllers.v2
         [HttpGet("{id}")]
         public IActionResult GetWarehouseById(int id)
         {
-            var validationResult = ValidateApiKeyAndUser("single");
+            var validationResult = ValidateApiKeyAndUser("get");
             if (validationResult != null) return validationResult;
-            
 
             try
             {
@@ -147,7 +146,7 @@ namespace Cargohub.controllers.v2
         [HttpGet("capacities")]
         public IActionResult GetAllWarehouseCapacities(int pageNumber = 1, int pageSize = 10)
         {
-            var validationResult = ValidateApiKeyAndUser("all");
+            var validationResult = ValidateApiKeyAndUser("get");
             if (validationResult != null) return validationResult;
 
             try
@@ -171,7 +170,7 @@ namespace Cargohub.controllers.v2
         [HttpGet("{id}/capacities")]
         public IActionResult GetWarehouseCapacities(int id)
         {
-            var validationResult = ValidateApiKeyAndUser("all");
+            var validationResult = ValidateApiKeyAndUser("get");
             if (validationResult != null) return validationResult;
             
             try

@@ -15,7 +15,7 @@ namespace Cargohub.models
         public int Warehouse_Id { get; set; }
         public int? Ship_To { get; set; } // Nullable
         public int? Bill_To { get; set; } // Nullable
-        public List<int?> Shipment_Id { get; set; }
+        public int? Shipment_Id { get; set; }
         public decimal Total_Amount { get; set; }
         public decimal Total_Discount { get; set; }
         public decimal Total_Tax { get; set; }

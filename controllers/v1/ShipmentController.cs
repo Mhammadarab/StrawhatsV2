@@ -131,13 +131,8 @@ namespace Cargohub.controllers
             try
             {
                 var shipment = _shipmentService.GetById(id);
-                var orders = new List<Order>();
-                foreach (var orderId in shipment.Order_Id)
-                {
-                    var order = _orderService.GetById(orderId);
-                    orders.Add(order);
-                }
-                return Ok(orders);
+                var order = _orderService.GetById(shipment.Order_Id);
+                return Ok(order);
             }
             catch (KeyNotFoundException e)
             {
@@ -154,7 +149,7 @@ namespace Cargohub.controllers
 
                 var targetOrder = _orderService.GetById(order.Id);
                 var targetShipment = _shipmentService.GetById(id);
-                targetShipment.Order_Id = new List<int> { targetOrder.Id };
+                targetShipment.Order_Id = targetOrder.Id;
                 targetShipment.Order_Date = targetOrder.Order_Date;
                 await _shipmentService.Update(targetShipment);
                 return NoContent();

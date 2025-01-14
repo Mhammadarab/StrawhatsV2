@@ -90,7 +90,7 @@ public class CrossDockingService
         }
 
         var orders = _orderService.GetAll();
-        var matchingOrder = orders.FirstOrDefault(o => o.Shipment_Id.Contains(shipmentId));
+        var matchingOrder = orders.FirstOrDefault(o => o.Shipment_Id == shipmentId);
         if (matchingOrder == null)
         {
             throw new KeyNotFoundException($"No order found linked to shipment ID {shipmentId}.");
@@ -132,7 +132,7 @@ public class CrossDockingService
 
         foreach (var shipment in shipments.Where(s => shipmentId == null || s.Id == shipmentId))
         {
-            var matchingOrder = orders.FirstOrDefault(o => o.Shipment_Id.Contains(shipment.Id));
+            var matchingOrder = orders.FirstOrDefault(o => o.Shipment_Id == shipment.Id);
             if (matchingOrder != null)
             {
                 foreach (var shipmentItem in shipment.Items)
