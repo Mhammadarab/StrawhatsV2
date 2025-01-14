@@ -1,4 +1,4 @@
-name: CI/CD - test
+name: CI/CD - Testing
 
 on:
   workflow_call:
@@ -57,7 +57,7 @@ jobs:
         run: |
           pytest --cov=integration_tests --cov-report=xml --cov-report=term-missing
           coverage xml -o coverage.xml
-          coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
+          coverage report --format=markdown > coverage_summary.md
           coverage report --fail-under=90
 
       - name: Notify Discord about Test Completion
@@ -75,8 +75,16 @@ jobs:
           if [ -z "$error_message" ]; then
             error_message="✅ **All tests passed successfully** for the branch."
           fi
-          coverage_summary=$(cat $GITHUB_STEP_SUMMARY)
-          error_message+="\n**Coverage Summary:**\n$coverage_summary"
+
+          # Extract coverage summary
+          if [ -f coverage_summary.md ]; then
+            coverage_summary=$(cat coverage_summary.md)
+            error_message+="\n**Coverage Summary:**\n```\n$coverage_summary\n```"
+          else
+            error_message+="\n**Coverage Summary:** Not available."
+          fi
+
+          # Send to Discord
           curl -X POST -H "Content-Type: application/json" \
           -d '{"content": "'"$error_message"'"}' \
           ${{ inputs.DEPLOY_WEBHOOK_URL }}
