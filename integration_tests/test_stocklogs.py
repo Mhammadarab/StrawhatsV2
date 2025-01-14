@@ -20,7 +20,7 @@ class TestStockLogAPI(unittest.TestCase):
         # Inventory Audit data
         self.test_stocklog = {
             "Timestamp": (datetime.now().isoformat() + "Z"),
-            "PerformedBy": "a1b2c3d4e5",
+            "PerformedBy": "owner",
             "Status": "Live",
             "AuditData": {
                 "1": {

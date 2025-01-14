@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<AdminOnly>();
-    options.Filters.Add<CustomForbidResultFilter>();
+    // options.Filters.Add<CustomForbidResultFilter>();
 });
 
 
