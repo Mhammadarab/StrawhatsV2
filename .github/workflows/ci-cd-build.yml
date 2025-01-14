@@ -25,10 +25,20 @@ jobs:
         run: dotnet restore
 
       - name: Build the solution
+        id: build_solution
         run: dotnet build --configuration Release --no-restore
 
       - name: Notify Discord about Build Completion
+        if: always()
         run: |
+          error_message=""
+          if [ ${{ steps.build_solution.outcome }} == 'failure' ]; then
+            build_errors=$(dotnet build --configuration Release --no-restore 2>&1)
+            error_message="❌ **Build stage failed** for staging branch.\n\n**Build Errors:  **\n$build_errors\n\n"
+          fi
+          if [ -z "$error_message" ]; then
+            error_message="🚀 **Build stage completed successfully** for staging branch. Proceeding to testing stage."
+          fi
           curl -X POST -H "Content-Type: application/json" \
-          -d '{"content": "🚀 **Build stage completed successfully** for staging branch. Proceeding to testing stage."}' \
+          -d '{"content": "'"$error_message"'"}' \
           ${{inputs.DISCORD_WEBHOOK_URL}}

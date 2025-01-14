@@ -39,27 +39,7 @@ jobs:
           cd ./unit_tests
           dotnet test --configuration Release --no-restore --collect:"XPlat Code Coverage" --results-directory cobertura
 
-      - name: Upload .NET coverage report
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: cobertura-coverage
-          path: unit_tests/cobertura/*/coverage.cobertura.xml
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.x"
-
-      - name: Install Python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r integration_tests/requirements.txt
-
-      - name: Run application
-        run: dotnet run --no-build --configuration Release --urls=${{ secrets.LOCALHOST }} & sleep 5
-
-      - name: Run Python integration tests with coverage
+      - name: Run Python tests with coverage
         id: run_python_tests
         run: |
           pytest --cov=integration_tests --cov-report=xml --cov-report=term-missing
