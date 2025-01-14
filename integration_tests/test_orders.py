@@ -50,7 +50,7 @@ class TestOrdersAPI(unittest.TestCase):
                 }
             ],
             "IsBackordered": True,
-            "ShipmentDetails": "test "
+            "ShipmentDetails": []
         }
 
     def test_get_orders(self):
