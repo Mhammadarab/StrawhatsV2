@@ -54,7 +54,7 @@ namespace Cargohub.services
                             { "item_lines", new EndpointAccess { All = true, Single = true, Create = true, Update = true, Delete = true } },
                             { "item_groups", new EndpointAccess { All = true, Single = true, Create = true, Update = true, Delete = true } }
                         },
-                        Warehouses = new List<int> { 1, 2, 3, 4, 5 }
+                        Warehouses = new List<int> { -1 }
                     }
                 };
                 SaveUsers();
