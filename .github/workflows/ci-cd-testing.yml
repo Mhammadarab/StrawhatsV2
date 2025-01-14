@@ -35,7 +35,7 @@ jobs:
       - name: Run .NET tests with coverage
         id: run_dotnet_tests
         run: |
-          dotnet test --configuration Release --no-restore --collect:"XPlat Code Coverage" --results-directory cobertura --invalid-flag 2>&1 | tee dotnet_test_output.txt
+          dotnet test --configuration Release --no-restore --collect:"XPlat Code Coverage" --results-directory cobertura  2>&1 | tee dotnet_test_output.txt
 
       - name: Capture .NET test errors
         if: failure()
