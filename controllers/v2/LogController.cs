@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Cargohub.services;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 
 namespace Cargohub.controllers.v2
 {
@@ -19,84 +18,36 @@ namespace Cargohub.controllers.v2
         }
 
         [HttpGet]
-        public IActionResult GetLogs()
+        public IActionResult GetLogs([FromQuery] string action = null, [FromQuery] string fromDate = null, [FromQuery] string toDate = null, [FromQuery] string performedBy = null, [FromQuery] string apiKey = null, [FromQuery] string changes = null)
         {
-            var logs = _logService.GetAll();
+            DateTime? parsedFromDate = null;
+            DateTime? parsedToDate = null;
+
+            if (!string.IsNullOrEmpty(fromDate))
+            {
+                if (!DateTime.TryParseExact(fromDate, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out var tempFromDate))
+                {
+                    return BadRequest("Invalid fromDate format. Use yyyy-MM-dd.");
+                }
+                parsedFromDate = tempFromDate;
+            }
+
+            if (!string.IsNullOrEmpty(toDate))
+            {
+                if (!DateTime.TryParseExact(toDate, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out var tempToDate))
+                {
+                    return BadRequest("Invalid toDate format. Use yyyy-MM-dd.");
+                }
+                parsedToDate = tempToDate;
+            }
+
+            var logs = _logService.GetAll(action, parsedFromDate, parsedToDate, performedBy, apiKey, changes);
+
             if (logs == null || logs.Count == 0)
             {
                 return NotFound("No logs found.");
             }
-            return Ok(logs);
-        }
 
-        [HttpGet("created")]
-        public IActionResult GetCreatedLogs()
-        {
-            var logs = _logService.FilterLogsByAction("Created");
-            if (logs == null || logs.Count == 0)
-            {
-                return NotFound("No created logs found.");
-            }
-            return Ok(logs);
-        }
-
-        [HttpGet("updated")]
-        public IActionResult GetUpdatedLogs()
-        {
-            var logs = _logService.FilterLogsByAction("Updated");
-            if (logs == null || logs.Count == 0)
-            {
-                return NotFound("No updated logs found.");
-            }
-            return Ok(logs);
-        }
-
-        [HttpGet("deleted")]
-        public IActionResult GetDeletedLogs()
-        {
-            var logs = _logService.FilterLogsByAction("Deleted");
-            if (logs == null || logs.Count == 0)
-            {
-                return NotFound("No deleted logs found.");
-            }
-            return Ok(logs);
-        }
-
-        [HttpGet("date/{date}")]
-        public IActionResult GetLogsByDate(string date)
-        {
-            if (!DateTime.TryParseExact(date, "dd-MM-yyyy", null, System.Globalization.DateTimeStyles.None, out var parsedDate))
-            {
-                return BadRequest("Invalid date format. Use dd-MM-yyyy.");
-            }
-
-            var logs = _logService.FilterLogsByDate(parsedDate);
-            if (logs == null || logs.Count == 0)
-            {
-                return NotFound($"No logs found for date: {date}.");
-            }
-            return Ok(logs);
-        }
-
-        [HttpGet("performedby/{performedBy}")]
-        public IActionResult GetLogsByPerformedBy(string performedBy)
-        {
-            var logs = _logService.FilterLogsByPerformedBy(performedBy);
-            if (logs == null || logs.Count == 0)
-            {
-                return NotFound($"No logs found for performedBy: {performedBy}.");
-            }
-            return Ok(logs);
-        }
-
-        [HttpGet("apikey/{apiKey}")]
-        public IActionResult GetLogsByApiKey(string apiKey)
-        {
-            var logs = _logService.FilterLogsByApiKey(apiKey);
-            if (logs == null || logs.Count == 0)
-            {
-                return NotFound($"No logs found for API key: {apiKey}.");
-            }
             return Ok(logs);
         }
     }

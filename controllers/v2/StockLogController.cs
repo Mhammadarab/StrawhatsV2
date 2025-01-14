@@ -28,22 +28,9 @@ namespace Cargohub.controllers.v2
         [HttpGet]
         public IActionResult GetStockLogs([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
         {
-            // Validate pagination parameters if provided
-            if ((pageNumber.HasValue && pageNumber <= 0) || (pageSize.HasValue && pageSize <= 0))
-            {
-                return BadRequest("Page number and page size must be greater than zero if provided.");
-            }
-
             var stockLogs = _stockLogService.GetAll(pageNumber, pageSize);
+            var totalRecords = stockLogs.Count;
 
-            if (stockLogs == null || !stockLogs.Any())
-            {
-                return NotFound();
-            }
-
-            var totalRecords = _stockLogService.GetAll(null, null).Count; // Total count without pagination
-
-            // Return metadata only if pagination is applied
             if (pageNumber.HasValue && pageSize.HasValue)
             {
                 return Ok(new
@@ -66,7 +53,6 @@ namespace Cargohub.controllers.v2
             {
                 return NotFound("Log entry not found.");
             }
-
             return Ok(logEntry);
         }
 
@@ -76,7 +62,7 @@ namespace Cargohub.controllers.v2
         {
             if (stockLog == null)
             {
-                return BadRequest("StockLog data is required.");
+                return BadRequest("Invalid log entry data.");
             }
 
             await _stockLogService.Create(stockLog);
@@ -116,54 +102,6 @@ namespace Cargohub.controllers.v2
             {
                 return NotFound(ex.Message);
             }
-        }
-
-        // PUT: api/v2/stocklogs/{timestamp}/yes
-        [HttpPut("{timestamp}/yes")]
-        public async Task<IActionResult> ApproveAudit(string timestamp)
-        {
-            var logFilePath = Path.Combine("logs", "inventory_audit.json");
-            if (!System.IO.File.Exists(logFilePath))
-            {
-                return NotFound("Log file not found.");
-            }
-
-            var jsonData = await System.IO.File.ReadAllTextAsync(logFilePath);
-            var logs = JsonConvert.DeserializeObject<List<LogEntry>>(jsonData) ?? new List<LogEntry>();
-
-            var logEntry = logs.FirstOrDefault(log => log.Timestamp == timestamp);
-            if (logEntry == null)
-            {
-                return NotFound("Log entry not found.");
-            }
-
-            // Update the stock based on the audit data
-            _inventoryService.AuditInventory(logEntry.PerformedBy, logEntry.AuditData);
-
-            // Update the status to "Completed"
-            logEntry.Status = "Completed";
-
-            // Write the updated logs back to the file
-            await System.IO.File.WriteAllTextAsync(logFilePath, JsonConvert.SerializeObject(logs, Formatting.Indented));
-
-            return Ok("Audit approved and inventory updated.");
-        }
-
-        // PUT: api/v2/stocklogs/{timestamp}/no
-        [HttpPut("{timestamp}/no")]
-        public IActionResult RejectAudit(string timestamp)
-        {
-            var logEntry = _stockLogService.GetById(timestamp);
-            if (logEntry == null)
-            {
-                return NotFound("Log entry not found.");
-            }
-
-            // Log the rejection
-            logEntry.Discrepancies.Add("Audit rejected by admin.");
-            _stockLogService.Update(logEntry);
-
-            return Ok("Audit rejected.");
         }
     }
 }
