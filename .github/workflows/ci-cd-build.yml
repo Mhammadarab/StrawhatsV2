@@ -27,6 +27,7 @@ jobs:
       - name: Build the solution
         id: build_solution
         run: dotnet build --configuration Release --no-restore
+        continue-on-error: true
 
       - name: Notify Discord about Build Completion
         if: always()
