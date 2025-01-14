@@ -182,38 +182,28 @@ namespace Cargohub.services
         }
 
         private void LogAuditChange(string performedBy, Dictionary<int, Dictionary<int, int>> auditData, List<string> discrepancies, string status)
-        {
-            var logEntry = new
-            {
-                Timestamp = DateTime.UtcNow,
-                PerformedBy = performedBy,
-                Status = status,
-                AuditData = auditData,
-                Discrepancies = discrepancies
-            };
+{
+    var logEntry = new
+    {
+        Timestamp = DateTime.UtcNow,
+        PerformedBy = performedBy,
+        Status = status,
+        AuditData = auditData,
+        Discrepancies = discrepancies
+    };
 
-            var logFilePath = Path.Combine("logs", "inventory_audit.json");
-            Directory.CreateDirectory("logs");
+    var logFilePath = Path.Combine("logs", "inventory_audit.log");
+    Directory.CreateDirectory("logs");
 
-            List<object> logs;
-            if (File.Exists(logFilePath))
-            {
-                var jsonData = File.ReadAllText(logFilePath);
-                logs = JsonConvert.DeserializeObject<List<object>>(jsonData) ?? new List<object>();
-            }
-            else
-            {
-                logs = new List<object>();
-            }
+    var logLine = $"Timestamp={logEntry.Timestamp:O} | PerformedBy={logEntry.PerformedBy} | Status={logEntry.Status} | AuditData={JsonConvert.SerializeObject(logEntry.AuditData)} | Discrepancies={JsonConvert.SerializeObject(logEntry.Discrepancies)}";
 
-            logs.Add(logEntry);
-            File.WriteAllText(logFilePath, JsonConvert.SerializeObject(logs, Formatting.Indented));
-        }
+    File.AppendAllText(logFilePath, logLine + Environment.NewLine);
+}
 
-                private void SaveToFile(List<Inventory> inventories)
-                {
-                    var jsonData = JsonConvert.SerializeObject(inventories, Formatting.Indented);
-                    File.WriteAllText(jsonFilePath, jsonData);
-                }
+private void SaveToFile(List<Inventory> inventories)
+{
+    var jsonData = JsonConvert.SerializeObject(inventories, Formatting.Indented);
+    File.WriteAllText(jsonFilePath, jsonData);
+}
             }
         }

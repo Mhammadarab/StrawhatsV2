@@ -12,7 +12,7 @@ namespace Cargohub.services
     {
         private static List<User> _users;
         private static readonly string filePath = Path.Combine("Data", "users.json");
-        private static readonly string logFilePath = Path.Combine("Logs", "user_changes.json");
+        private static readonly string logFilePath = Path.Combine("Logs", "user_changes.log");
 
         static AuthProvider()
         {
@@ -283,7 +283,6 @@ namespace Cargohub.services
                     _ => false
                 };
             }
-
             // Deny access by default
             return false;
         }

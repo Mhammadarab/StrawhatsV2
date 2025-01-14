@@ -6,7 +6,7 @@ using StrawhatsV2.models;
 public class ShipmentService : ICrudService<Shipment, int>
 {
     private readonly string jsonFilePath = "data/shipments.json";
-    private readonly string logFilePath = "logs/picking_logs.json";
+    private readonly string logFilePath = "logs/picking_logs.log";
 
     public Task Create(Shipment entity)
     {
@@ -81,16 +81,9 @@ public class ShipmentService : ICrudService<Shipment, int>
 
         private async Task LogPickingAction(PickingLogEntry logEntry)
         {
-            var logs = new List<PickingLogEntry>();
+            var logLine = $"Timestamp={logEntry.Timestamp:O} | PerformedBy={logEntry.PerformedBy} | ShipmentId={logEntry.ShipmentId} | Description={logEntry.Description} | PickedItems={string.Join(", ", logEntry.PickedItems.Select(kv => $"{kv.Key}:{kv.Value}"))}";
 
-            if (File.Exists(logFilePath))
-            {
-                var jsonData = await File.ReadAllTextAsync(logFilePath);
-                logs = JsonConvert.DeserializeObject<List<PickingLogEntry>>(jsonData) ?? new List<PickingLogEntry>();
-            }
-
-            logs.Add(logEntry);
-            await File.WriteAllTextAsync(logFilePath, JsonConvert.SerializeObject(logs, Formatting.Indented));
+            await File.AppendAllTextAsync(logFilePath, logLine + Environment.NewLine);
         }
         
         public List<ItemDetail> GeneratePicklist(int shipmentId)
