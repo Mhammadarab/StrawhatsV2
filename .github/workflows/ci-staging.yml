@@ -1,7 +1,7 @@
 name: CI - Staging Branch
 
 on:
-  pull_request:
+  push:
     branches:
       - sending-coverage-to-discord
   workflow_dispatch:
