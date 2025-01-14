@@ -69,7 +69,6 @@ namespace Cargohub.controllers.v2
             var warehouses = _warehouseService.GetAll()
                 .Where(warehouse => AuthProvider.HasWarehouseAccess(apiKey, warehouse.Id))
                 .ToList();
-
             return Ok(warehouses);
         }
 
@@ -79,12 +78,6 @@ namespace Cargohub.controllers.v2
             var validationResult = ValidateApiKeyAndUser("single");
             if (validationResult != null) return validationResult;
             
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (!AuthProvider.HasWarehouseAccess(apiKey, id))
-            {
-                return Forbid("You do not have access to this warehouse.");
-            }
-
             try
             {
                 var warehouse = _warehouseService.GetById(id);
