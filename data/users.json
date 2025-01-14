@@ -187,13 +187,7 @@
       }
     },
     "IsActive": true,
-    "Warehouses": [
-      1,
-      2,
-      3,
-      4,
-      5
-    ]
+    "Warehouses": [-1]
   },
   {
     "ApiKey": "admin12345",
