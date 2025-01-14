@@ -49,7 +49,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: "3.x"
 
       - name: Install Python dependencies
         run: |
@@ -77,9 +77,16 @@ jobs:
       - name: Notify Discord about Test Completion
         if: always()
         run: |
-          if [ ${{ steps.run_dotnet_tests.outcome }} == 'failure' ] || [ ${{ steps.run_python_tests.outcome }} == 'failure' ]; then
-            error_message="❌ **Testing stage failed** for staging branch.\n\n**.NET Test Errors:  **\n\n\n**Python Test Errors:  **\n"
-          else
+          error_message=""
+          if [ ${{ steps.run_dotnet_tests.outcome }} == 'failure' ]; then
+            dotnet_errors=$(cat unit_tests/cobertura/*/coverage.cobertura.xml | grep -oP '(?<=<message>).*?(?=</message>)')
+            error_message="❌ **Testing stage failed** for staging branch.\n\n**.NET Test Errors:  **\n$dotnet_errors\n\n"
+          fi
+          if [ ${{ steps.run_python_tests.outcome }} == 'failure' ]; then
+            python_errors=$(cat coverage.xml | grep -oP '(?<=<message>).*?(?=</message>)')
+            error_message="${error_message}**Python Test Errors:  **\n$python_errors\n"
+          fi
+          if [ -z "$error_message" ]; then
             error_message="✅ **Testing stage completed successfully** for staging branch."
           fi
           curl -X POST -H "Content-Type: application/json" \
