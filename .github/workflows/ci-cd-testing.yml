@@ -34,6 +34,7 @@ jobs:
           dotnet restore
 
       - name: Run .NET tests
+        id: run_dotnet_tests
         run: |
           cd ./unit_tests
           dotnet test --configuration Release --no-restore
@@ -84,7 +85,7 @@ jobs:
           # Extract coverage summary
           if [ -f coverage_summary.md ]; then
             coverage_summary=$(cat coverage_summary.md)
-            error_message+="\n**Coverage Summary:**\n```\n$coverage_summary\n```"
+            error_message+="\n**Coverage Summary:**\n$coverage_summary"
           else
             error_message+="\n**Coverage Summary:** Not available."
           fi
