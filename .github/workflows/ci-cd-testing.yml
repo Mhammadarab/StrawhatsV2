@@ -37,11 +37,7 @@ jobs:
         id: run_dotnet_tests
         run: |
           cd ./unit_tests
-          dotnet test --configuration Release --no-restore --collect:"XPlat Code Coverage" --results-directory cobertura > result.log || true
-          DOTNET_TEST_OUTPUT=$(cat result.log)
-          echo "DOTNET_TEST_OUTPUT<<EOF" >> $GITHUB_ENV
-          echo "$DOTNET_TEST_OUTPUT" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          dotnet test --configuration Release --no-restore --collect:"XPlat Code Coverage" --results-directory cobertura
 
       - name: Upload .NET coverage report
         if: always()
@@ -66,13 +62,9 @@ jobs:
       - name: Run Python integration tests with coverage
         id: run_python_tests
         run: |
-          pytest --cov=integration_tests --cov-report=xml --cov-report=term-missing > result.log || true
+          pytest --cov=integration_tests --cov-report=xml --cov-report=term-missing
           coverage xml -o coverage.xml
           coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
-          PYTHON_TEST_OUTPUT=$(cat result.log)
-          echo "PYTHON_TEST_OUTPUT<<EOF" >> $GITHUB_ENV
-          echo "$PYTHON_TEST_OUTPUT" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
           coverage report --fail-under=90
 
       - name: Upload Python coverage report
@@ -85,12 +77,11 @@ jobs:
       - name: Notify Discord about Test Completion
         if: always()
         run: |
-            if [ ${{ steps.run_dotnet_tests.outcome }} == 'failure' ] || [ ${{ steps.run_python_tests.outcome }} == 'failure' ]; then
-              error_message="❌ **Testing stage failed** for staging branch.\n\n**.NET Test Errors:**\n\n${{ env.DOTNET_TEST_OUTPUT }}\n\n**Python Integration Test Errors:**\n\n${{ env.PYTHON_TEST_OUTPUT }}"
-            else
-              error_message="✅ **Testing stage completed successfully** for staging branch."
-            fi
-            curl -X POST -H "Content-Type: application/json" \
-            -d '{"content": "'"$error_message"'"}' \
-            ${{ inputs.DEPLOY_WEBHOOK_URL }}
-  
+          if [ ${{ steps.run_dotnet_tests.outcome }} == 'failure' ] || [ ${{ steps.run_python_tests.outcome }} == 'failure' ]; then
+            error_message="❌ **Testing stage failed** for staging branch.\n\n**.NET Test Errors:  **\n\n\n**Python Test Errors:  **\n"
+          else
+            error_message="✅ **Testing stage completed successfully** for staging branch."
+          fi
+          curl -X POST -H "Content-Type: application/json" \
+          -d '{"content": "'"$error_message"'"}' \
+          ${{inputs.DEPLOY_WEBHOOK_URL}}
