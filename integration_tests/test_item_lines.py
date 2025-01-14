@@ -59,7 +59,7 @@ class TestItemLinesAPI(unittest.TestCase):
     def test_update_item_line(self):
         """Test updating an existing item line (happy path)."""
         # Add an item line to update
-        post_response = requests.post(self.base_url, json=self.new_item_line, headers=self.headers)
+        post_response = requests.post(self.base_url, json=self.new_tem_line, headers=self.headers)
         self.assertEqual(post_response.status_code, 201)
         item_line_id = self.new_item_line["id"]
 
