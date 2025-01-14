@@ -68,33 +68,37 @@ jobs:
           # Check .NET test outcome
           if [ "${{ steps.run_dotnet_tests.outcome }}" == "failure" ]; then
             dotnet_errors=$(cat unit_tests/cobertura/*/coverage.cobertura.xml 2>/dev/null || echo "No detailed .NET test errors found.")
-            error_message+="❌ **.NET Tests failed**:\n$dotnet_errors\n"
+            error_message+="❌ **.NET Tests failed**:\n$dotnet_errors\n\n"
           fi
 
           # Check Python test outcome
           if [ "${{ steps.run_python_tests.outcome }}" == "failure" ]; then
             python_errors=$(cat coverage.xml 2>/dev/null || echo "No detailed Python test errors found.")
-            error_message+="❌ **Python Tests failed**:\n$python_errors\n"
+            error_message+="❌ **Python Tests failed**:\n$python_errors\n\n"
           fi
 
           # If no errors, mark tests as successful
           if [ -z "$error_message" ]; then
-            error_message="✅ **All tests passed successfully** for the branch."
+            error_message="✅ **All tests passed successfully** for the branch.\n\n"
           fi
 
-          # Extract coverage summary
-          if [ -f coverage_summary.md ]; then
-            coverage_summary=$(cat coverage_summary.md)
-            error_message+="\n**Coverage Summary:**\n```\n$coverage_summary\n```"
+          # Extract unit test coverage summary
+          unit_test_coverage=""
+          if [ -f unit_tests/coverage_summary.md ]; then
+            unit_test_coverage=$(cat unit_tests/coverage_summary.md)
+            error_message+="**Unit Test Coverage Summary:**\n```\n$unit_test_coverage\n```\n"
           else
-            error_message+="\n**Coverage Summary:** Not available."
+            error_message+="**Unit Test Coverage Summary:** Not available.\n"
+          fi
+
+          # Extract integration test coverage summary
+          integration_test_coverage=""
+          if [ -f coverage_summary.md ]; then
+            integration_test_coverage=$(cat coverage_summary.md)
+            error_message+="**Integration Test Coverage Summary:**\n```\n$integration_test_coverage\n```\n"
+          else
+            error_message+="**Integration Test Coverage Summary:** Not available.\n"
           fi
 
           # Send the message to Discord
-          echo '{"content": "'"$error_message"'"}' | jq -Rs '{content: .}' | curl -X POST -H "Content-Type: application/json" -d @- ${{ inputs.DEPLOY_WEBHOOK_URL }}
-
-      - name: Add coverage summary to GitHub Actions summary
-        if: always()
-        run: |
-          echo "## Coverage Summary" >> $GITHUB_STEP_SUMMARY
-          cat coverage_summary.md >> $GITHUB_STEP_SUMMARY
+          echo '{'"$error_message"'"}' | jq -Rs '{content: .}' | curl -X POST -H "Content-Type: application/json" -d @- ${{ inputs.DEPLOY_WEBHOOK_URL }}
