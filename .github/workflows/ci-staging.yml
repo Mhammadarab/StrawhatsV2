@@ -1,9 +1,9 @@
 name: CI - Staging Branch
 
 on:
-  pull_request:
+  push:
     branches:
-      - staging
+      - 166-as-a-developer-i-want-to-review-and-implement-a-better-log-format-so-that-the-logs-are-easier-to-analyze-and-maintain
   workflow_dispatch:
 
 env:

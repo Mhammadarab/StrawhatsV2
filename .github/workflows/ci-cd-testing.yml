@@ -34,12 +34,13 @@ jobs:
           dotnet restore
 
       - name: Run .NET tests with coverage
+        id: run_dotnet_tests
         run: |
           cd ./unit_tests
           dotnet test --configuration Release --no-restore --collect:"XPlat Code Coverage" --results-directory cobertura
-        continue-on-error: true
 
       - name: Upload .NET coverage report
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: cobertura-coverage
@@ -59,6 +60,7 @@ jobs:
         run: dotnet run --no-build --configuration Release --urls=${{ secrets.LOCALHOST }} & sleep 5
 
       - name: Run Python integration tests with coverage
+        id: run_python_tests
         run: |
           pytest --cov=integration_tests --cov-report=xml --cov-report=term-missing
           coverage xml -o coverage.xml
@@ -66,13 +68,20 @@ jobs:
           coverage report --fail-under=90
 
       - name: Upload Python coverage report
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: python-coverage
           path: coverage.xml
 
       - name: Notify Discord about Test Completion
+        if: always()
         run: |
+          if [ ${{ steps.run_dotnet_tests.outcome }} == 'failure' ] || [ ${{ steps.run_python_tests.outcome }} == 'failure' ]; then
+            error_message="❌ **Testing stage failed** for staging branch.\n\n**.NET Test Errors:**\n${{ steps.run_dotnet_tests.outputs.error }}\n\n**Python Test Errors:**\n${{ steps.run_python_tests.outputs.error }}"
+          else
+            error_message="✅ **Testing stage completed successfully** for staging branch."
+          fi
           curl -X POST -H "Content-Type: application/json" \
-          -d '{"content": "✅ **Testing stage completed successfully** for staging branch, despite potential errors."}' \
+          -d '{"content": "'"$error_message"'"}' \
           ${{inputs.DEPLOY_WEBHOOK_URL}}
