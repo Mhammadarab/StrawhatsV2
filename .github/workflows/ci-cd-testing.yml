@@ -85,10 +85,16 @@ jobs:
           # Extract coverage summary
           if [ -f coverage_summary.md ]; then
             coverage_summary=$(cat coverage_summary.md)
-            error_message+="**Coverage Summary:**$coverage_summary"
+            error_message+="\n**Coverage Summary:**\n```\n$coverage_summary\n```"
           else
             error_message+="\n**Coverage Summary:** Not available."
           fi
 
           # Send the message to Discord
-          echo '{'"$error_message"'"}' | jq -Rs '{content: .}' | curl -X POST -H "Content-Type: application/json" -d @- ${{ inputs.DEPLOY_WEBHOOK_URL }}
+          echo '{"content": "'"$error_message"'"}' | jq -Rs '{content: .}' | curl -X POST -H "Content-Type: application/json" -d @- ${{ inputs.DEPLOY_WEBHOOK_URL }}
+
+      - name: Add coverage summary to GitHub Actions summary
+        if: always()
+        run: |
+          echo "## Coverage Summary" >> $GITHUB_STEP_SUMMARY
+          cat coverage_summary.md >> $GITHUB_STEP_SUMMARY
