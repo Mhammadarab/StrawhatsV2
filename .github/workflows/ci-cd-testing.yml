@@ -85,10 +85,10 @@ jobs:
           # Extract coverage summary
           if [ -f coverage_summary.md ]; then
             coverage_summary=$(cat coverage_summary.md)
-            error_message+="\n**Coverage Summary:**\n$coverage_summary"
+            error_message+="**Coverage Summary:**$coverage_summary"
           else
             error_message+="\n**Coverage Summary:** Not available."
           fi
 
           # Send the message to Discord
-          echo '{"content": "'"$error_message"'"}' | jq -Rs '{content: .}' | curl -X POST -H "Content-Type: application/json" -d @- ${{ inputs.DEPLOY_WEBHOOK_URL }}
+          echo '{'"$error_message"'"}' | jq -Rs '{content: .}' | curl -X POST -H "Content-Type: application/json" -d @- ${{ inputs.DEPLOY_WEBHOOK_URL }}
