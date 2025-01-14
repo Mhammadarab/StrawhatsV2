@@ -33,11 +33,12 @@ jobs:
           cd ./unit_tests
           dotnet restore
 
-      - name: Run .NET tests
+      - name: Run .NET tests with coverage
         id: run_dotnet_tests
         run: |
           cd ./unit_tests
-          dotnet test --configuration Release --no-restore
+          dotnet test --configuration Release --no-restore --collect:"XPlat Code Coverage" --results-directory cobertura
+          reportgenerator -reports:cobertura/coverage.cobertura.xml -targetdir:coverage -reporttypes:TextSummary
         continue-on-error: true
 
       - name: Setup Python
@@ -65,33 +66,30 @@ jobs:
         if: always()
         run: |
           error_message=""
-
           # Check .NET test outcome
           if [ "${{ steps.run_dotnet_tests.outcome }}" == "failure" ]; then
             dotnet_errors=$(cat unit_tests/cobertura/*/coverage.cobertura.xml 2>/dev/null || echo "No detailed .NET test errors found.")
-            error_message+="❌ **.NET Tests failed**\n\n\`\`\`$dotnet_errors\`\`\`\n"
+            error_message+="❌ **.NET Tests failed**:\n$dotnet_errors\n"
           fi
 
           # Check Python test outcome
           if [ "${{ steps.run_python_tests.outcome }}" == "failure" ]; then
             python_errors=$(cat coverage.xml 2>/dev/null || echo "No detailed Python test errors found.")
-            error_message+="❌ **Python Tests failed**\n\n\`\`\`$python_errors\`\`\`\n"
+            error_message+="❌ **Python Tests failed**:\n$python_errors\n"
           fi
 
           # If no errors, mark tests as successful
           if [ -z "$error_message" ]; then
-            error_message="✅ **All tests passed successfully** for the branch.\n\n"
+            error_message="✅ **All tests passed successfully** for the branch."
           fi
 
           # Extract coverage summary
           if [ -f coverage_summary.md ]; then
             coverage_summary=$(cat coverage_summary.md)
-            error_message+="**Coverage Summary:**\n\`\`\`\n$coverage_summary\n\`\`\`"
+            error_message+="\n**Coverage Summary:**\n$coverage_summary"
           else
             error_message+="\n**Coverage Summary:** Not available."
           fi
 
           # Send the message to Discord
-          curl -X POST -H "Content-Type: application/json" \
-          -d '{"content": "'"$error_message"'"}' \
-          ${{ inputs.DEPLOY_WEBHOOK_URL }}
+          echo "$error_message" | jq -Rs '{content: .}' | curl -X POST -H "Content-Type: application/json" -d @- ${{ inputs.DEPLOY_WEBHOOK_URL }}
