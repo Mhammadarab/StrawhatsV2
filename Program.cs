@@ -122,8 +122,7 @@ app.Use(async (ctx, next) =>
     if (string.IsNullOrEmpty(apiKey))
     {
         ctx.Response.StatusCode = 401;
-        ctx.Response.ContentType = "application/json";
-        await ctx.Response.WriteAsync("{\"error\": \"API key is missing\"}");
+        await ctx.Response.WriteAsync("API key is missing");
         return;
     }
 
@@ -131,8 +130,7 @@ app.Use(async (ctx, next) =>
     if (user == null)
     {
         ctx.Response.StatusCode = 401;
-        ctx.Response.ContentType = "application/json";
-        await ctx.Response.WriteAsync("{\"error\": \"Invalid API key\"}");
+        await ctx.Response.WriteAsync("Invalid API key");
         return;
     }
 
