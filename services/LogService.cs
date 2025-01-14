@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using Newtonsoft.Json;
+using Cargohub.models;
 
 namespace Cargohub.services
 {
@@ -8,7 +11,7 @@ namespace Cargohub.services
     {
         private readonly string logFilePath = Path.Combine(Directory.GetCurrentDirectory(), "logs", "user_changes.log");
 
-        public List<Dictionary<string, object>> GetAllLogs()
+        public List<Dictionary<string, object>> GetAll(string action = null, DateTime? fromDate = null, DateTime? toDate = null, string performedBy = null, string apiKey = null, string changes = null)
         {
             if (!File.Exists(logFilePath))
             {
@@ -26,6 +29,37 @@ namespace Cargohub.services
                 {
                     logs.Add(parsedLog);
                 }
+            }
+
+            // Apply filters
+            if (!string.IsNullOrEmpty(action))
+            {
+                logs = logs.Where(log => log["Action"]?.ToString().Equals(action, StringComparison.OrdinalIgnoreCase) == true).ToList();
+            }
+
+            if (fromDate.HasValue)
+            {
+                logs = logs.Where(log => DateTime.Parse(log["Timestamp"].ToString()) >= fromDate.Value).ToList();
+            }
+
+            if (toDate.HasValue)
+            {
+                logs = logs.Where(log => DateTime.Parse(log["Timestamp"].ToString()) <= toDate.Value).ToList();
+            }
+
+            if (!string.IsNullOrEmpty(performedBy))
+            {
+                logs = logs.Where(log => log["PerformedBy"]?.ToString().Equals(performedBy, StringComparison.OrdinalIgnoreCase) == true).ToList();
+            }
+
+            if (!string.IsNullOrEmpty(apiKey))
+            {
+                logs = logs.Where(log => log["ApiKey"]?.ToString().Equals(apiKey, StringComparison.OrdinalIgnoreCase) == true).ToList();
+            }
+
+            if (!string.IsNullOrEmpty(changes))
+            {
+                logs = logs.Where(log => log["Changes"]?.ToString().Contains(changes, StringComparison.OrdinalIgnoreCase) == true).ToList();
             }
 
             return logs;
