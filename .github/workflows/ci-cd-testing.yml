@@ -67,13 +67,13 @@ jobs:
           error_message=""
           # Check .NET test outcome
           if [ "${{ steps.run_dotnet_tests.outcome }}" == "failure" ]; then
-            dotnet_errors=$(cat unit_tests/cobertura/*/coverage.cobertura.xml 2>/dev/null | tail -n 20 || echo "No detailed .NET test errors found.")
+            dotnet_errors=$(cat unit_tests/cobertura/*/coverage.cobertura.xml 2>/dev/null || echo "No detailed .NET test errors found.")
             error_message+="❌ **.NET Tests failed**:\n$dotnet_errors\n"
           fi
 
           # Check Python test outcome
           if [ "${{ steps.run_python_tests.outcome }}" == "failure" ]; then
-            python_errors=$(tail -n 20 coverage.xml 2>/dev/null || echo "No detailed Python test errors found.")
+            python_errors=$(cat coverage.xml 2>/dev/null || echo "No detailed Python test errors found.")
             error_message+="❌ **Python Tests failed**:\n$python_errors\n"
           fi
 
@@ -91,6 +91,4 @@ jobs:
           fi
 
           # Send the message to Discord
-          curl -X POST -H "Content-Type: application/json" \
-          -d '{"content": "'"$error_message"'"}' \
-          ${{ inputs.DEPLOY_WEBHOOK_URL }}
+          echo '{"content": "'"$error_message"'"}' | jq -c . | curl -X POST -H "Content-Type: application/json" -d @- ${{ inputs.DEPLOY_WEBHOOK_URL }}
