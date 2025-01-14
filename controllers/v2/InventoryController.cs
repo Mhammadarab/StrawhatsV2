@@ -47,7 +47,7 @@ namespace Cargohub.controllers.v2
         public IActionResult GetInventories([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
         {
 
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("all");
             if (validationResult != null)
             {
                 return validationResult;
@@ -88,16 +88,10 @@ namespace Cargohub.controllers.v2
         public IActionResult GetInventoryById(int id)
         {
 
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
+            var validationResult = ValidateApiKeyAndUser("single");
+            if (validationResult != null)
             {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "inventories", "get"))
-            {
-                return Forbid("You do not have permission to delete clients.");
+                return validationResult;
             }
 
             try
@@ -167,16 +161,10 @@ namespace Cargohub.controllers.v2
         public IActionResult UpdateInventory(int id, [FromBody] Inventory inventory)
         {
 
-            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
-            if (string.IsNullOrEmpty(apiKey))
+            var validationResult = ValidateApiKeyAndUser("put");
+            if (validationResult != null)
             {
-                return Unauthorized("API_KEY header is missing.");
-            }
-
-            var user = AuthProvider.GetUser(apiKey);
-            if (user == null || !AuthProvider.HasAccess(user, "inventories", "put"))
-            {
-                return Forbid("You do not have permission to delete clients.");
+                return validationResult;
             }
 
             if (inventory == null)
@@ -214,6 +202,11 @@ namespace Cargohub.controllers.v2
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteInventory(int id)
         {
+            var validationResult = ValidateApiKeyAndUser("delete");
+            if (validationResult != null)
+            {
+                return validationResult;
+            }
             try
             {
                 await _inventoryService.Delete(id);
