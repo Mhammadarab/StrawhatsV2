@@ -17,22 +17,54 @@ namespace Cargohub.services
         {
             if (!File.Exists(logFilePath))
             {
+                Console.WriteLine($"Log file not found at path: {logFilePath}");
                 return new List<LogEntry>();
             }
 
-            var logContent = File.ReadAllText(logFilePath);
-            var logs = JsonConvert.DeserializeObject<List<LogEntry>>(logContent) ?? new List<LogEntry>();
+            var logEntries = new List<LogEntry>();
+            var logLines = File.ReadAllLines(logFilePath);
+
+            foreach (var line in logLines)
+            {
+                var logEntry = ParseLogLine(line);
+                if (logEntry != null)
+                {
+                    logEntries.Add(logEntry);
+                }
+            }
 
             // Apply pagination only if pageNumber and pageSize are provided and valid
             if (pageNumber.HasValue && pageSize.HasValue && pageNumber > 0 && pageSize > 0)
             {
-                logs = logs
+                logEntries = logEntries
                     .Skip((pageNumber.Value - 1) * pageSize.Value)
                     .Take(pageSize.Value)
                     .ToList();
             }
 
-            return logs;
+            return logEntries;
+        }
+
+        private LogEntry ParseLogLine(string line)
+        {
+            try
+            {
+                var parts = line.Split('|');
+                var logEntry = new LogEntry
+                {
+                    Timestamp = parts[0].Split('=')[1].Trim(),
+                    PerformedBy = parts[1].Split('=')[1].Trim(),
+                    Status = parts[2].Split('=')[1].Trim(),
+                    AuditData = JsonConvert.DeserializeObject<Dictionary<int, Dictionary<int, int>>>(parts[3].Split('=')[1].Trim()),
+                    Discrepancies = JsonConvert.DeserializeObject<List<string>>(parts[4].Split('=')[1].Trim())
+                };
+                return logEntry;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error parsing log line: {line}. Exception: {ex.Message}");
+                return null;
+            }
         }
 
         public LogEntry GetById(string timestamp)
@@ -43,9 +75,9 @@ namespace Cargohub.services
 
         public async Task Create(LogEntry newLogEntry)
         {
-            var logs = GetAll();
-            logs.Add(newLogEntry);
-            await File.WriteAllTextAsync(logFilePath, JsonConvert.SerializeObject(logs, Formatting.Indented));
+            var logLine = $"Timestamp={newLogEntry.Timestamp:O} | PerformedBy={newLogEntry.PerformedBy} | Status={newLogEntry.Status} | AuditData={JsonConvert.SerializeObject(newLogEntry.AuditData)} | Discrepancies={JsonConvert.SerializeObject(newLogEntry.Discrepancies)}";
+
+            await File.AppendAllTextAsync(logFilePath, logLine + Environment.NewLine);
         }
 
         public async Task Update(LogEntry updatedLogEntry)
@@ -59,7 +91,7 @@ namespace Cargohub.services
             }
 
             logs[logEntryIndex] = updatedLogEntry;
-            await File.WriteAllTextAsync(logFilePath, JsonConvert.SerializeObject(logs, Formatting.Indented));
+            await File.WriteAllLinesAsync(logFilePath, logs.Select(log => FormatLogEntry(log)));
         }
 
         public async Task Delete(string timestamp)
@@ -73,7 +105,12 @@ namespace Cargohub.services
             }
 
             logs.Remove(logEntry);
-            await File.WriteAllTextAsync(logFilePath, JsonConvert.SerializeObject(logs, Formatting.Indented));
+            await File.WriteAllLinesAsync(logFilePath, logs.Select(log => FormatLogEntry(log)));
+        }
+
+        private string FormatLogEntry(LogEntry logEntry)
+        {
+            return $"Timestamp={logEntry.Timestamp:O} | PerformedBy={logEntry.PerformedBy} | Status={logEntry.Status} | AuditData={JsonConvert.SerializeObject(logEntry.AuditData)} | Discrepancies={JsonConvert.SerializeObject(logEntry.Discrepancies)}";
         }
     }
 }

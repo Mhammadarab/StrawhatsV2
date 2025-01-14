@@ -103,53 +103,5 @@ namespace Cargohub.controllers.v2
                 return NotFound(ex.Message);
             }
         }
-
-        // PUT: api/v2/stocklogs/{timestamp}/yes
-        [HttpPut("{timestamp}/yes")]
-        public async Task<IActionResult> ApproveAudit(string timestamp)
-        {
-            var logFilePath = Path.Combine("logs", "inventory_audit.log");
-            if (!System.IO.File.Exists(logFilePath))
-            {
-                return NotFound("Log file not found.");
-            }
-
-            var jsonData = await System.IO.File.ReadAllTextAsync(logFilePath);
-            var logs = JsonConvert.DeserializeObject<List<LogEntry>>(jsonData) ?? new List<LogEntry>();
-
-            var logEntry = logs.FirstOrDefault(log => log.Timestamp == timestamp);
-            if (logEntry == null)
-            {
-                return NotFound("Log entry not found.");
-            }
-
-            // Update the stock based on the audit data
-            _inventoryService.AuditInventory(logEntry.PerformedBy, logEntry.AuditData);
-
-            // Update the status to "Completed"
-            logEntry.Status = "Completed";
-
-            // Write the updated logs back to the file
-            await System.IO.File.WriteAllTextAsync(logFilePath, JsonConvert.SerializeObject(logs, Formatting.Indented));
-
-            return Ok("Audit approved and inventory updated.");
-        }
-
-        // PUT: api/v2/stocklogs/{timestamp}/no
-        [HttpPut("{timestamp}/no")]
-        public IActionResult RejectAudit(string timestamp)
-        {
-            var logEntry = _stockLogService.GetById(timestamp);
-            if (logEntry == null)
-            {
-                return NotFound("Log entry not found.");
-            }
-
-            // Log the rejection
-            logEntry.Discrepancies.Add("Audit rejected by admin.");
-            _stockLogService.Update(logEntry);
-
-            return Ok("Audit rejected.");
-        }
     }
 }
