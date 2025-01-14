@@ -23,17 +23,23 @@ namespace Cargohub.controllers.v2
             DateTime? parsedFromDate = null;
             DateTime? parsedToDate = null;
 
-            if (!string.IsNullOrEmpty(fromDate) && !DateTime.TryParseExact(fromDate, "dd-MM-yyyy", null, System.Globalization.DateTimeStyles.None, out var tempFromDate))
+            if (!string.IsNullOrEmpty(fromDate))
             {
-                return BadRequest("Invalid fromDate format. Use dd-MM-yyyy.");
+                if (!DateTime.TryParseExact(fromDate, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out var tempFromDate))
+                {
+                    return BadRequest("Invalid fromDate format. Use yyyy-MM-dd.");
+                }
+                parsedFromDate = tempFromDate;
             }
-            // parsedFromDate = tempFromDate;
 
-            if (!string.IsNullOrEmpty(toDate) && !DateTime.TryParseExact(toDate, "dd-MM-yyyy", null, System.Globalization.DateTimeStyles.None, out var tempToDate))
+            if (!string.IsNullOrEmpty(toDate))
             {
-                return BadRequest("Invalid toDate format. Use dd-MM-yyyy.");
+                if (!DateTime.TryParseExact(toDate, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out var tempToDate))
+                {
+                    return BadRequest("Invalid toDate format. Use yyyy-MM-dd.");
+                }
+                parsedToDate = tempToDate;
             }
-            // parsedToDate = tempToDate;
 
             var logs = _logService.GetAll(action, parsedFromDate, parsedToDate, performedBy, apiKey, changes);
 
