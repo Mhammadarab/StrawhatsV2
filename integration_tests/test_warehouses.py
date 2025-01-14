@@ -18,7 +18,7 @@ class TestWarehousesAPI(unittest.TestCase):
     
 
         self.test_warehouse = {
-            "id": max_id + 1,
+            "id": 1,
             "code": "WAREHOUSE",
             "name": "Test Warehouse",
             "address": "Test Street",

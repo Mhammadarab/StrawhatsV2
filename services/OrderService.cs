@@ -15,6 +15,7 @@ namespace Cargohub.services
 
         public Task Create(Order entity)
         {
+            var orders = GetAll() ?? new List<Order>();
             // Find the next available ID
             var nextId = orders.Any() ? orders.Max(o => o.Id) + 1 : 1;
             entity.Id = nextId;
