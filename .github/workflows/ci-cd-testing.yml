@@ -32,7 +32,7 @@ jobs:
         continue-on-error: true
 
       - name: Run code linting
-        run: dotnet format --check
+        run: dotnet format StrawhatsV2 --check
         continue-on-error: true
 
       - name: Restore unit test dependencies
