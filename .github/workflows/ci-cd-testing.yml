@@ -29,12 +29,8 @@ jobs:
       - name: Install dotnet-format tool
         run: dotnet tool install -g dotnet-format
 
-      - name: Run .NET formatting check
+      - name: Run .NET formatting verification
         run: dotnet format ./ --verify-no-changes
-        continue-on-error: true
-
-      - name: Run .NET linting
-        run: dotnet format ./ --check
         continue-on-error: true
 
       # Run .NET tests
