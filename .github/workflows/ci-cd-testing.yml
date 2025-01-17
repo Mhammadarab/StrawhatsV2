@@ -30,11 +30,11 @@ jobs:
         run: dotnet tool install -g dotnet-format
 
       - name: Run .NET formatting check
-        run: dotnet format ./ --verify-no-changes
+        run: dotnet format --verify-no-changes
         continue-on-error: true
 
       - name: Run .NET linting
-        run: dotnet format ./ --check
+        run: dotnet format --check
         continue-on-error: true
 
       # Run .NET tests
@@ -50,7 +50,7 @@ jobs:
           dotnet test --configuration Release --no-restore
         continue-on-error: true
 
-      # Setup Python and dependencies
+      
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -61,18 +61,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r integration_tests/requirements.txt
 
-      # Add Python linting with flake8
+      
       - name: Run Python linting
         run: |
           python -m pip install flake8
           flake8 integration_tests --count --max-line-length=120 --show-source --statistics
         continue-on-error: true
 
-      # Run application for integration tests
       - name: Run application
         run: dotnet run --no-build --configuration Release --urls=${{ secrets.LOCALHOST }} & sleep 5
 
-      # Run Python integration tests with coverage
       - name: Run Python integration tests with coverage
         id: run_python_tests
         run: |
@@ -81,7 +79,6 @@ jobs:
           coverage report --format=markdown > coverage_summary.md
           coverage report --fail-under=90
 
-      # Notify Discord about test completion
       - name: Notify Discord about Test Completion
         if: always()
         run: |
