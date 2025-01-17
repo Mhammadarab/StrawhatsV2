@@ -1,9 +1,9 @@
 name: CI - Staging Branch
 
 on:
-  pull_request:
+  push:
     branches:
-      - staging
+      - 183-as-a-developer-i-want-to-resolve-linting-errors-in-the-codebase-so-that-the-code-adheres-to-coding-standards-and-is-easier-to-maintain
   workflow_dispatch:
 
 env:
