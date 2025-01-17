@@ -31,9 +31,10 @@ jobs:
         run: dotnet tool install -g csharpier
 
       - name: Add .NET tools to PATH
-        run: |
-          echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
-          export PATH="$PATH:$HOME/.dotnet/tools"
+        run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: Verify CSharpier installation
+        run: csharpier --version
 
       - name: Run code formatting check with dotnet-format
         run: dotnet format --verify-no-changes
