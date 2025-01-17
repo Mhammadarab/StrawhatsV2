@@ -25,11 +25,11 @@ jobs:
         run: dotnet restore
 
       - name: Run code formatting check
-        run: dotnet format --verify-no-changes
+        run: dotnet format Cargohub.sln --verify-no-changes
         continue-on-error: true
 
       - name: Run .NET linting
-        run: dotnet format --check
+        run: dotnet format Cargohub.sln --check
         continue-on-error: false
 
       - name: Restore unit test dependencies
