@@ -30,15 +30,12 @@ jobs:
       - name: Install Roslynator tool
         run: dotnet tool install -g roslynator.dotnet.cli
 
-      - name: Add .NET tools to PATH
-        run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
-
       - name: Run code formatting check with dotnet-format
         run: dotnet format --verify-no-changes
         continue-on-error: true
 
       - name: Run code analysis with Roslynator
-        run: roslynator analyze StrawhatsV2.sln
+        run: roslynator analyze StrawhatsV2
         continue-on-error: true
 
       - name: Restore unit test dependencies
