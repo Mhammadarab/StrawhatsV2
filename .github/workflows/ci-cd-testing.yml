@@ -16,7 +16,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Setup .NET and dependencies
       - name: Setup .NET
         uses: actions/setup-dotnet@main
         with:
@@ -25,19 +24,20 @@ jobs:
       - name: Install .NET dependencies
         run: dotnet restore
 
-      # Run .NET linting with dotnet-format
       - name: Install dotnet-format tool
         run: dotnet tool install -g dotnet-format
 
-      - name: Run .NET formatting check
+      - name: Install CSharpier tool
+        run: dotnet tool install -g csharpier
+
+      - name: Run code formatting check with dotnet-format
         run: dotnet format --verify-no-changes
         continue-on-error: true
 
-      - name: Run .NET linting
-        run: dotnet format --check
+      - name: Run code formatting check with CSharpier
+        run: csharpier --check .
         continue-on-error: true
 
-      # Run .NET tests
       - name: Restore unit test dependencies
         run: |
           cd ./unit_tests
@@ -50,7 +50,6 @@ jobs:
           dotnet test --configuration Release --no-restore
         continue-on-error: true
 
-      
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -61,7 +60,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r integration_tests/requirements.txt
 
-      
       - name: Run Python linting
         run: |
           python -m pip install flake8
