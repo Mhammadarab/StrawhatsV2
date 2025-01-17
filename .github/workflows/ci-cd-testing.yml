@@ -27,6 +27,7 @@ jobs:
       - name: Install dotnet-format tool
         run: dotnet tool install -g dotnet-format
 
+        
       - name: Run code formatting check
         run: dotnet format --verify-no-changes
         continue-on-error: true
