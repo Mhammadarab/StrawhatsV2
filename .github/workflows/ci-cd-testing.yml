@@ -27,13 +27,12 @@ jobs:
       - name: Install dotnet-format tool
         run: dotnet tool install -g dotnet-format
 
-        
       - name: Run code formatting check
-        run: dotnet format --verify-no-changes
+        run: dotnet format ./StrawhatsV2.sln --verify-no-changes
         continue-on-error: true
 
       - name: Run code linting
-        run: dotnet format --check
+        run: dotnet format ./StrawhatsV2.sln --check
         continue-on-error: true
 
       - name: Restore unit test dependencies
