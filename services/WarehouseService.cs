@@ -194,5 +194,57 @@ namespace Cargohub.services
             var jsonData = JsonConvert.SerializeObject(warehouses, Formatting.Indented);
             File.WriteAllText(jsonFilePath, jsonData);
         }
+
+        public async Task TransferItemBetweenWarehouses(int sourceWarehouseId, int destinationWarehouseId, string itemId, int quantity)
+        {
+            var inventories = GetInventories();
+            var sourceWarehouseLocations = GetWarehouseLocations(sourceWarehouseId);
+            var destinationWarehouseLocations = GetWarehouseLocations(destinationWarehouseId);
+
+            if (!sourceWarehouseLocations.Any() || !destinationWarehouseLocations.Any())
+                throw new KeyNotFoundException("One or both warehouses do not have any locations.");
+
+            var sourceInventory = inventories.FirstOrDefault(inv => inv.Item_Id == itemId);
+            if (sourceInventory == null || sourceInventory.Total_On_Hand < quantity)
+                throw new InvalidOperationException("Insufficient inventory in the source warehouse.");
+
+            // Deduct from source warehouse
+            foreach (var location in sourceWarehouseLocations)
+            {
+                if (sourceInventory.Locations.ContainsKey(location.Id.ToString()))
+                {
+                    var availableQuantity = sourceInventory.Locations[location.Id.ToString()];
+                    if (availableQuantity >= quantity)
+                    {
+                        sourceInventory.Locations[location.Id.ToString()] -= quantity;
+                        break;
+                    }
+                    else
+                    {
+                        quantity -= availableQuantity;
+                        sourceInventory.Locations[location.Id.ToString()] = 0;
+                    }
+                }
+            }
+
+            // Add to destination warehouse
+            var destinationLocation = destinationWarehouseLocations.First();
+            if (sourceInventory.Locations.ContainsKey(destinationLocation.Id.ToString()))
+            {
+                sourceInventory.Locations[destinationLocation.Id.ToString()] += quantity;
+            }
+            else
+            {
+                sourceInventory.Locations[destinationLocation.Id.ToString()] = quantity;
+            }
+
+            SaveToFile(inventories);
+        }
+
+        private void SaveToFile(List<Inventory> inventories)
+        {
+            var jsonData = JsonConvert.SerializeObject(inventories, Formatting.Indented);
+            File.WriteAllText(inventoriesFilePath, jsonData);
+        }
     }
 }
