@@ -215,5 +215,30 @@ namespace Cargohub.controllers.v2
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        [HttpPost("{sourceWarehouseId}/transfer/{destinationWarehouseId}")]
+        public async Task<IActionResult> TransferItemBetweenWarehouses(int sourceWarehouseId, int destinationWarehouseId, [FromBody] TransferRequest transferRequest)
+        {
+            var validationResult = ValidateApiKeyAndUser("post");
+            if (validationResult != null) return validationResult;
+
+            try
+            {
+                await _warehouseService.TransferItemBetweenWarehouses(sourceWarehouseId, destinationWarehouseId, transferRequest.ItemId, transferRequest.Quantity);
+                return Ok("Transfer successful.");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }
