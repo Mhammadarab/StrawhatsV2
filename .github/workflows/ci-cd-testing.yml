@@ -27,21 +27,18 @@ jobs:
       - name: Install dotnet-format tool
         run: dotnet tool install -g dotnet-format
 
-      - name: Install CSharpier tool
-        run: dotnet tool install -g csharpier
+      - name: Install Roslynator tool
+        run: dotnet tool install -g roslynator.dotnet.cli
 
       - name: Add .NET tools to PATH
         run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
-
-      - name: Verify CSharpier installation
-        run: csharpier --version
 
       - name: Run code formatting check with dotnet-format
         run: dotnet format --verify-no-changes
         continue-on-error: true
 
-      - name: Run code formatting check with CSharpier
-        run: csharpier --check .
+      - name: Run code analysis with Roslynator
+        run: roslynator analyze . --ignore-compiler-errors
         continue-on-error: true
 
       - name: Restore unit test dependencies
