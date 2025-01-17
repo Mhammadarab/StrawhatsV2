@@ -25,11 +25,20 @@ jobs:
       - name: Install .NET dependencies
         run: dotnet restore
 
-      # Run .NET linting with dotnet-format
+      # Run .NET linting with analyzers
+      - name: Install analyzers (if not already part of the project)
+        run: |
+          dotnet add package Microsoft.CodeAnalysis.FxCopAnalyzers --version 3.3.2
+          dotnet add package StyleCop.Analyzers --version 1.2.0
+
+      - name: Run .NET linting
+        run: dotnet build --no-restore -warnaserror
+
+      # Run .NET formatting verification
       - name: Install dotnet-format tool
         run: dotnet tool install -g dotnet-format
 
-      - name: Run .NET formatting verification
+      - name: Verify code formatting
         run: dotnet format ./ --verify-no-changes
         continue-on-error: true
 
