@@ -1,14 +1,13 @@
-import unittest
 import requests
+import unittest
 import random
 from datetime import datetime
-import uuid
 
 class TestOrdersAPI(unittest.TestCase):
 
     def setUp(self):
         self.base_url = 'http://localhost:3000/api/v2/orders'
-        self.headers = {'API_KEY': 'a1b2c3d4e5'}
+        self.headers = {'API_KEY': 'owner'}
         self.invalid_headers = {'API_KEY': 'invalid_api_key'}
 
         # Get the current max ID
@@ -19,39 +18,39 @@ class TestOrdersAPI(unittest.TestCase):
         # Order data
         self.new_order = {
             "id": max_id + 1,
-            "Source_Id": random.randint(10, 99),
-            "Order_Date": datetime.now().isoformat() + "Z",
-            "Request_Date": datetime.now().isoformat() + "Z",
-            "Reference": f"ORD{random.randint(10000, 99999)}",
-            "Reference_Extra": "This is a test order.",
+            "Source_Id": 33,
+            "Order_Date": datetime.now().isoformat().split('T')[0],
+            "Request_Date": datetime.now().isoformat().split('T')[0],
+            "Reference": f"OR{max_id + 1}",
+            "Reference_Extra": "Extra reference",
             "Order_Status": "Pending",
-            "Notes": "These are some test notes.",
-            "Shipping_Notes": "Test shipping notes.",
-            "Picking_Notes": "Test picking notes.",
-            "Warehouse_Id": random.randint(10, 99),
-            "Ship_To": random.randint(1000, 9999),
-            "Bill_To": random.randint(1000, 9999),
-            "Shipment_Id": random.randint(1, 100),
-            "Total_Amount": round(random.uniform(100, 10000), 2),
-            "Total_Discount": round(random.uniform(0, 500), 2),
-            "Total_Tax": round(random.uniform(0, 500), 2),
-            "Total_Surcharge": round(random.uniform(0, 100), 2),
-            "Created_At": datetime.now().isoformat() + "Z",
-            "Updated_At": datetime.now().isoformat() + "Z",
+            "Notes": "This is a test order.",
+            "Shipping_Notes": "Handle with care.",
+            "Picking_Notes": "Pick items carefully.",
+            "Warehouse_Id": 1,
+            "Ship_To": 1,
+            "Bill_To": 1,
+            "Shipment_Id": [1, 2],  # List of shipment IDs
+            "Total_Amount": 100.0,
+            "Total_Discount": 10.0,
+            "Total_Tax": 5.0,
+            "Total_Surcharge": 2.0,
+            "Created_At": datetime.now().isoformat(),
+            "Updated_At": datetime.now().isoformat(),
             "Items": [
                 {
-                    "Item_Id": f"P{random.randint(1000, 9999)}",
-                    "Amount": random.randint(1, 50),
+                    "Item_Id": "P001",
+                    "Amount": 5,
                     "CrossDockingStatus": None
                 },
                 {
-                    "Item_Id": f"P{random.randint(1000, 9999)}",
-                    "Amount": random.randint(1, 50),
+                    "Item_Id": "P002",
+                    "Amount": 5,
                     "CrossDockingStatus": None
                 }
             ],
             "IsBackordered": True,
-            "ShipmentDetails": "test "
+            "ShipmentDetails": []
         }
 
     def test_get_orders(self):
@@ -64,16 +63,19 @@ class TestOrdersAPI(unittest.TestCase):
         """Test retrieving an order by ID (happy path)."""
         # Add a new order
         post_response = requests.post(self.base_url, json=self.new_order, headers=self.headers)
-        
-        # Print the response content for debugging
-        print(f"POST /orders - Status Code: {post_response.status_code}, Response: {post_response.text}")
-        
         self.assertEqual(post_response.status_code, 201)
         order_id = self.new_order["id"]
 
         # GET request for specific order
         response = requests.get(f"{self.base_url}/{order_id}", headers=self.headers)
         self.assertEqual(response.status_code, 200)
+
+        # Debugging: Print the response JSON
+        print(f"GET /orders/{order_id} - Response: {response.json()}")
+
+        # Check if 'shipment_Id' exists in the response JSON
+        self.assertIn("shipment_Id", response.json(), "shipment_Id key not found in the response")
+        self.assertEqual(response.json()["shipment_Id"], self.new_order["Shipment_Id"])
 
         # Clean up by deleting the order
         delete_response = requests.delete(f"{self.base_url}/{order_id}", headers=self.headers)
@@ -83,69 +85,50 @@ class TestOrdersAPI(unittest.TestCase):
         """Test adding a new order (happy path)."""
         response = requests.post(self.base_url, json=self.new_order, headers=self.headers)
         self.assertEqual(response.status_code, 201)
-
-        # Verify the order exists
-        order_id = self.new_order["id"]
-        get_response = requests.get(f"{self.base_url}/{order_id}", headers=self.headers)
-        self.assertEqual(get_response.status_code, 200)
-
-        # Clean up by deleting the order
-        delete_response = requests.delete(f"{self.base_url}/{order_id}", headers=self.headers)
-        self.assertEqual(delete_response.status_code, 204)
+        print(f"POST /orders - Status Code: {response.status_code}, Response: {response.text}")
 
     def test_update_order(self):
-        """Test updating an existing order (happy path)."""
-        # Add an order to update
+        """Test updating an order (happy path)."""
+        # Add a new order
         post_response = requests.post(self.base_url, json=self.new_order, headers=self.headers)
         self.assertEqual(post_response.status_code, 201)
         order_id = self.new_order["id"]
 
         # Update the order
         updated_order = self.new_order.copy()
-        updated_order.update({
-            "order_status": "Shipped",
-            "notes": "Updated test notes.",
-            "shipping_notes": "Updated shipping notes.",
-            "picking_notes": "Updated picking notes.",
-        })
+        updated_order["Notes"] = "Updated test order."
         put_response = requests.put(f"{self.base_url}/{order_id}", json=updated_order, headers=self.headers)
         self.assertEqual(put_response.status_code, 204)
 
         # Verify the update
-        get_response = requests.get(f"{self.base_url}/{order_id}", headers=self.headers)
-        self.assertEqual(get_response.status_code, 200)
-        order_data = get_response.json()
+        response = requests.get(f"{self.base_url}/{order_id}", headers=self.headers)
+        self.assertEqual(response.status_code, 200)
+        
+        # Debugging: Print the response JSON
+        print(f"GET /orders/{order_id} - Response: {response.json()}")
 
-        # Debugging step to print the response data
-        print(f"GET Response Data: {order_data}")
-
-        # Normalize keys to lowercase
-        order_data = {k.lower(): v for k, v in order_data.items()}
-
-        # Check if 'order_status' exists in the response
-        self.assertIn("order_status", order_data, "Response is missing 'order_status'")
-        self.assertEqual(order_data["order_status"], updated_order["order_status"])
+        # Check if 'notes' exists in the response JSON
+        self.assertIn("notes", response.json(), "notes key not found in the response")
+        self.assertEqual(response.json()["notes"], updated_order["Notes"])
 
         # Clean up by deleting the order
         delete_response = requests.delete(f"{self.base_url}/{order_id}", headers=self.headers)
         self.assertEqual(delete_response.status_code, 204)
 
     def test_delete_order(self):
-        """Test deleting an existing order (happy path)."""
-        # Add an order to delete
+        """Test deleting an order (happy path)."""
+        # Add a new order
         post_response = requests.post(self.base_url, json=self.new_order, headers=self.headers)
         self.assertEqual(post_response.status_code, 201)
         order_id = self.new_order["id"]
 
-        # DELETE request to remove the order
-        response = requests.delete(f"{self.base_url}/{order_id}", headers=self.headers)
-        self.assertEqual(response.status_code, 204)
-        print(f"DELETE /orders/{order_id} - Status Code: {response.status_code}")
+        # Delete the order
+        delete_response = requests.delete(f"{self.base_url}/{order_id}", headers=self.headers)
+        self.assertEqual(delete_response.status_code, 204)
 
-        # Verify the order no longer exists
-        get_response = requests.get(f"{self.base_url}/{order_id}", headers=self.headers)
-        self.assertEqual(get_response.status_code, 404)
-        print(f"GET /orders/{order_id} after delete - Status Code: {get_response.status_code}")
+        # Verify the deletion
+        response = requests.get(f"{self.base_url}/{order_id}", headers=self.headers)
+        self.assertEqual(response.status_code, 404)
 
     def test_get_order_with_invalid_api_key(self):
         """Test retrieving orders with invalid API key (unhappy path)."""

@@ -40,7 +40,7 @@ namespace Cargohub.controllers.v2
         [HttpGet("{warehouse_id}/locations")]
         public IActionResult GetWarehouseLocations(int warehouse_id)
         {
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("all");
             if (validationResult != null) return validationResult;
 
             try
@@ -61,22 +61,29 @@ namespace Cargohub.controllers.v2
         [HttpGet]
         public IActionResult GetWarehouses()
         {
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("all");
             if (validationResult != null) return validationResult;
+            
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            
+            var warehouses = _warehouseService.GetAll()
+                .Where(warehouse => AuthProvider.HasWarehouseAccess(apiKey, warehouse.Id))
+                .ToList();
 
-            var warehouses = _warehouseService.GetAll();
-            if (warehouses == null || !warehouses.Any())
-            {
-                return NotFound();
-            }
             return Ok(warehouses);
         }
 
         [HttpGet("{id}")]
         public IActionResult GetWarehouseById(int id)
         {
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("single");
             if (validationResult != null) return validationResult;
+            
+            var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
+            if (!AuthProvider.HasWarehouseAccess(apiKey, id))
+            {
+                return Forbid("You do not have access to this warehouse.");
+            }
 
             try
             {
@@ -146,7 +153,7 @@ namespace Cargohub.controllers.v2
         [HttpGet("capacities")]
         public IActionResult GetAllWarehouseCapacities(int pageNumber = 1, int pageSize = 10)
         {
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("all");
             if (validationResult != null) return validationResult;
 
             try
@@ -170,7 +177,7 @@ namespace Cargohub.controllers.v2
         [HttpGet("{id}/capacities")]
         public IActionResult GetWarehouseCapacities(int id)
         {
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("all");
             if (validationResult != null) return validationResult;
             
             try
@@ -202,6 +209,31 @@ namespace Cargohub.controllers.v2
             catch (KeyNotFoundException ex)
             {
                 return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPost("{sourceWarehouseId}/transfer/{destinationWarehouseId}")]
+        public async Task<IActionResult> TransferItemBetweenWarehouses(int sourceWarehouseId, int destinationWarehouseId, [FromBody] TransferRequest transferRequest)
+        {
+            var validationResult = ValidateApiKeyAndUser("post");
+            if (validationResult != null) return validationResult;
+
+            try
+            {
+                await _warehouseService.TransferItemBetweenWarehouses(sourceWarehouseId, destinationWarehouseId, transferRequest.ItemId, transferRequest.Quantity);
+                return Ok("Transfer successful.");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {

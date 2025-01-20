@@ -15,7 +15,7 @@ namespace Cargohub.models
         public int Warehouse_Id { get; set; }
         public int? Ship_To { get; set; } // Nullable
         public int? Bill_To { get; set; } // Nullable
-        public int? Shipment_Id { get; set; }
+        public List<int?> Shipment_Id { get; set; }
         public decimal Total_Amount { get; set; }
         public decimal Total_Discount { get; set; }
         public decimal Total_Tax { get; set; }
@@ -24,6 +24,6 @@ namespace Cargohub.models
         public DateTime Updated_At { get; set; }
         public List<ItemDetail> Items { get; set; }
         public bool IsBackordered { get; set; } // New property for backorder status
-        public string ShipmentDetails { get; set; } // New property for shipment details
+        public List<ItemDetail> ShipmentDetails { get; set; } // New property for shipment details
     }
 }

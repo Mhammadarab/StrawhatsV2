@@ -41,7 +41,7 @@ namespace Cargohub.controllers.v2
         [HttpGet]
         public IActionResult GetSuppliers([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
         {
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("all");
             if (validationResult != null)
             {
                 return validationResult;
@@ -77,7 +77,7 @@ namespace Cargohub.controllers.v2
         [HttpGet("{id}")]
         public IActionResult GetSupplierById(int id)
         {
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("single");
             if (validationResult != null)
             {
                 return validationResult;
@@ -160,7 +160,7 @@ namespace Cargohub.controllers.v2
         [HttpGet("{id}/items")]
         public async Task<IActionResult> GetSupplierItems(int id)
         {
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("all");
             if (validationResult != null)
             {
                 return validationResult;

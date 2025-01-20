@@ -14,8 +14,8 @@ namespace Cargohub.controllers.v2
     [ApiController]
     public class OrderContoller : Controller
     {
-        private readonly ICrudService<Order, int> _orderService;
-        public OrderContoller(ICrudService<Order, int> orderService)
+        private readonly OrderService _orderService;
+        public OrderContoller(OrderService orderService)
         {
             _orderService = orderService;
         }
@@ -40,7 +40,7 @@ namespace Cargohub.controllers.v2
         [HttpGet]
         public IActionResult GetOrders([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
         {
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("all");
             if (validationResult != null)
             {
                 return validationResult;
@@ -76,7 +76,7 @@ namespace Cargohub.controllers.v2
         [HttpGet("{id}")]
         public IActionResult GetOrderById(int id)
         {
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("single");
             if (validationResult != null)
             {
                 return validationResult;
@@ -159,7 +159,7 @@ namespace Cargohub.controllers.v2
         [HttpGet("{id}/items")]
         public async Task<IActionResult> GetOrderItems(int id)
         {
-            var validationResult = ValidateApiKeyAndUser("get");
+            var validationResult = ValidateApiKeyAndUser("all");
             if (validationResult != null)
             {
                 return validationResult;
@@ -173,6 +173,24 @@ namespace Cargohub.controllers.v2
             catch (KeyNotFoundException ex)
             {
                 return NotFound(ex.Message);
+            }
+        }
+
+        [HttpPut("{id}/backorder-status")]
+        public async Task<IActionResult> UpdateBackorderStatus(int id)
+        {
+            try
+            {
+                await _orderService.UpdateBackorderStatus(id);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
 

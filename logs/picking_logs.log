@@ -1,0 +1,4 @@
+Timestamp=2024-12-17T13:41:37.736769+01:00 | PerformedBy=a1b2c3d4e5 | ShipmentId=29 | Description=test | PickedItems=P009334:45, P009920:42, P008278:28
+Timestamp=2024-12-17T13:42:32.197635+01:00 | PerformedBy=a1b2c3d4e5 | ShipmentId=29 | Description=test | PickedItems=P010669:15
+Timestamp=2024-12-17T13:43:48.604818+01:00 | PerformedBy=a1b2c3d4e5 | ShipmentId=3 | Description=test | PickedItems=P010669:15
+Timestamp=2025-01-14T14:33:24.4474180+01:00 | PerformedBy=a1b2c3d4e5 | ShipmentId=5 | Description=string | PickedItems=P008440:32, P005397:16

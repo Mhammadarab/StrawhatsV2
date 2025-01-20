@@ -1,4 +1,4 @@
-name: CI/CD - test
+name: CI/CD - Testing
 
 on:
   workflow_call:
@@ -24,41 +24,87 @@ jobs:
       - name: Install .NET dependencies
         run: dotnet restore
 
-      - name: Run code formatting check
+      - name: Install dotnet-format tool
+        run: dotnet tool install -g dotnet-format
+
+      - name: Install Roslynator tool
+        run: dotnet tool install -g roslynator.dotnet.cli
+
+      - name: Run code formatting check with dotnet-format
         run: dotnet format --verify-no-changes
         continue-on-error: true
 
-      - name: Run .NET tests
-        run: dotnet test --configuration Release --no-restore
+      - name: Run code analysis with Roslynator
+        run: roslynator analyze Cargohub.csproj controllers/ data/ interfaces/ models/ Providers/ services/ unit_tests/
+        continue-on-error: true
+
+      - name: Restore unit test dependencies
+        run: |
+          cd ./unit_tests
+          dotnet restore
+
+      - name: Run .NET unit tests
+        id: run_dotnet_tests
+        run: |
+          cd ./unit_tests
+          dotnet test --configuration Release --no-restore
         continue-on-error: true
 
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: "3.x"
 
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r integration_tests/requirements.txt
 
+      - name: Run Python linting
+        run: |
+          python -m pip install flake8
+          flake8 integration_tests --count --max-line-length=120 --show-source --statistics
+        continue-on-error: true
+
       - name: Run application
         run: dotnet run --no-build --configuration Release --urls=${{ secrets.LOCALHOST }} & sleep 5
 
       - name: Run Python integration tests with coverage
+        id: run_python_tests
         run: |
           pytest --cov=integration_tests --cov-report=xml --cov-report=term-missing
           coverage xml -o coverage.xml
-          coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
+          coverage report --format=markdown > coverage_summary.md
           coverage report --fail-under=90
 
-      # - name: Create test summary
-      #   uses: mikepenz/action-junit-report@v3
-      #   with:
-      #     report_paths: integration_tests/results.xm
-
       - name: Notify Discord about Test Completion
+        if: always()
         run: |
-          curl -X POST -H "Content-Type: application/json" \
-          -d '{"content": "✅ **Testing stage completed successfully** for staging branch, despite potential errors."}' \
-          ${{inputs.DEPLOY_WEBHOOK_URL}}
+          error_message=""
+          # Check .NET test outcome
+          if [ "${{ steps.run_dotnet_tests.outcome }}" == "failure" ]; then
+            dotnet_errors=$(cat unit_tests/cobertura/*/coverage.cobertura.xml 2>/dev/null || echo "No detailed .NET test errors found.")
+            error_message+="❌ **.NET Tests failed**:\n$dotnet_errors\n"
+          fi
+
+          # Check Python test outcome
+          if [ "${{ steps.run_python_tests.outcome }}" == "failure" ]; then
+            python_errors=$(cat coverage.xml 2>/dev/null || echo "No detailed Python test errors found.")
+            error_message+="❌ **Python Tests failed**:\n$python_errors\n"
+          fi
+
+          # If no errors, mark tests as successful
+          if [ -z "$error_message" ]; then
+            error_message="✅ **All tests passed successfully** for the branch."
+          fi
+
+          # Extract coverage summary
+          if [ -f coverage_summary.md ]; then
+            coverage_summary=$(cat coverage_summary.md)
+            error_message+="**Coverage Summary:**$coverage_summary"
+          else
+            error_message+="\n**Coverage Summary:** Not available."
+          fi
+
+          # Send the message to Discord
+          echo '{'"$error_message"'"}' | jq -Rs '{content: .}' | curl -X POST -H "Content-Type: application/json" -d @- ${{ inputs.DEPLOY_WEBHOOK_URL }}

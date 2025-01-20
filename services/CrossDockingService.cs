@@ -9,12 +9,12 @@ public class CrossDockingService
     private readonly ICrudService<Order, int> _orderService;
 
     public CrossDockingService(
-        ICrudService<Shipment, int> shipmentService,
-        ICrudService<Order, int> orderService)
-    {
-        _shipmentService = shipmentService;
-        _orderService = orderService;
-    }
+    ICrudService<Shipment, int> shipmentService,
+    ICrudService<Order, int> orderService)
+{
+    _shipmentService = shipmentService;
+    _orderService = orderService;
+}
 
     private void LogCrossDockingOperation(string operation, string performedBy, Dictionary<string, object> details)
     {
@@ -26,22 +26,12 @@ public class CrossDockingService
             Details = details
         };
 
-        var logFilePath = Path.Combine("logs", "cross_docking_logs.json");
+        var logFilePath = Path.Combine("logs", "cross_docking_logs.log");
         Directory.CreateDirectory("logs");
 
-        List<CrossDockingLogEntry> logs;
-        if (File.Exists(logFilePath))
-        {
-            var jsonData = File.ReadAllText(logFilePath);
-            logs = JsonConvert.DeserializeObject<List<CrossDockingLogEntry>>(jsonData) ?? new List<CrossDockingLogEntry>();
-        }
-        else
-        {
-            logs = new List<CrossDockingLogEntry>();
-        }
+        var logLine = $"Timestamp={logEntry.Timestamp:O} | PerformedBy={logEntry.PerformedBy} | Operation={logEntry.Operation} | Details={JsonConvert.SerializeObject(logEntry.Details)}";
 
-        logs.Add(logEntry);
-        File.WriteAllText(logFilePath, JsonConvert.SerializeObject(logs, Formatting.Indented));
+        File.AppendAllText(logFilePath, logLine + Environment.NewLine);
     }
 
     public string ReceiveShipment(int shipmentId, string apiKey)
@@ -90,7 +80,7 @@ public class CrossDockingService
         }
 
         var orders = _orderService.GetAll();
-        var matchingOrder = orders.FirstOrDefault(o => o.Shipment_Id == shipmentId);
+        var matchingOrder = orders.FirstOrDefault(o => o.Shipment_Id.Contains(shipmentId));
         if (matchingOrder == null)
         {
             throw new KeyNotFoundException($"No order found linked to shipment ID {shipmentId}.");
@@ -132,7 +122,7 @@ public class CrossDockingService
 
         foreach (var shipment in shipments.Where(s => shipmentId == null || s.Id == shipmentId))
         {
-            var matchingOrder = orders.FirstOrDefault(o => o.Shipment_Id == shipment.Id);
+            var matchingOrder = orders.FirstOrDefault(o => o.Shipment_Id.Contains(shipment.Id));
             if (matchingOrder != null)
             {
                 foreach (var shipmentItem in shipment.Items)

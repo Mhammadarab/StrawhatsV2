@@ -41,7 +41,7 @@ namespace Cargohub.Controllers.v2
       [HttpGet]
       public IActionResult GetItemGroups([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
       {
-        var validationResult = ValidateApiKeyAndUser("get");
+        var validationResult = ValidateApiKeyAndUser("all");
         if (validationResult != null)
         {
           return validationResult;
@@ -78,7 +78,7 @@ namespace Cargohub.Controllers.v2
       [HttpGet("{id}")]
       public IActionResult GetItemGroupById(int id)
       {
-        var validationResult = ValidateApiKeyAndUser("get");
+        var validationResult = ValidateApiKeyAndUser("single");
         if (validationResult != null)
         {
           return validationResult;
