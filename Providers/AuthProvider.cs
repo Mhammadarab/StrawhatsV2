@@ -98,54 +98,47 @@ namespace Cargohub.services
         }
 
         private static void LogChange(string action, string performedBy, User oldUser = null, User newUser = null)
-        {
-            var changes = new Dictionary<string, object>();
+{
+    var changes = new Dictionary<string, object>();
 
-            if (oldUser != null && newUser != null)
-            {
-                changes = GetUpdatedFields(oldUser, newUser);
-            }
-            else if (oldUser != null)
-            {
-                changes["DeletedUser"] = oldUser;
-            }
-            else if (newUser != null)
-            {
-                changes["NewUser"] = newUser;
-            }
+    if (oldUser != null && newUser != null)
+    {
+        changes = GetUpdatedFields(oldUser, newUser);
+    }
+    else if (oldUser != null)
+    {
+        changes["DeletedUser"] = oldUser;
+    }
+    else if (newUser != null)
+    {
+        changes["NewUser"] = newUser;
+    }
 
-            if (changes.Count == 0)
-                return; // Nothing to log if there are no changes.
+    if (changes.Count == 0)
+        return; // Nothing to log if there are no changes.
 
-            var APIkey = oldUser?.ApiKey ?? newUser?.ApiKey;
-            var logEntry = new JObject
-            {
-                ["Timestamp"] = DateTime.UtcNow,
-                ["Action"] = action,
-                ["PerformedBy"] = performedBy,
-                ["APIkey"] = APIkey,
-                ["Changes"] = JObject.FromObject(changes)
-            };
+    var APIkey = oldUser?.ApiKey ?? newUser?.ApiKey;
+    var logEntry = new
+    {
+        Timestamp = DateTime.UtcNow,
+        Action = action,
+        PerformedBy = performedBy,
+        APIkey = APIkey,
+        Changes = changes
+    };
 
-            Directory.CreateDirectory("logs");
+    var logFilePath = Path.Combine("Logs", "user_changes.log");
+    var logEntryJson = JsonConvert.SerializeObject(logEntry, Formatting.Indented);
 
-            // Change the log file extension to .log
-            var logFilePath = Path.Combine("logs", "user_changes.log");
-
-            List<JObject> logs;
-            if (File.Exists(logFilePath))
-            {
-                var jsonData = File.ReadAllText(logFilePath);
-                logs = JsonConvert.DeserializeObject<List<JObject>>(jsonData) ?? new List<JObject>();
-            }
-            else
-            {
-                logs = new List<JObject>();
-            }
-
-            logs.Add(logEntry);
-            File.WriteAllText(logFilePath, JsonConvert.SerializeObject(logs, Formatting.Indented));
-        }
+    try
+    {
+        File.AppendAllText(logFilePath, logEntryJson + Environment.NewLine);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error writing log entry to file: {ex.Message}");
+    }
+}
 
         private static Dictionary<string, object> GetUpdatedFields(User oldUser, User newUser)
         {
@@ -270,6 +263,12 @@ namespace Cargohub.services
 
         public static bool HasAccess(User user, string path, string permission)
         {
+
+            if (!user.IsActive)
+            {
+                return false;
+            }
+
             // Check for path-specific access
             if (user.EndpointAccess.TryGetValue(path, out var specificAccess))
             {

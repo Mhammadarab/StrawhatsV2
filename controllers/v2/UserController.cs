@@ -130,7 +130,7 @@ namespace Cargohub.Controllers.v2
         [HttpPost("{apiKey}/deactivate")]
         public IActionResult DeactivateUser(string apiKey)
         {
-            var validationResult = ValidateApiKeyAndUser("deactivate");
+            var validationResult = ValidateApiKeyAndUser("post");
             if (validationResult != null)
             {
                 return validationResult;
@@ -150,7 +150,7 @@ namespace Cargohub.Controllers.v2
         [HttpPost("{apiKey}/reactivate")]
         public IActionResult ReactivateUser(string apiKey)
         {
-            var validationResult = ValidateApiKeyAndUser("reactivate");
+            var validationResult = ValidateApiKeyAndUser("post");
             if (validationResult != null)
             {
                 return validationResult;
