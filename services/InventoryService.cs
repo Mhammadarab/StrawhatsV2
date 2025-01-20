@@ -133,53 +133,51 @@ namespace Cargohub.services
         }
 
         public List<string> AuditInventory(string performedBy, Dictionary<int, Dictionary<int, int>> physicalCountsByLocation)
+{
+    var inventories = GetAll();
+    var discrepancies = new List<string>();
+
+    foreach (var auditEntry in physicalCountsByLocation)
+    {
+        var inventory = inventories.FirstOrDefault(i => i.Id == auditEntry.Key);
+
+        if (inventory == null)
         {
-            var inventories = GetAll();
-            var discrepancies = new List<string>();
+            discrepancies.Add($"Inventory ID {auditEntry.Key} not found.");
+            continue;
+        }
 
-            foreach (var auditEntry in physicalCountsByLocation)
+        foreach (var locationEntry in auditEntry.Value)
+        {
+            int locationId = locationEntry.Key;
+            int physicalCount = locationEntry.Value;
+
+            if (inventory.Locations.ContainsKey(locationId.ToString()))
             {
-                var inventory = inventories.FirstOrDefault(i => i.Id == auditEntry.Key);
-
-                if (inventory == null)
+                int systemCount = inventory.Locations[locationId.ToString()];
+                if (systemCount != physicalCount)
                 {
-                    discrepancies.Add($"Inventory ID {auditEntry.Key} not found.");
-                    continue;
-                }
-
-                foreach (var locationEntry in auditEntry.Value)
-                {
-                    int locationId = locationEntry.Key;
-                    int physicalCount = locationEntry.Value;
-
-                    if (inventory.Locations.ContainsKey(locationId.ToString()))
-                    {
-                        int systemCount = inventory.Locations[locationId.ToString()];
-                        if (systemCount != physicalCount)
-                        {
-                            discrepancies.Add(
-                                $"Discrepancy for Inventory ID {inventory.Id} at Location {locationId}: System = {systemCount}, Physical = {physicalCount}"
-                            );
-                            // Update the stock based on the physical count
-                            inventory.Locations[locationId.ToString()] = physicalCount;
-                        }
-                    }
-                    else
-                    {
-                        discrepancies.Add(
-                            $"Location {locationId} not found for Inventory ID {inventory.Id}."
-                        );
-                    }
+                    discrepancies.Add(
+                        $"Discrepancy for Inventory ID {inventory.Id} at Location {locationId}: System = {systemCount}, Physical = {physicalCount}"
+                    );
+                    // Update the inventory with the physical count
+                    inventory.Locations[locationId.ToString()] = physicalCount;
                 }
             }
-
-            // Save the updated inventories
-            SaveToFile(inventories);
-
-            // Log the discrepancies with status "Completed"
-            LogAuditChange(performedBy, physicalCountsByLocation, discrepancies, "Completed");
-            return discrepancies;
+            else
+            {
+                discrepancies.Add(
+                    $"Location {locationId} not found for Inventory ID {inventory.Id}."
+                );
+            }
         }
+    }
+
+    // Log the discrepancies with status "Live"
+    LogAuditChange(performedBy, physicalCountsByLocation, discrepancies, "Live");
+    SaveToFile(inventories); // Save the updated inventories to the file
+    return discrepancies;
+}
 
         private void LogAuditChange(string performedBy, Dictionary<int, Dictionary<int, int>> auditData, List<string> discrepancies, string status)
 {

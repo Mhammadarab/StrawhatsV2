@@ -234,7 +234,7 @@ namespace Cargohub.controllers.v2
 
             return Ok(new
             {
-                Message = "Audit completed. Discrepancies have been logged.",
+                Message = "Audit logged with status 'Live'. Discrepancies have been logged.",
                 Discrepancies = discrepancies
             });
         }
