@@ -1,7 +1,15 @@
 [
-  {"ApiKey": "owner",
+  {
+    "ApiKey": "owner",
     "App": "CargoHUB Owner Dashboard ",
     "EndpointAccess": {
+      "classifications": {
+        "All": true,
+        "Single": true,
+        "Create": true,
+        "Update": true,
+        "Delete": true
+      },
       "clients": {
         "All": true,
         "Single": true,
