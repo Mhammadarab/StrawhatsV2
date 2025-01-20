@@ -97,7 +97,11 @@ public class CrossDockingService
             }
         }
 
-        shipment.Shipment_Status = "Delivered";
+        shipment.Shipment_Status = "Shipped";
+        foreach (var item in shipment.Items)
+        {
+            item.CrossDockingStatus = "Shipped";
+        }
         _shipmentService.Update(shipment);
         _orderService.Update(matchingOrder);
 

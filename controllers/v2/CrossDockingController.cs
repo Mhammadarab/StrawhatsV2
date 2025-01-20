@@ -53,12 +53,6 @@ namespace Cargohub.Controllers.v2
         [HttpPost("receive")]
         public IActionResult ReceiveShipment([FromBody] int shipmentId)
         {
-            var validationResult = ValidateApiKey();
-            if (validationResult != null)
-            {
-                return validationResult;
-            }
-
             try
             {
                 var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
@@ -79,12 +73,6 @@ namespace Cargohub.Controllers.v2
         [HttpPost("ship")]
         public IActionResult ShipShipment([FromBody] int shipmentId)
         {
-            var validationResult = ValidateApiKey();
-            if (validationResult != null)
-            {
-                return validationResult;
-            }
-
             try
             {
                 var apiKey = Request.Headers["API_KEY"].FirstOrDefault();
