@@ -48,7 +48,7 @@ namespace Cargohub.controllers.v2
         [HttpGet]
         public IActionResult GetClients([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
         {
-            // TODO: check/change "get" to correct permission
+            // TODO: chek/change "get" to correct permission
             var validationResult = ValidateApiKeyAndUser("all");
             if (validationResult != null)
             {
