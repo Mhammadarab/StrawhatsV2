@@ -182,7 +182,7 @@ namespace Cargohub.Controllers.v2
         [HttpPut("{apiKey}/warehouses/add")]
         public IActionResult AddWarehouse(string apiKey, [FromBody] int warehouseId)
         {
-            var validationResult = ValidateApiKeyAndUser("add_warehouse");
+            var validationResult = ValidateApiKeyAndUser("put");
             if (validationResult != null)
             {
                 return validationResult;
@@ -206,7 +206,7 @@ namespace Cargohub.Controllers.v2
         [HttpPut("{apiKey}/warehouses/remove")]
         public IActionResult RemoveWarehouse(string apiKey, [FromBody] int warehouseId)
         {
-            var validationResult = ValidateApiKeyAndUser("remove_warehouse");
+            var validationResult = ValidateApiKeyAndUser("put");
             if (validationResult != null)
             {
                 return validationResult;
