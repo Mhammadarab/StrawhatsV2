@@ -19,14 +19,14 @@ jobs:
     with:
       DISCORD_WEBHOOK_URL: ${{ vars.DISCORD_WEBHOOK_URL }}
 
-  # Test Stage
   test:
+    needs: build
     uses: ./.github/workflows/ci-cd-testing.yml
     with:
       DEPLOY_WEBHOOK_URL: ${{ vars.DISCORD_WEBHOOK_URL }}
 
-  # Deploy Stage
   deploy:
+    needs: test
     uses: ./.github/workflows/ci-cd-deploy.yml
     with:
-      DEPLOY_WEBHOOK_URL: ${{ vars.DEPLOY_WEBHOOK_URL}}
+      DEPLOY_WEBHOOK_URL: ${{ vars.DEPLOY_WEBHOOK_URL }}
