@@ -70,7 +70,6 @@ namespace Cargohub.controllers.v2
 
             var totalRecords = _clientService.GetAll(null, null).Count; // Total count without pagination
 
-            // Return metadata only if pagination is applied
             if (pageNumber.HasValue && pageSize.HasValue)
             {
                 return Ok(new
